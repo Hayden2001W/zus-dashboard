@@ -38,10 +38,98 @@ body {
   font-family: 'DM Sans', sans-serif;
   color: var(--text);
   min-height: 100vh;
-  padding: 24px 28px 40px;
+  font-size: 16px;
+  display: flex;
 }
 
-/* ── HEADER ─────────────────────────────────── */
+/* ── SIDE PANEL ──────────────────────────────────────────── */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 22px 18px;
+  position: sticky; top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.sidebar .brand-block {
+  display: flex; align-items: center; gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+.brand-dot {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: linear-gradient(135deg, #f5a623, #e05d5d);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.5px;
+}
+.brand-name { font-size: 17px; font-weight: 700; color: var(--text); }
+.brand-sub  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.nav-label {
+  font-size: 11px; font-weight: 600; color: var(--muted2);
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin: 12px 0 8px;
+}
+.nav-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.nav-list a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 7px;
+  color: var(--muted); font-size: 14px; font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.nav-list a:hover { background: var(--surface2); color: var(--text); }
+.nav-list a.active { background: var(--blue-dim); color: var(--blue); }
+.nav-list .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+/* Segmented toggle (Period / View) */
+.seg-row {
+  display: flex; gap: 4px;
+  background: var(--surface2);
+  padding: 4px; border-radius: 8px;
+}
+.seg-row button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500;
+  padding: 7px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.seg-row button.active {
+  background: var(--blue);
+  color: #0a0e14;
+  font-weight: 600;
+}
+
+/* Brand chip list */
+.filter-stack { display: flex; flex-direction: column; gap: 6px; }
+.filter-chip {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.filter-chip:hover { color: var(--text); }
+.filter-chip.active { border-color: var(--blue); color: var(--blue); }
+.filter-chip .check { color: var(--blue); }
+
+/* ── MAIN ────────────────────────────────────────────────── */
+.main { flex: 1; padding: 28px 32px 48px; min-width: 0; }
+
 .top-bar {
   display: flex;
   align-items: center;
@@ -50,41 +138,34 @@ body {
   padding-bottom: 18px;
   border-bottom: 1px solid var(--border);
 }
-.brand { display: flex; align-items: center; gap: 12px; }
-.brand-dot {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: linear-gradient(135deg, #f5a623, #e05d5d);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -0.5px;
-}
-.brand-name { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: 0.01em; }
-.brand-sub  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.page-title { font-size: 22px; font-weight: 700; }
+.page-title .filter-active { color: var(--blue); font-weight: 600; }
 .top-meta { text-align: right; }
-.top-meta-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-.top-meta-val   { font-size: 13px; color: var(--text); font-weight: 500; margin-top: 2px; }
+.top-meta-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.top-meta-val   { font-size: 15px; color: var(--text); font-weight: 500; margin-top: 3px; }
 
-/* ── SECTION LABEL ──────────────────────────── */
 .section-label {
-  font-size: 10px; font-weight: 600; color: var(--muted2);
+  font-size: 11px; font-weight: 600; color: var(--muted2);
   text-transform: uppercase; letter-spacing: 0.12em;
-  margin: 0 0 10px;
+  margin: 0 0 12px;
 }
 
-/* ── KPI ROW ────────────────────────────────── */
 .kpi-row {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 .kpi-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 16px 18px 14px;
+  padding: 18px 20px 16px;
   position: relative;
   overflow: hidden;
+  transition: opacity .2s;
 }
+.kpi-card.dim { opacity: 0.35; }
 .kpi-card::before {
   content: '';
   position: absolute; top: 0; left: 0; right: 0; height: 2px;
@@ -97,12 +178,12 @@ body {
 .kpi-card.purple::before{ background: var(--purple); }
 
 .kpi-label {
-  font-size: 10px; font-weight: 600; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 8px;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 10px;
 }
 .kpi-value {
   font-family: 'DM Mono', monospace;
-  font-size: 22px; font-weight: 500; line-height: 1;
+  font-size: 26px; font-weight: 500; line-height: 1;
 }
 .kpi-card.blue  .kpi-value { color: var(--blue); }
 .kpi-card.green .kpi-value { color: var(--green); }
@@ -112,113 +193,101 @@ body {
 .kpi-card.purple.kpi-value { color: var(--purple); }
 
 .kpi-sub {
-  font-size: 11px; color: var(--muted); margin-top: 5px;
+  font-size: 12px; color: var(--muted); margin-top: 7px;
 }
 .kpi-badge {
   display: inline-flex; align-items: center; gap: 3px;
-  font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px;
-  margin-top: 5px;
+  font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 4px;
+  margin-top: 6px;
 }
 .kpi-badge.pos { color: var(--green); background: var(--green-dim); }
 .kpi-badge.neg { color: var(--red);   background: var(--red-dim); }
 .kpi-badge.neu { color: var(--muted); background: rgba(100,120,140,0.12); }
 
-/* ── GRID 2-COL ─────────────────────────────── */
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-.grid-3 {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 .grid-bottom {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
-/* ── CARD ───────────────────────────────────── */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 22px 24px 18px;
+  padding: 22px 24px 20px;
+  scroll-margin-top: 20px;
 }
 .card-header {
   display: flex; align-items: flex-start;
   justify-content: space-between; margin-bottom: 20px;
 }
-.card-title   { font-size: 14px; font-weight: 600; color: var(--text); }
-.card-sub     { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.card-title   { font-size: 15px; font-weight: 600; color: var(--text); }
+.card-sub     { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .chart-wrap   { position: relative; }
 
-/* ── LEGEND ─────────────────────────────────── */
 .legend {
   display: flex; gap: 14px; flex-wrap: wrap;
 }
 .leg-item {
   display: flex; align-items: center; gap: 6px;
-  font-size: 11px; color: var(--muted); font-weight: 500;
+  font-size: 12px; color: var(--muted); font-weight: 500;
 }
 .leg-dot  { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 .leg-line { width: 16px; height: 2.5px; border-radius: 2px; flex-shrink: 0; }
 .leg-dash { width: 16px; height: 0; border-top: 2px dashed; flex-shrink: 0; }
 
-/* ── DIVIDER + FOOTER STATS ─────────────────── */
 .card-divider { height: 1px; background: var(--border); margin: 14px 0 12px; }
 .stat-row { display: flex; gap: 20px; flex-wrap: wrap; }
 .stat { display: flex; flex-direction: column; gap: 2px; }
 .stat-label {
-  font-size: 10px; color: var(--muted); text-transform: uppercase;
+  font-size: 11px; color: var(--muted); text-transform: uppercase;
   letter-spacing: 0.08em; font-weight: 500;
 }
 .stat-val {
-  font-size: 13px; font-weight: 600;
+  font-size: 14px; font-weight: 600;
   font-family: 'DM Mono', monospace;
 }
 .stat-val.blue  { color: var(--blue); }
 .stat-val.cyan  { color: var(--cyan); }
 .stat-val.green { color: var(--green); }
 .stat-val.amber { color: var(--amber); }
+.stat-val.red   { color: var(--red); }
 
-/* ── TREND INDICATOR ────────────────────────── */
 .trend-row { display: flex; gap: 12px; margin-bottom: 14px; }
 .trend-badge {
   display: flex; align-items: center; gap: 5px;
-  padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  padding: 5px 10px; border-radius: 6px; font-size: 13px; font-weight: 600;
 }
 .trend-badge.pos { color: var(--green); background: var(--green-dim); }
 .trend-badge.neg { color: var(--red);   background: var(--red-dim); }
 .trend-badge .trend-label { color: var(--muted); font-weight: 400; margin-right: 2px; }
 
-/* ── CHANNEL MIX ────────────────────────────── */
-.channel-list { display: flex; flex-direction: column; gap: 10px; }
-.channel-item {}
+.channel-list { display: flex; flex-direction: column; gap: 11px; }
 .channel-top {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 5px;
 }
-.channel-name { font-size: 12px; font-weight: 500; color: var(--text); }
-.channel-pct  { font-size: 12px; font-weight: 600; font-family: 'DM Mono', monospace; }
-.channel-bar  { height: 5px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+.channel-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.channel-pct  { font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace; }
+.channel-bar  { height: 6px; background: var(--border2); border-radius: 3px; overflow: hidden; }
 .channel-fill { height: 100%; border-radius: 3px; }
 
-/* ── QoQ TABLE ──────────────────────────────── */
 .qoq-table { width: 100%; border-collapse: collapse; }
 .qoq-table th {
-  font-size: 10px; color: var(--muted); text-transform: uppercase;
+  font-size: 11px; color: var(--muted); text-transform: uppercase;
   letter-spacing: 0.08em; padding: 0 10px 10px 0; text-align: right;
   font-weight: 500; border-bottom: 1px solid var(--border);
 }
 .qoq-table th:first-child { text-align: left; }
 .qoq-table td {
-  font-size: 12px; padding: 9px 10px 9px 0; text-align: right;
+  font-size: 13px; padding: 10px 10px 10px 0; text-align: right;
   border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace;
   color: var(--muted);
 }
@@ -231,89 +300,130 @@ body {
 .qoq-table .fy { color: var(--blue); font-weight: 500; }
 .qoq-table .quarter-badge {
   display: inline-block; padding: 2px 8px; border-radius: 4px;
-  font-size: 11px; font-weight: 600; font-family: 'DM Sans';
+  font-size: 12px; font-weight: 600; font-family: 'DM Sans';
 }
 .qoq-table .q1 { background: rgba(77,157,224,0.12); color: var(--blue); }
 .qoq-table .q2 { background: rgba(62,207,108,0.10); color: var(--green); }
 .qoq-table .q3 { background: rgba(245,166,35,0.10); color: var(--amber); }
 .qoq-table .q4 { background: rgba(165,122,245,0.10); color: var(--purple); }
 
-/* ── SCROLLBAR ──────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+@media (max-width: 900px) {
+  body { flex-direction: column; }
+  .sidebar { width: 100%; position: relative; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .grid-2, .grid-bottom { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<!-- ══ TOP BAR ══════════════════════════════════════════════════════ -->
-<div class="top-bar">
-  <div class="brand">
+<!-- ══ SIDE PANEL ══════════════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="brand-block">
     <div class="brand-dot">ZC</div>
     <div>
       <div class="brand-name">ZUS Coffee Group</div>
       <div class="brand-sub">CEO Dashboard · FY 2026</div>
     </div>
   </div>
+
+  <div class="nav-label">Sections</div>
+  <ul class="nav-list" id="navList">
+    <li><a href="#kpis"     class="active" data-target="kpis"><span class="nav-dot"></span> Headline KPIs</a></li>
+    <li><a href="#monthly"  data-target="monthly"><span class="nav-dot"></span> PSPD &amp; AOV Monthly</a></li>
+    <li><a href="#l6m"      data-target="l6m"><span class="nav-dot"></span> L6M MoM Trend</a></li>
+    <li><a href="#l6w"      data-target="l6w"><span class="nav-dot"></span> L6W WoW Trend</a></li>
+    <li><a href="#qoq"      data-target="qoq"><span class="nav-dot"></span> QoQ Overview</a></li>
+    <li><a href="#channels" data-target="channels"><span class="nav-dot"></span> Channel Mix</a></li>
+    <li><a href="#brands"   data-target="brands"><span class="nav-dot"></span> Brand PSPD</a></li>
+  </ul>
+
+  <div class="nav-label" style="margin-top: 22px;">Brand</div>
+  <div class="filter-stack" id="brandFilter">
+    <div class="filter-chip active" data-brand="overall"><span>● Overall</span><span class="check">✓</span></div>
+    <div class="filter-chip"        data-brand="zc"><span style="color:var(--cyan)">● ZUS Coffee</span><span class="check"></span></div>
+    <div class="filter-chip"        data-brand="zs"><span style="color:var(--amber)">● ZUS Signature</span><span class="check"></span></div>
+  </div>
+
+  <div class="nav-label" style="margin-top: 22px;">Jump to Period</div>
+  <div class="seg-row" id="periodFilter">
+    <button class="active" data-period="ytd">YTD</button>
+    <button data-period="l6m">L6M</button>
+    <button data-period="l6w">L6W</button>
+  </div>
+
+  <div class="nav-label" style="margin-top: 22px;">View</div>
+  <div class="seg-row" id="viewFilter">
+    <button class="active" data-view="both">CY + PY</button>
+    <button data-view="cy">CY only</button>
+  </div>
+</aside>
+
+<!-- ══ MAIN ════════════════════════════════════════════════════════════ -->
+<main class="main">
+
+<div class="top-bar">
+  <div class="page-title">FY 2026 Performance — <span class="filter-active" id="filterLabel">Overall · YTD</span></div>
   <div class="top-meta">
     <div class="top-meta-label">Last Refreshed</div>
     <div class="top-meta-val">14 May 2026 &nbsp;·&nbsp; YTD Jan–Apr 2026</div>
   </div>
 </div>
 
-<!-- ══ KPI CARDS ════════════════════════════════════════════════════ -->
-<p class="section-label">YTD Headline KPIs</p>
+<p class="section-label" id="kpis">YTD Headline KPIs</p>
 <div class="kpi-row">
 
-  <div class="kpi-card blue">
+  <div class="kpi-card blue" data-brand-card="all">
     <div class="kpi-label">YTD Revenue</div>
     <div class="kpi-value">RM 336.5M</div>
     <div class="kpi-sub">Target: RM 349.3M</div>
     <span class="kpi-badge neg">▼ 3.7% vs Target</span>
   </div>
 
-  <div class="kpi-card amber">
+  <div class="kpi-card amber" data-brand-card="overall">
     <div class="kpi-label">YTD PSPD (Overall)</div>
     <div class="kpi-value">3,852.55</div>
     <div class="kpi-sub">Target: 4,000.00</div>
     <span class="kpi-badge neg">▼ 3.7% vs Target</span>
   </div>
 
-  <div class="kpi-card cyan">
+  <div class="kpi-card cyan" data-brand-card="zc">
     <div class="kpi-label">YTD PSPD (ZUS Coffee)</div>
     <div class="kpi-value">3,859.16</div>
     <div class="kpi-sub">Target: 4,000.00</div>
     <span class="kpi-badge neg">▼ 3.5% vs Target</span>
   </div>
 
-  <div class="kpi-card red">
+  <div class="kpi-card red" data-brand-card="zs">
     <div class="kpi-label">YTD PSPD (ZUS Sig.)</div>
     <div class="kpi-value">2,644.46</div>
     <div class="kpi-sub">Target: 4,000.00</div>
     <span class="kpi-badge neg">▼ 33.9% vs Target</span>
   </div>
 
-  <div class="kpi-card green">
+  <div class="kpi-card green" data-brand-card="all">
     <div class="kpi-label">YTD AOV</div>
     <div class="kpi-value">RM 20.30</div>
     <div class="kpi-sub">Per order average</div>
     <span class="kpi-badge neu">No Target Set</span>
   </div>
 
-  <div class="kpi-card blue" style="--blue:#a57af5;">
+  <div class="kpi-card blue" data-brand-card="all" style="--blue:#a57af5;">
     <div class="kpi-label">Total Orders YTD</div>
-    <div class="kpi-value" style="color:#a57af5;font-size:19px;">16.57M</div>
+    <div class="kpi-value" style="color:#a57af5;font-size:22px;">16.57M</div>
     <div class="kpi-sub">Jan – Apr 2026</div>
     <span class="kpi-badge neu">Cumulative</span>
   </div>
 
 </div>
 
-<!-- ══ ROW 1: PSPD×AOV MONTHLY + L6M MoM ═══════════════════════════ -->
-<div class="grid-2" style="margin-bottom:14px;">
+<div class="grid-2">
 
-  <!-- PSPD & AOV Monthly -->
-  <div class="card">
+  <div class="card" id="monthly">
     <div class="card-header">
       <div>
         <div class="card-title">PSPD &amp; AOV × TIME</div>
@@ -338,8 +448,7 @@ body {
     </div>
   </div>
 
-  <!-- L6M MoM -->
-  <div class="card">
+  <div class="card" id="l6m">
     <div class="card-header">
       <div>
         <div class="card-title">L6M MoM PSPD Trend</div>
@@ -361,11 +470,9 @@ body {
 
 </div>
 
-<!-- ══ ROW 2: L6W WoW + QoQ ══════════════════════════════════════════ -->
-<div class="grid-2" style="margin-bottom:14px;">
+<div class="grid-2">
 
-  <!-- L6W WoW -->
-  <div class="card">
+  <div class="card" id="l6w">
     <div class="card-header">
       <div>
         <div class="card-title">L6W WoW PSPD Trend</div>
@@ -385,8 +492,7 @@ body {
     <div class="stat-row" id="l6wStats"></div>
   </div>
 
-  <!-- QoQ PSPD -->
-  <div class="card">
+  <div class="card" id="qoq">
     <div class="card-header">
       <div>
         <div class="card-title">Quarterly PSPD — QoQ Overview</div>
@@ -416,11 +522,9 @@ body {
 
 </div>
 
-<!-- ══ ROW 3: CHANNEL MIX + BRAND PSPD QoQ ══════════════════════════ -->
 <div class="grid-bottom">
 
-  <!-- Channel Mix -->
-  <div class="card">
+  <div class="card" id="channels">
     <div class="card-header">
       <div>
         <div class="card-title">2026 YTD Channel Mix</div>
@@ -430,8 +534,7 @@ body {
     <div class="channel-list" id="channelList"></div>
   </div>
 
-  <!-- ZC Brand PSPD QoQ -->
-  <div class="card">
+  <div class="card" id="brands">
     <div class="card-header">
       <div>
         <div class="card-title">ZUS Coffee PSPD by Quarter</div>
@@ -449,7 +552,6 @@ body {
     </div>
   </div>
 
-  <!-- ZS Brand PSPD QoQ -->
   <div class="card">
     <div class="card-header">
       <div>
@@ -470,9 +572,10 @@ body {
 
 </div>
 
+</main>
+
 <!-- ══ SCRIPTS ═══════════════════════════════════════════════════════ -->
 <script>
-// ── HELPERS ──────────────────────────────────────────────────────────
 const fmt0 = v => v.toLocaleString('en-MY', {minimumFractionDigits:0, maximumFractionDigits:0});
 const fmt2 = v => v.toLocaleString('en-MY', {minimumFractionDigits:2, maximumFractionDigits:2});
 const fmtPct = v => (v >= 0 ? '+' : '') + (v*100).toFixed(1) + '%';
@@ -483,28 +586,30 @@ const tooltipDefaults = {
   borderWidth: 1,
   titleColor: '#e4ecf5',
   bodyColor: '#8ba0b8',
-  titleFont: { family: "'DM Sans', sans-serif", size: 12, weight: '600' },
-  bodyFont:  { family: "'DM Mono', monospace",  size: 11 },
+  titleFont: { family: "'DM Sans', sans-serif", size: 13, weight: '600' },
+  bodyFont:  { family: "'DM Mono', monospace",  size: 12 },
   padding: 10,
 };
 
 const gridColor   = 'rgba(255,255,255,0.05)';
 const tickColor   = '#6b7e94';
-const tickFont    = { family: "'DM Mono', sans-serif", size: 10 };
+const tickFont    = { family: "'DM Mono', sans-serif", size: 11 };
 
 // ── 1. PSPD & AOV MONTHLY ────────────────────────────────────────────
-const months   = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const pspd     = [3582.63, 3572.04, 4162.57, 4387.41, null, null, null, null, null, null, null, null];
-const pyPspd   = [3513.94, 3695.64, 3057.78, 4030.55, 4107.29, 4545.74, 4486.30, 3992.40, 3905.30, 3896.87, 3936.75, 4099.09];
-const aov      = [19.57, 20.08, 21.30, 19.98, null, null, null, null, null, null, null, null];
-const pyAov    = [19.57, 19.56, 20.10, 20.53, 19.81, 20.39, 20.28, 19.87, 19.95, 20.01, 19.49, 20.37];
+const months         = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const pspd           = [3582.63, 3572.04, 4162.57, 4387.41, null, null, null, null, null, null, null, null];
+const pyPspd         = [3513.94, 3695.64, 3057.78, 4030.55, 4107.29, 4545.74, 4486.30, 3992.40, 3905.30, 3896.87, 3936.75, 4099.09];
+const aov            = [19.57, 20.08, 21.30, 19.98, null, null, null, null, null, null, null, null];
+const pyAov          = [19.57, 19.56, 20.10, 20.53, 19.81, 20.39, 20.28, 19.87, 19.95, 20.01, 19.49, 20.37];
+const monthlyZcPspd  = [3585.79, 3577.56, 4172.41, 4396.86, null, null, null, null, null, null, null, null];
+const monthlyZsPspd  = [3012.18, 2559.51, 2352.90, 2639.29, null, null, null, null, null, null, null, null];
 
-new Chart(document.getElementById('pspdAovChart'), {
+const pspdChart = new Chart(document.getElementById('pspdAovChart'), {
   type: 'bar',
   data: {
     labels: months,
     datasets: [
-      { label:'PSPD', data:pspd, backgroundColor:'rgba(77,157,224,0.80)', borderColor:'rgba(77,157,224,1)',
+      { label:'PSPD', data:pspd.slice(), backgroundColor:'rgba(77,157,224,0.80)', borderColor:'rgba(77,157,224,1)',
         borderWidth:1, borderRadius:4, borderSkipped:'bottom', yAxisID:'y', order:2,
         barPercentage:0.45, categoryPercentage:0.85 },
       { label:'PY PSPD', data:pyPspd, backgroundColor:'rgba(57,208,216,0.55)', borderColor:'rgba(57,208,216,1)',
@@ -554,7 +659,6 @@ const l6mZC      = [4157.02, 4127.56, 4057.91, 3905.47, 3838.27, 3885.19];
 const l6mZS      = [3196.84, 3128.35, 3075.17, 3009.53, 2877.32, 2774.18];
 const l6mMoM     = [null, -0.00719, -0.01685, -0.03747, -0.01730, 0.01204];
 
-// trend badges
 const l6mLatestMoM = l6mMoM[l6mMoM.length-1];
 const l6mPrevMoM   = l6mMoM[l6mMoM.length-2];
 document.getElementById('l6mTrendRow').innerHTML =
@@ -568,7 +672,7 @@ document.getElementById('l6mStats').innerHTML = `
   <div class="stat"><span class="stat-label">ZS Latest</span><span class="stat-val amber">${fmt2(l6mZS[5])}</span></div>
 `;
 
-new Chart(document.getElementById('l6mChart'), {
+const l6mChart = new Chart(document.getElementById('l6mChart'), {
   type:'line',
   data:{
     labels:l6mLabels,
@@ -584,7 +688,7 @@ new Chart(document.getElementById('l6mChart'), {
         pointBorderColor:'#111820', pointBorderWidth:1.5, tension:0.4, fill:false }
     ]
   },
-  options:lineOptions(3400, 4300)
+  options:lineOptions(2600, 4300)
 });
 
 // ── 3. L6W WoW ───────────────────────────────────────────────────────
@@ -607,7 +711,7 @@ document.getElementById('l6wStats').innerHTML = `
   <div class="stat"><span class="stat-label">ZS Latest</span><span class="stat-val amber">${fmt2(l6wZS[5])}</span></div>
 `;
 
-new Chart(document.getElementById('l6wChart'), {
+const l6wChart = new Chart(document.getElementById('l6wChart'), {
   type:'line',
   data:{
     labels:l6wLabels,
@@ -626,7 +730,7 @@ new Chart(document.getElementById('l6wChart'), {
   options:lineOptions(2000, 4500)
 });
 
-// ── 4. QoQ CHART + TABLE ─────────────────────────────────────────────
+// ── 4. QoQ ──────────────────────────────────────────────────────────
 const qoqData = [
   { q:'Q1 2025', rev:216.5, pspd:3410.00, target:4000, prev:null },
   { q:'Q2 2025', rev:288.3, pspd:4229.54, target:4000, prev:3410.00 },
@@ -637,7 +741,7 @@ const qoqData = [
 ];
 const qColors = ['#4d9de0','#3ecf6c','#f5a623','#a57af5','#4d9de0','#3ecf6c'];
 
-new Chart(document.getElementById('qoqChart'), {
+const qoqChart = new Chart(document.getElementById('qoqChart'), {
   type:'bar',
   data:{
     labels: qoqData.map(d=>d.q),
@@ -666,7 +770,6 @@ new Chart(document.getElementById('qoqChart'), {
   }
 });
 
-// QoQ table
 const qClassMap = {Q1:'q1',Q2:'q2',Q3:'q3',Q4:'q4'};
 const qoqTbody = document.getElementById('qoqTableBody');
 qoqData.forEach((d,i) => {
@@ -709,8 +812,8 @@ channels.forEach(ch => {
     </div>`;
 });
 
-// ── 6. ZUS COFFEE BRAND QoQ ─────────────────────────────────────────
-new Chart(document.getElementById('zcBrandChart'), {
+// ── 6. ZC BRAND ──────────────────────────────────────────────────────
+const zcBrandChart = new Chart(document.getElementById('zcBrandChart'), {
   type:'bar',
   data:{
     labels:['Q1 2026','Q2 2026'],
@@ -727,8 +830,8 @@ new Chart(document.getElementById('zcBrandChart'), {
   options: brandChartOptions(3000,5000)
 });
 
-// ── 7. ZUS SIGNATURE BRAND QoQ ───────────────────────────────────────
-new Chart(document.getElementById('zsBrandChart'), {
+// ── 7. ZS BRAND ──────────────────────────────────────────────────────
+const zsBrandChart = new Chart(document.getElementById('zsBrandChart'), {
   type:'bar',
   data:{
     labels:['Q1 2026','Q2 2026'],
@@ -789,6 +892,141 @@ function brandChartOptions(yMin, yMax) {
     }
   };
 }
+
+// ══════════════════════════════════════════════════════════════════════
+//  FILTER LOGIC — Brand / Period / View
+// ══════════════════════════════════════════════════════════════════════
+const filterState = { brand: 'overall', period: 'ytd', view: 'both' };
+const BRAND_LABEL  = { overall: 'Overall', zc: 'ZUS Coffee', zs: 'ZUS Signature' };
+const PERIOD_LABEL = { ytd: 'YTD', l6m: 'L6M', l6w: 'L6W' };
+
+// Cache original line colors so we can dim/restore
+[l6mChart, l6wChart].forEach(c => {
+  c.data.datasets.forEach(ds => { ds._origColor = ds.borderColor; });
+});
+
+function applyFilters() {
+  document.getElementById('filterLabel').textContent =
+    `${BRAND_LABEL[filterState.brand]} · ${PERIOD_LABEL[filterState.period]}`;
+
+  document.querySelectorAll('[data-brand-card]').forEach(card => {
+    const tag = card.dataset.brandCard;
+    let dim = false;
+    if (filterState.brand === 'zc' && tag === 'zs') dim = true;
+    if (filterState.brand === 'zs' && tag === 'zc') dim = true;
+    if (filterState.brand !== 'overall' && tag === 'overall') dim = true;
+    card.classList.toggle('dim', dim);
+  });
+
+  const monthlySrc =
+    filterState.brand === 'zc' ? monthlyZcPspd :
+    filterState.brand === 'zs' ? monthlyZsPspd : pspd;
+  pspdChart.data.datasets[0].data = monthlySrc.slice();
+  pspdChart.data.datasets[0].label =
+    filterState.brand === 'zc' ? 'ZC PSPD' :
+    filterState.brand === 'zs' ? 'ZS PSPD' : 'PSPD';
+
+  const showPY = filterState.view === 'both';
+  pspdChart.data.datasets[1].hidden = !showPY;
+  pspdChart.data.datasets[3].hidden = !showPY;
+  pspdChart.update();
+
+  emphasiseLines(l6mChart, filterState.brand);
+  emphasiseLines(l6wChart, filterState.brand);
+}
+
+function emphasiseLines(chart, brand) {
+  const map = { overall: 0, zc: 1, zs: 2 };
+  const focusIdx = brand === 'overall' ? null : map[brand];
+  chart.data.datasets.forEach((ds, i) => {
+    if (focusIdx === null) {
+      ds.borderWidth = i === 0 ? 2.5 : 2;
+      ds.pointRadius = i === 0 ? 4 : 3.5;
+      ds.borderColor = ds._origColor;
+    } else {
+      const isFocus = i === focusIdx;
+      ds.borderWidth = isFocus ? 3 : 1.5;
+      ds.pointRadius = isFocus ? 5 : 2;
+      ds.borderColor = isFocus ? ds._origColor : hexToRgba(ds._origColor, 0.25);
+    }
+  });
+  chart.update();
+}
+
+function hexToRgba(hex, alpha) {
+  if (!hex || hex[0] !== '#') return hex;
+  const h = hex.replace('#','');
+  const r = parseInt(h.substring(0,2),16);
+  const g = parseInt(h.substring(2,4),16);
+  const b = parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+// Brand chips
+document.querySelectorAll('#brandFilter .filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#brandFilter .filter-chip').forEach(c => {
+      c.classList.remove('active');
+      const cs = c.querySelector('.check'); if (cs) cs.textContent = '';
+    });
+    chip.classList.add('active');
+    const cs = chip.querySelector('.check'); if (cs) cs.textContent = '✓';
+    filterState.brand = chip.dataset.brand;
+    applyFilters();
+  });
+});
+
+// Period buttons (scroll to section)
+document.querySelectorAll('#periodFilter button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#periodFilter button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterState.period = btn.dataset.period;
+    const target = { ytd: 'kpis', l6m: 'l6m', l6w: 'l6w' }[filterState.period];
+    document.getElementById(target).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    applyFilters();
+  });
+});
+
+// View buttons
+document.querySelectorAll('#viewFilter button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#viewFilter button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterState.view = btn.dataset.view;
+    applyFilters();
+  });
+});
+
+// Nav link clicks (smooth scroll)
+document.querySelectorAll('#navList a').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const id = link.dataset.target;
+    document.querySelectorAll('#navList a').forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Active-nav-on-scroll via IntersectionObserver
+const sectionIds = ['kpis','monthly','l6m','l6w','qoq','channels','brands'];
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      document.querySelectorAll('#navList a').forEach(a => {
+        a.classList.toggle('active', a.dataset.target === id);
+      });
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sectionIds.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) observer.observe(el);
+});
+
+applyFilters();
 </script>
 </body>
 </html>
