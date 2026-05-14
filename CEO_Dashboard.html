@@ -223,7 +223,36 @@ body {
   border-radius: var(--r);
   padding: 22px 24px 20px;
   scroll-margin-top: 20px;
+  position: relative;          /* anchor for absolute view-toggle */
 }
+
+/* ── INLINE CY/PY VIEW TOGGLE (top-right corner of card) ─── */
+.view-toggle {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 2;
+  display: inline-flex;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+.view-toggle button {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.view-toggle button.active { background: var(--blue); color: #0a0e14; }
+.view-toggle button:hover:not(.active) { color: var(--text); }
+.card-has-toggle .card-header { padding-right: 165px; }
 .brand-card-full .brand-card-body {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
@@ -369,12 +398,6 @@ body {
     <button data-period="l6m">L6M</button>
     <button data-period="l6w">L6W</button>
   </div>
-
-  <div class="nav-label" style="margin-top: 22px;">View</div>
-  <div class="seg-row" id="viewFilter">
-    <button class="active" data-view="both">CY + PY</button>
-    <button data-view="cy">CY only</button>
-  </div>
 </aside>
 
 <!-- ══ MAIN ════════════════════════════════════════════════════════════ -->
@@ -437,7 +460,11 @@ body {
 
 <div class="grid-2">
 
-  <div class="card" id="monthly">
+  <div class="card card-has-toggle" id="monthly">
+    <div class="view-toggle" data-target="monthly">
+      <button class="active" data-view="both">CY + PY</button>
+      <button data-view="cy">CY only</button>
+    </div>
     <div class="card-header">
       <div>
         <div class="card-title">PSPD &amp; AOV × TIME</div>
@@ -506,7 +533,11 @@ body {
     <div class="stat-row" id="l6wStats"></div>
   </div>
 
-  <div class="card" id="qoq">
+  <div class="card card-has-toggle" id="qoq">
+    <div class="view-toggle" data-target="qoq">
+      <button class="active" data-view="both">CY + PY</button>
+      <button data-view="cy">CY only</button>
+    </div>
     <div class="card-header">
       <div>
         <div class="card-title">Quarterly PSPD — QoQ Overview</div>
@@ -550,7 +581,11 @@ body {
 </div>
 
 <!-- ZUS Coffee — stacked full-width -->
-<div class="card brand-card-full" id="brands" data-brand-card="zc" style="margin-bottom:16px;">
+<div class="card brand-card-full card-has-toggle" id="brands" data-brand-card="zc" style="margin-bottom:16px;">
+  <div class="view-toggle" data-target="zc">
+    <button class="active" data-view="both">CY + PY</button>
+    <button data-view="cy">CY only</button>
+  </div>
   <div class="card-header">
     <div>
       <div class="card-title">ZUS Coffee PSPD by Quarter</div>
@@ -576,7 +611,11 @@ body {
 </div>
 
 <!-- ZUS Signature — stacked full-width -->
-<div class="card brand-card-full" data-brand-card="zs">
+<div class="card brand-card-full card-has-toggle" data-brand-card="zs">
+  <div class="view-toggle" data-target="zs">
+    <button class="active" data-view="both">CY + PY</button>
+    <button data-view="cy">CY only</button>
+  </div>
   <div class="card-header">
     <div>
       <div class="card-title">ZUS Signature PSPD by Quarter</div>
@@ -992,7 +1031,7 @@ function brandChartOptions(yMin, yMax) {
 // ══════════════════════════════════════════════════════════════════════
 //  FILTER LOGIC — Brand / Period / View
 // ══════════════════════════════════════════════════════════════════════
-const filterState = { brand: 'overall', period: 'ytd', view: 'both' };
+const filterState = { brand: 'overall', period: 'ytd' };
 const BRAND_LABEL  = { overall: 'Overall', zc: 'ZUS Coffee', zs: 'ZUS Signature' };
 const PERIOD_LABEL = { ytd: 'YTD', l6m: 'L6M', l6w: 'L6W' };
 
@@ -1022,9 +1061,6 @@ function applyFilters() {
     filterState.brand === 'zc' ? 'ZC PSPD' :
     filterState.brand === 'zs' ? 'ZS PSPD' : 'PSPD';
 
-  const showPY = filterState.view === 'both';
-  pspdChart.data.datasets[1].hidden = !showPY;
-  pspdChart.data.datasets[3].hidden = !showPY;
   pspdChart.update();
 
   emphasiseLines(l6mChart, filterState.brand);
@@ -1084,13 +1120,26 @@ document.querySelectorAll('#periodFilter button').forEach(btn => {
   });
 });
 
-// View buttons
-document.querySelectorAll('#viewFilter button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#viewFilter button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    filterState.view = btn.dataset.view;
-    applyFilters();
+// Per-chart View toggles — each card has its own CY/PY toggle in the top-right corner.
+// dataset indexes refer to PY-related datasets that should be hidden when "CY only" is active.
+const viewToggleMap = {
+  monthly: { chart: () => pspdChart,    pyIndexes: [1, 3] },   // PY PSPD bars + PY AOV line
+  qoq:     { chart: () => qoqChart,     pyIndexes: [1] },      // PY PSPD line
+  zc:      { chart: () => zcBrandChart, pyIndexes: [1] },      // PY PSPD line
+  zs:      { chart: () => zsBrandChart, pyIndexes: [1] },
+};
+document.querySelectorAll('.view-toggle').forEach(toggle => {
+  const cfg = viewToggleMap[toggle.dataset.target];
+  if (!cfg) return;
+  toggle.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      toggle.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const showPY = btn.dataset.view === 'both';
+      const chart = cfg.chart();
+      cfg.pyIndexes.forEach(i => chart.data.datasets[i].hidden = !showPY);
+      chart.update();
+    });
   });
 });
 
