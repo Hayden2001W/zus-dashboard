@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZUS Coffee — CEO Dashboard FY2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0a0e14;
+  --surface:   #111820;
+  --surface2:  #161e28;
+  --border:    #1e2c3a;
+  --border2:   #243040;
+  --text:      #e4ecf5;
+  --muted:     #6b7e94;
+  --muted2:    #4a5a6d;
+  --blue:      #4d9de0;
+  --blue-dim:  rgba(77,157,224,0.12);
+  --cyan:      #39d0d8;
+  --cyan-dim:  rgba(57,208,216,0.12);
+  --green:     #3ecf6c;
+  --green-dim: rgba(62,207,108,0.10);
+  --amber:     #f5a623;
+  --amber-dim: rgba(245,166,35,0.10);
+  --red:       #e05d5d;
+  --red-dim:   rgba(224,93,93,0.10);
+  --purple:    #a57af5;
+  --r:         12px;
+}
+
+body {
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  padding: 24px 28px 40px;
+}
+
+/* ── HEADER ─────────────────────────────────── */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-dot {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, #f5a623, #e05d5d);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -0.5px;
+}
+.brand-name { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: 0.01em; }
+.brand-sub  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.top-meta { text-align: right; }
+.top-meta-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.top-meta-val   { font-size: 13px; color: var(--text); font-weight: 500; margin-top: 2px; }
+
+/* ── SECTION LABEL ──────────────────────────── */
+.section-label {
+  font-size: 10px; font-weight: 600; color: var(--muted2);
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin: 0 0 10px;
+}
+
+/* ── KPI ROW ────────────────────────────────── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 18px 14px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.kpi-card.blue::before  { background: var(--blue); }
+.kpi-card.green::before { background: var(--green); }
+.kpi-card.amber::before { background: var(--amber); }
+.kpi-card.cyan::before  { background: var(--cyan); }
+.kpi-card.red::before   { background: var(--red); }
+.kpi-card.purple::before{ background: var(--purple); }
+
+.kpi-label {
+  font-size: 10px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 8px;
+}
+.kpi-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 22px; font-weight: 500; line-height: 1;
+}
+.kpi-card.blue  .kpi-value { color: var(--blue); }
+.kpi-card.green .kpi-value { color: var(--green); }
+.kpi-card.amber .kpi-value { color: var(--amber); }
+.kpi-card.cyan  .kpi-value { color: var(--cyan); }
+.kpi-card.red   .kpi-value { color: var(--red); }
+.kpi-card.purple.kpi-value { color: var(--purple); }
+
+.kpi-sub {
+  font-size: 11px; color: var(--muted); margin-top: 5px;
+}
+.kpi-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px;
+  margin-top: 5px;
+}
+.kpi-badge.pos { color: var(--green); background: var(--green-dim); }
+.kpi-badge.neg { color: var(--red);   background: var(--red-dim); }
+.kpi-badge.neu { color: var(--muted); background: rgba(100,120,140,0.12); }
+
+/* ── GRID 2-COL ─────────────────────────────── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.grid-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+/* ── CARD ───────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 22px 24px 18px;
+}
+.card-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; margin-bottom: 20px;
+}
+.card-title   { font-size: 14px; font-weight: 600; color: var(--text); }
+.card-sub     { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.chart-wrap   { position: relative; }
+
+/* ── LEGEND ─────────────────────────────────── */
+.legend {
+  display: flex; gap: 14px; flex-wrap: wrap;
+}
+.leg-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--muted); font-weight: 500;
+}
+.leg-dot  { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.leg-line { width: 16px; height: 2.5px; border-radius: 2px; flex-shrink: 0; }
+.leg-dash { width: 16px; height: 0; border-top: 2px dashed; flex-shrink: 0; }
+
+/* ── DIVIDER + FOOTER STATS ─────────────────── */
+.card-divider { height: 1px; background: var(--border); margin: 14px 0 12px; }
+.stat-row { display: flex; gap: 20px; flex-wrap: wrap; }
+.stat { display: flex; flex-direction: column; gap: 2px; }
+.stat-label {
+  font-size: 10px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.08em; font-weight: 500;
+}
+.stat-val {
+  font-size: 13px; font-weight: 600;
+  font-family: 'DM Mono', monospace;
+}
+.stat-val.blue  { color: var(--blue); }
+.stat-val.cyan  { color: var(--cyan); }
+.stat-val.green { color: var(--green); }
+.stat-val.amber { color: var(--amber); }
+
+/* ── TREND INDICATOR ────────────────────────── */
+.trend-row { display: flex; gap: 12px; margin-bottom: 14px; }
+.trend-badge {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;
+}
+.trend-badge.pos { color: var(--green); background: var(--green-dim); }
+.trend-badge.neg { color: var(--red);   background: var(--red-dim); }
+.trend-badge .trend-label { color: var(--muted); font-weight: 400; margin-right: 2px; }
+
+/* ── CHANNEL MIX ────────────────────────────── */
+.channel-list { display: flex; flex-direction: column; gap: 10px; }
+.channel-item {}
+.channel-top {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 5px;
+}
+.channel-name { font-size: 12px; font-weight: 500; color: var(--text); }
+.channel-pct  { font-size: 12px; font-weight: 600; font-family: 'DM Mono', monospace; }
+.channel-bar  { height: 5px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+.channel-fill { height: 100%; border-radius: 3px; }
+
+/* ── QoQ TABLE ──────────────────────────────── */
+.qoq-table { width: 100%; border-collapse: collapse; }
+.qoq-table th {
+  font-size: 10px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 0 10px 10px 0; text-align: right;
+  font-weight: 500; border-bottom: 1px solid var(--border);
+}
+.qoq-table th:first-child { text-align: left; }
+.qoq-table td {
+  font-size: 12px; padding: 9px 10px 9px 0; text-align: right;
+  border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace;
+  color: var(--muted);
+}
+.qoq-table td:first-child {
+  text-align: left; font-family: 'DM Sans', sans-serif; color: var(--text); font-weight: 500;
+}
+.qoq-table tr:last-child td { border-bottom: none; }
+.qoq-table .hit-pos { color: var(--green); }
+.qoq-table .hit-neg { color: var(--red); }
+.qoq-table .fy { color: var(--blue); font-weight: 500; }
+.qoq-table .quarter-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 600; font-family: 'DM Sans';
+}
+.qoq-table .q1 { background: rgba(77,157,224,0.12); color: var(--blue); }
+.qoq-table .q2 { background: rgba(62,207,108,0.10); color: var(--green); }
+.qoq-table .q3 { background: rgba(245,166,35,0.10); color: var(--amber); }
+.qoq-table .q4 { background: rgba(165,122,245,0.10); color: var(--purple); }
+
+/* ── SCROLLBAR ──────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ══ TOP BAR ══════════════════════════════════════════════════════ -->
+<div class="top-bar">
+  <div class="brand">
+    <div class="brand-dot">ZC</div>
+    <div>
+      <div class="brand-name">ZUS Coffee Group</div>
+      <div class="brand-sub">CEO Dashboard · FY 2026</div>
+    </div>
+  </div>
+  <div class="top-meta">
+    <div class="top-meta-label">Last Refreshed</div>
+    <div class="top-meta-val">14 May 2026 &nbsp;·&nbsp; YTD Jan–Apr 2026</div>
+  </div>
+</div>
+
+<!-- ══ KPI CARDS ════════════════════════════════════════════════════ -->
+<p class="section-label">YTD Headline KPIs</p>
+<div class="kpi-row">
+
+  <div class="kpi-card blue">
+    <div class="kpi-label">YTD Revenue</div>
+    <div class="kpi-value">RM 336.5M</div>
+    <div class="kpi-sub">Target: RM 349.3M</div>
+    <span class="kpi-badge neg">▼ 3.7% vs Target</span>
+  </div>
+
+  <div class="kpi-card amber">
+    <div class="kpi-label">YTD PSPD (Overall)</div>
+    <div class="kpi-value">3,852.55</div>
+    <div class="kpi-sub">Target: 4,000.00</div>
+    <span class="kpi-badge neg">▼ 3.7% vs Target</span>
+  </div>
+
+  <div class="kpi-card cyan">
+    <div class="kpi-label">YTD PSPD (ZUS Coffee)</div>
+    <div class="kpi-value">3,859.16</div>
+    <div class="kpi-sub">Target: 4,000.00</div>
+    <span class="kpi-badge neg">▼ 3.5% vs Target</span>
+  </div>
+
+  <div class="kpi-card red">
+    <div class="kpi-label">YTD PSPD (ZUS Sig.)</div>
+    <div class="kpi-value">2,644.46</div>
+    <div class="kpi-sub">Target: 4,000.00</div>
+    <span class="kpi-badge neg">▼ 33.9% vs Target</span>
+  </div>
+
+  <div class="kpi-card green">
+    <div class="kpi-label">YTD AOV</div>
+    <div class="kpi-value">RM 20.30</div>
+    <div class="kpi-sub">Per order average</div>
+    <span class="kpi-badge neu">No Target Set</span>
+  </div>
+
+  <div class="kpi-card blue" style="--blue:#a57af5;">
+    <div class="kpi-label">Total Orders YTD</div>
+    <div class="kpi-value" style="color:#a57af5;font-size:19px;">16.57M</div>
+    <div class="kpi-sub">Jan – Apr 2026</div>
+    <span class="kpi-badge neu">Cumulative</span>
+  </div>
+
+</div>
+
+<!-- ══ ROW 1: PSPD×AOV MONTHLY + L6M MoM ═══════════════════════════ -->
+<div class="grid-2" style="margin-bottom:14px;">
+
+  <!-- PSPD & AOV Monthly -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">PSPD &amp; AOV × TIME</div>
+        <div class="card-sub">FY 2026 — Monthly Performance · Jan–Dec (PY overlay)</div>
+      </div>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> PSPD</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--cyan)"></div> PY PSPD</div>
+        <div class="leg-item"><div class="leg-line" style="background:var(--green)"></div> AOV</div>
+        <div class="leg-item"><div class="leg-dash" style="border-color:var(--amber)"></div> PY AOV</div>
+      </div>
+    </div>
+    <div class="chart-wrap" style="height:240px;">
+      <canvas id="pspdAovChart"></canvas>
+    </div>
+    <div class="card-divider"></div>
+    <div class="stat-row">
+      <div class="stat"><span class="stat-label">Peak PSPD</span><span class="stat-val blue">4,545.74</span></div>
+      <div class="stat"><span class="stat-label">Avg PSPD (Actual)</span><span class="stat-val blue">3,926.16</span></div>
+      <div class="stat"><span class="stat-label">Avg PY PSPD</span><span class="stat-val cyan">3,938.97</span></div>
+      <div class="stat"><span class="stat-label">Avg AOV (Actual)</span><span class="stat-val green">20.23</span></div>
+    </div>
+  </div>
+
+  <!-- L6M MoM -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">L6M MoM PSPD Trend</div>
+        <div class="card-sub">Last 6 months rolling — Overall vs ZUS Coffee vs ZUS Signature</div>
+      </div>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-line" style="background:var(--blue)"></div> Overall</div>
+        <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> ZC</div>
+        <div class="leg-item"><div class="leg-line" style="background:var(--amber)"></div> ZS</div>
+      </div>
+    </div>
+    <div class="trend-row" id="l6mTrendRow"></div>
+    <div class="chart-wrap" style="height:200px;">
+      <canvas id="l6mChart"></canvas>
+    </div>
+    <div class="card-divider"></div>
+    <div class="stat-row" id="l6mStats"></div>
+  </div>
+
+</div>
+
+<!-- ══ ROW 2: L6W WoW + QoQ ══════════════════════════════════════════ -->
+<div class="grid-2" style="margin-bottom:14px;">
+
+  <!-- L6W WoW -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">L6W WoW PSPD Trend</div>
+        <div class="card-sub">Last 6 weeks rolling — Overall vs ZUS Coffee vs ZUS Signature</div>
+      </div>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-line" style="background:var(--blue)"></div> Overall</div>
+        <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> ZC</div>
+        <div class="leg-item"><div class="leg-line" style="background:var(--amber)"></div> ZS</div>
+      </div>
+    </div>
+    <div class="trend-row" id="l6wTrendRow"></div>
+    <div class="chart-wrap" style="height:200px;">
+      <canvas id="l6wChart"></canvas>
+    </div>
+    <div class="card-divider"></div>
+    <div class="stat-row" id="l6wStats"></div>
+  </div>
+
+  <!-- QoQ PSPD -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Quarterly PSPD — QoQ Overview</div>
+        <div class="card-sub">Q1 2025 → Q2 2026 · Actual vs Target (4,000)</div>
+      </div>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> Actual PSPD</div>
+        <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted2)"></div> Target</div>
+      </div>
+    </div>
+    <div class="chart-wrap" style="height:130px; margin-bottom:14px;">
+      <canvas id="qoqChart"></canvas>
+    </div>
+    <table class="qoq-table">
+      <thead>
+        <tr>
+          <th>Quarter</th>
+          <th>Revenue</th>
+          <th>PSPD</th>
+          <th>vs Target</th>
+          <th>QoQ Δ</th>
+        </tr>
+      </thead>
+      <tbody id="qoqTableBody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ══ ROW 3: CHANNEL MIX + BRAND PSPD QoQ ══════════════════════════ -->
+<div class="grid-bottom">
+
+  <!-- Channel Mix -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">2026 YTD Channel Mix</div>
+        <div class="card-sub">Jan 1 – Apr 12, 2026 (102 days) · % of Gross Revenue</div>
+      </div>
+    </div>
+    <div class="channel-list" id="channelList"></div>
+  </div>
+
+  <!-- ZC Brand PSPD QoQ -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">ZUS Coffee PSPD by Quarter</div>
+        <div class="card-sub">CY2026 Q1 & Q2 vs Target</div>
+      </div>
+    </div>
+    <div class="chart-wrap" style="height:180px;">
+      <canvas id="zcBrandChart"></canvas>
+    </div>
+    <div class="card-divider"></div>
+    <div class="stat-row">
+      <div class="stat"><span class="stat-label">Q1 PSPD</span><span class="stat-val cyan">3,786.34</span></div>
+      <div class="stat"><span class="stat-label">Q2 PSPD</span><span class="stat-val green">4,396.86</span></div>
+      <div class="stat"><span class="stat-label">vs Target Q2</span><span class="stat-val green">+9.9%</span></div>
+    </div>
+  </div>
+
+  <!-- ZS Brand PSPD QoQ -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">ZUS Signature PSPD by Quarter</div>
+        <div class="card-sub">CY2026 Q1 & Q2 vs Target</div>
+      </div>
+    </div>
+    <div class="chart-wrap" style="height:180px;">
+      <canvas id="zsBrandChart"></canvas>
+    </div>
+    <div class="card-divider"></div>
+    <div class="stat-row">
+      <div class="stat"><span class="stat-label">Q1 PSPD</span><span class="stat-val red">2,645.16</span></div>
+      <div class="stat"><span class="stat-label">Q2 PSPD</span><span class="stat-val red">2,639.29</span></div>
+      <div class="stat"><span class="stat-label">vs Target Q2</span><span class="stat-val red">-34.0%</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ SCRIPTS ═══════════════════════════════════════════════════════ -->
+<script>
+// ── HELPERS ──────────────────────────────────────────────────────────
+const fmt0 = v => v.toLocaleString('en-MY', {minimumFractionDigits:0, maximumFractionDigits:0});
+const fmt2 = v => v.toLocaleString('en-MY', {minimumFractionDigits:2, maximumFractionDigits:2});
+const fmtPct = v => (v >= 0 ? '+' : '') + (v*100).toFixed(1) + '%';
+
+const tooltipDefaults = {
+  backgroundColor: '#1a2533',
+  borderColor: '#2a3a4d',
+  borderWidth: 1,
+  titleColor: '#e4ecf5',
+  bodyColor: '#8ba0b8',
+  titleFont: { family: "'DM Sans', sans-serif", size: 12, weight: '600' },
+  bodyFont:  { family: "'DM Mono', monospace",  size: 11 },
+  padding: 10,
+};
+
+const gridColor   = 'rgba(255,255,255,0.05)';
+const tickColor   = '#6b7e94';
+const tickFont    = { family: "'DM Mono', sans-serif", size: 10 };
+
+// ── 1. PSPD & AOV MONTHLY ────────────────────────────────────────────
+const months   = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const pspd     = [3582.63, 3572.04, 4162.57, 4387.41, null, null, null, null, null, null, null, null];
+const pyPspd   = [3513.94, 3695.64, 3057.78, 4030.55, 4107.29, 4545.74, 4486.30, 3992.40, 3905.30, 3896.87, 3936.75, 4099.09];
+const aov      = [19.57, 20.08, 21.30, 19.98, null, null, null, null, null, null, null, null];
+const pyAov    = [19.57, 19.56, 20.10, 20.53, 19.81, 20.39, 20.28, 19.87, 19.95, 20.01, 19.49, 20.37];
+
+new Chart(document.getElementById('pspdAovChart'), {
+  type: 'bar',
+  data: {
+    labels: months,
+    datasets: [
+      { label:'PSPD', data:pspd, backgroundColor:'rgba(77,157,224,0.80)', borderColor:'rgba(77,157,224,1)',
+        borderWidth:1, borderRadius:4, borderSkipped:'bottom', yAxisID:'y', order:2,
+        barPercentage:0.45, categoryPercentage:0.85 },
+      { label:'PY PSPD', data:pyPspd, backgroundColor:'rgba(57,208,216,0.55)', borderColor:'rgba(57,208,216,1)',
+        borderWidth:1, borderRadius:4, borderSkipped:'bottom', yAxisID:'y', order:2,
+        barPercentage:0.45, categoryPercentage:0.85 },
+      { label:'AOV', data:aov, type:'line', borderColor:'#3ecf6c', backgroundColor:'rgba(62,207,108,0.06)',
+        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#3ecf6c', pointBorderColor:'#111820',
+        pointBorderWidth:2, tension:0.4, fill:false, yAxisID:'y2', order:1 },
+      { label:'PY AOV', data:pyAov, type:'line', borderColor:'#f5a623', borderWidth:2,
+        borderDash:[5,4], pointRadius:3, pointBackgroundColor:'#f5a623', pointBorderColor:'#111820',
+        pointBorderWidth:1.5, tension:0.4, fill:false, yAxisID:'y2', order:1 }
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{
+      legend:{ display:false },
+      tooltip:{ ...tooltipDefaults,
+        callbacks:{
+          label: ctx => {
+            if(ctx.raw === null) return null;
+            if(ctx.datasetIndex < 2) return `  ${ctx.dataset.label}: ${fmt2(ctx.raw)}`;
+            return `  ${ctx.dataset.label}: ${ctx.raw.toFixed(2)}`;
+          }
+        }
+      }
+    },
+    scales:{
+      x:{ grid:{color:gridColor, drawTicks:false}, border:{display:false},
+          ticks:{color:tickColor, font:tickFont, padding:6} },
+      y:{ position:'left', min:0, max:5500, grid:{color:gridColor, drawTicks:false},
+          border:{display:false},
+          ticks:{color:tickColor, font:tickFont, padding:8,
+            callback:v => v===0?'0':(v/1000).toFixed(0)+'k', maxTicksLimit:6 } },
+      y2:{ position:'right', min:10, max:28, grid:{display:false}, border:{display:false},
+           ticks:{color:tickColor, font:tickFont, padding:8,
+             callback:v=>v.toFixed(0), maxTicksLimit:5} }
+    }
+  }
+});
+
+// ── 2. L6M MoM ───────────────────────────────────────────────────────
+const l6mLabels  = ['L6M-5', 'L6M-4', 'L6M-3', 'L6M-2', 'L6M-1', 'L6M'];
+const l6mOverall = [4151.67, 4121.81, 4052.36, 3900.52, 3833.04, 3879.20];
+const l6mZC      = [4157.02, 4127.56, 4057.91, 3905.47, 3838.27, 3885.19];
+const l6mZS      = [3196.84, 3128.35, 3075.17, 3009.53, 2877.32, 2774.18];
+const l6mMoM     = [null, -0.00719, -0.01685, -0.03747, -0.01730, 0.01204];
+
+// trend badges
+const l6mLatestMoM = l6mMoM[l6mMoM.length-1];
+const l6mPrevMoM   = l6mMoM[l6mMoM.length-2];
+document.getElementById('l6mTrendRow').innerHTML =
+  trendBadge('Overall MoM', l6mLatestMoM) +
+  trendBadge('Prev Month', l6mPrevMoM);
+
+document.getElementById('l6mStats').innerHTML = `
+  <div class="stat"><span class="stat-label">Latest PSPD</span><span class="stat-val blue">${fmt2(l6mOverall[5])}</span></div>
+  <div class="stat"><span class="stat-label">Peak (6M)</span><span class="stat-val blue">${fmt2(Math.max(...l6mOverall))}</span></div>
+  <div class="stat"><span class="stat-label">ZC Latest</span><span class="stat-val cyan">${fmt2(l6mZC[5])}</span></div>
+  <div class="stat"><span class="stat-label">ZS Latest</span><span class="stat-val amber">${fmt2(l6mZS[5])}</span></div>
+`;
+
+new Chart(document.getElementById('l6mChart'), {
+  type:'line',
+  data:{
+    labels:l6mLabels,
+    datasets:[
+      { label:'Overall', data:l6mOverall, borderColor:'#4d9de0', backgroundColor:'rgba(77,157,224,0.06)',
+        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#4d9de0', pointBorderColor:'#111820',
+        pointBorderWidth:2, tension:0.4, fill:false },
+      { label:'ZUS Coffee', data:l6mZC, borderColor:'#39d0d8', backgroundColor:'transparent',
+        borderWidth:2, pointRadius:3.5, pointBackgroundColor:'#39d0d8', pointBorderColor:'#111820',
+        pointBorderWidth:1.5, tension:0.4, fill:false },
+      { label:'ZUS Signature', data:l6mZS, borderColor:'#f5a623', backgroundColor:'transparent',
+        borderWidth:2, borderDash:[5,3], pointRadius:3.5, pointBackgroundColor:'#f5a623',
+        pointBorderColor:'#111820', pointBorderWidth:1.5, tension:0.4, fill:false }
+    ]
+  },
+  options:lineOptions(3400, 4300)
+});
+
+// ── 3. L6W WoW ───────────────────────────────────────────────────────
+const l6wLabels  = ['L6W-5', 'L6W-4', 'L6W-3', 'L6W-2', 'L6W-1', 'L6W'];
+const l6wOverall = [3492.00, 3357.69, 3509.21, 3868.47, 4019.91, 4251.04];
+const l6wZC      = [3497.37, 3362.99, 3515.62, 3876.95, 4029.10, 4260.98];
+const l6wZS      = [2512.73, 2388.90, 2337.39, 2310.89, 2334.17, 2425.91];
+const l6wWoW     = [null, -0.03846, 0.04512, 0.10238, 0.03915, 0.05750];
+
+const l6wLatestWoW = l6wWoW[l6wWoW.length-1];
+const l6wPrevWoW   = l6wWoW[l6wWoW.length-2];
+document.getElementById('l6wTrendRow').innerHTML =
+  trendBadge('Latest WoW', l6wLatestWoW) +
+  trendBadge('Prev Week', l6wPrevWoW);
+
+document.getElementById('l6wStats').innerHTML = `
+  <div class="stat"><span class="stat-label">Latest PSPD</span><span class="stat-val blue">${fmt2(l6wOverall[5])}</span></div>
+  <div class="stat"><span class="stat-label">Peak (6W)</span><span class="stat-val blue">${fmt2(Math.max(...l6wOverall))}</span></div>
+  <div class="stat"><span class="stat-label">ZC Latest</span><span class="stat-val cyan">${fmt2(l6wZC[5])}</span></div>
+  <div class="stat"><span class="stat-label">ZS Latest</span><span class="stat-val amber">${fmt2(l6wZS[5])}</span></div>
+`;
+
+new Chart(document.getElementById('l6wChart'), {
+  type:'line',
+  data:{
+    labels:l6wLabels,
+    datasets:[
+      { label:'Overall', data:l6wOverall, borderColor:'#4d9de0', backgroundColor:'rgba(77,157,224,0.06)',
+        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#4d9de0', pointBorderColor:'#111820',
+        pointBorderWidth:2, tension:0.4, fill:false },
+      { label:'ZUS Coffee', data:l6wZC, borderColor:'#39d0d8', backgroundColor:'transparent',
+        borderWidth:2, pointRadius:3.5, pointBackgroundColor:'#39d0d8', pointBorderColor:'#111820',
+        pointBorderWidth:1.5, tension:0.4, fill:false },
+      { label:'ZUS Signature', data:l6wZS, borderColor:'#f5a623', backgroundColor:'transparent',
+        borderWidth:2, borderDash:[5,3], pointRadius:3.5, pointBackgroundColor:'#f5a623',
+        pointBorderColor:'#111820', pointBorderWidth:1.5, tension:0.4, fill:false }
+    ]
+  },
+  options:lineOptions(2000, 4500)
+});
+
+// ── 4. QoQ CHART + TABLE ─────────────────────────────────────────────
+const qoqData = [
+  { q:'Q1 2025', rev:216.5, pspd:3410.00, target:4000, prev:null },
+  { q:'Q2 2025', rev:288.3, pspd:4229.54, target:4000, prev:3410.00 },
+  { q:'Q3 2025', rev:299.2, pspd:4127.99, target:4000, prev:4229.54 },
+  { q:'Q4 2025', rev:301.2, pspd:3979.92, target:4000, prev:4127.99 },
+  { q:'Q1 2026', rev:290.8, pspd:3780.12, target:4000, prev:3979.92 },
+  { q:'Q2 2026', rev:45.7, pspd:4387.41, target:4000, prev:3780.12 }
+];
+const qColors = ['#4d9de0','#3ecf6c','#f5a623','#a57af5','#4d9de0','#3ecf6c'];
+
+new Chart(document.getElementById('qoqChart'), {
+  type:'bar',
+  data:{
+    labels: qoqData.map(d=>d.q),
+    datasets:[
+      { label:'PSPD', data:qoqData.map(d=>d.pspd),
+        backgroundColor: qColors.map(c => c + 'cc'),
+        borderColor: qColors, borderWidth:1, borderRadius:4, borderSkipped:'bottom', yAxisID:'y' },
+      { label:'Target', data:qoqData.map(()=>4000), type:'line',
+        borderColor:'rgba(107,126,148,0.5)', borderWidth:1.5, borderDash:[4,4],
+        pointRadius:0, tension:0, fill:false, yAxisID:'y' }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{ legend:{display:false}, tooltip:{ ...tooltipDefaults,
+      callbacks:{ label:ctx => ctx.raw===null?null:`  ${ctx.dataset.label}: ${fmt2(ctx.raw)}` }
+    }},
+    scales:{
+      x:{ grid:{color:gridColor,drawTicks:false}, border:{display:false},
+          ticks:{color:tickColor,font:tickFont,padding:4} },
+      y:{ min:0, max:5000, grid:{color:gridColor,drawTicks:false}, border:{display:false},
+          ticks:{color:tickColor,font:tickFont,padding:6,
+            callback:v=>v===0?'0':(v/1000).toFixed(0)+'k',maxTicksLimit:5} }
+    }
+  }
+});
+
+// QoQ table
+const qClassMap = {Q1:'q1',Q2:'q2',Q3:'q3',Q4:'q4'};
+const qoqTbody = document.getElementById('qoqTableBody');
+qoqData.forEach((d,i) => {
+  const vsTarget = (d.pspd - d.target)/d.target;
+  const qoqDelta = d.prev ? (d.pspd - d.prev)/d.prev : null;
+  const qClass = qClassMap[d.q.substring(0,2)];
+  const isCY26 = d.q.includes('2026');
+  qoqTbody.innerHTML += `<tr>
+    <td><span class="quarter-badge ${qClass}">${d.q}</span></td>
+    <td class="${isCY26?'fy':''}">RM ${d.rev.toFixed(1)}M</td>
+    <td class="${isCY26?'fy':''}">${fmt2(d.pspd)}</td>
+    <td class="${vsTarget>=0?'hit-pos':'hit-neg'}">${fmtPct(vsTarget)}</td>
+    <td class="${qoqDelta===null?'':(qoqDelta>=0?'hit-pos':'hit-neg')}">
+      ${qoqDelta===null ? '—' : fmtPct(qoqDelta)}
+    </td>
+  </tr>`;
+});
+
+// ── 5. CHANNEL MIX ───────────────────────────────────────────────────
+const channels = [
+  { name:'ZUSAPP', rev:202171944, pct:60.07, color:'#4d9de0' },
+  { name:'Retail', rev:97555858, pct:28.99, color:'#3ecf6c' },
+  { name:'GrabFood', rev:21712533, pct:6.45, color:'#f5a623' },
+  { name:'FoodPanda', rev:9627521, pct:2.86, color:'#e05d5d' },
+  { name:'ShopeeFood', rev:5409199, pct:1.61, color:'#a57af5' },
+  { name:'Others', rev:96520, pct:0.03, color:'#6b7e94' }
+];
+
+const channelListEl = document.getElementById('channelList');
+channels.forEach(ch => {
+  channelListEl.innerHTML += `
+    <div class="channel-item">
+      <div class="channel-top">
+        <span class="channel-name">${ch.name}</span>
+        <span class="channel-pct" style="color:${ch.color}">${ch.pct.toFixed(1)}%</span>
+      </div>
+      <div class="channel-bar">
+        <div class="channel-fill" style="width:${ch.pct}%;background:${ch.color}"></div>
+      </div>
+    </div>`;
+});
+
+// ── 6. ZUS COFFEE BRAND QoQ ─────────────────────────────────────────
+new Chart(document.getElementById('zcBrandChart'), {
+  type:'bar',
+  data:{
+    labels:['Q1 2026','Q2 2026'],
+    datasets:[
+      { label:'ZC PSPD', data:[3786.34, 4396.86],
+        backgroundColor:['rgba(57,208,216,0.7)','rgba(62,207,108,0.7)'],
+        borderColor:['#39d0d8','#3ecf6c'], borderWidth:1,
+        borderRadius:6, borderSkipped:'bottom', yAxisID:'y' },
+      { label:'Target', data:[4000,4000], type:'line',
+        borderColor:'rgba(107,126,148,0.5)', borderWidth:1.5, borderDash:[4,4],
+        pointRadius:0, fill:false, yAxisID:'y' }
+    ]
+  },
+  options: brandChartOptions(3000,5000)
+});
+
+// ── 7. ZUS SIGNATURE BRAND QoQ ───────────────────────────────────────
+new Chart(document.getElementById('zsBrandChart'), {
+  type:'bar',
+  data:{
+    labels:['Q1 2026','Q2 2026'],
+    datasets:[
+      { label:'ZS PSPD', data:[2645.16, 2639.29],
+        backgroundColor:['rgba(224,93,93,0.65)','rgba(224,93,93,0.55)'],
+        borderColor:['#e05d5d','#e05d5d'], borderWidth:1,
+        borderRadius:6, borderSkipped:'bottom', yAxisID:'y' },
+      { label:'Target', data:[4000,4000], type:'line',
+        borderColor:'rgba(107,126,148,0.5)', borderWidth:1.5, borderDash:[4,4],
+        pointRadius:0, fill:false, yAxisID:'y' }
+    ]
+  },
+  options: brandChartOptions(0, 5000)
+});
+
+// ── UTILS ─────────────────────────────────────────────────────────────
+function trendBadge(label, val) {
+  if(val === null) return '';
+  const cls = val >= 0 ? 'pos' : 'neg';
+  const arrow = val >= 0 ? '▲' : '▼';
+  return `<div class="trend-badge ${cls}">
+    <span class="trend-label">${label}</span>
+    ${arrow} ${Math.abs(val*100).toFixed(1)}%
+  </div>`;
+}
+
+function lineOptions(yMin, yMax) {
+  return {
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{ legend:{display:false}, tooltip:{ ...tooltipDefaults,
+      callbacks:{ label:ctx=>ctx.raw===null?null:`  ${ctx.dataset.label}: ${fmt2(ctx.raw)}` }
+    }},
+    scales:{
+      x:{ grid:{color:gridColor,drawTicks:false}, border:{display:false},
+          ticks:{color:tickColor,font:tickFont,padding:6} },
+      y:{ min:yMin, max:yMax, grid:{color:gridColor,drawTicks:false}, border:{display:false},
+          ticks:{color:tickColor,font:tickFont,padding:8,
+            callback:v=>(v/1000).toFixed(1)+'k', maxTicksLimit:5} }
+    }
+  };
+}
+
+function brandChartOptions(yMin, yMax) {
+  return {
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{ legend:{display:false}, tooltip:{ ...tooltipDefaults,
+      callbacks:{ label:ctx=>`  ${ctx.dataset.label}: ${fmt2(ctx.raw)}` }
+    }},
+    scales:{
+      x:{ grid:{color:gridColor,drawTicks:false}, border:{display:false},
+          ticks:{color:tickColor,font:tickFont,padding:6} },
+      y:{ min:yMin, max:yMax, grid:{color:gridColor,drawTicks:false}, border:{display:false},
+          ticks:{color:tickColor,font:tickFont,padding:8,
+            callback:v=>v===0?'0':(v/1000).toFixed(1)+'k', maxTicksLimit:5} }
+    }
+  };
+}
+</script>
+</body>
+</html>
