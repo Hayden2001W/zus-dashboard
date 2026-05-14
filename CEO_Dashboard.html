@@ -496,7 +496,7 @@ body {
     <div class="card-header">
       <div>
         <div class="card-title">Quarterly PSPD — QoQ Overview</div>
-        <div class="card-sub">Q1 2025 → Q2 2026 · Actual vs Target (4,000)</div>
+        <div class="card-sub">Actual vs Target</div>
       </div>
       <div class="legend">
         <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> Actual PSPD</div>
@@ -741,6 +741,10 @@ const qoqData = [
 ];
 const qColors = ['#4d9de0','#3ecf6c','#f5a623','#a57af5','#4d9de0','#3ecf6c'];
 
+// QoQ subtitle reflects the actual target pulled from Excel
+document.querySelector('#qoq .card-sub').textContent =
+  `${qoqData[0].q} → ${qoqData[qoqData.length-1].q} · Actual vs Target (${fmt0(qoqData[qoqData.length-1].target)})`;
+
 const qoqChart = new Chart(document.getElementById('qoqChart'), {
   type:'bar',
   data:{
@@ -749,7 +753,7 @@ const qoqChart = new Chart(document.getElementById('qoqChart'), {
       { label:'PSPD', data:qoqData.map(d=>d.pspd),
         backgroundColor: qColors.map(c => c + 'cc'),
         borderColor: qColors, borderWidth:1, borderRadius:4, borderSkipped:'bottom', yAxisID:'y' },
-      { label:'Target', data:qoqData.map(()=>4000), type:'line',
+      { label:'Target', data:qoqData.map(d=>d.target), type:'line',
         borderColor:'rgba(107,126,148,0.5)', borderWidth:1.5, borderDash:[4,4],
         pointRadius:0, tension:0, fill:false, yAxisID:'y' }
     ]
@@ -813,6 +817,7 @@ channels.forEach(ch => {
 });
 
 // ── 6. ZC BRAND ──────────────────────────────────────────────────────
+const zcBrandTargets = [4000, 4000];
 const zcBrandChart = new Chart(document.getElementById('zcBrandChart'), {
   type:'bar',
   data:{
@@ -822,7 +827,7 @@ const zcBrandChart = new Chart(document.getElementById('zcBrandChart'), {
         backgroundColor:['rgba(57,208,216,0.7)','rgba(62,207,108,0.7)'],
         borderColor:['#39d0d8','#3ecf6c'], borderWidth:1,
         borderRadius:6, borderSkipped:'bottom', yAxisID:'y' },
-      { label:'Target', data:[4000,4000], type:'line',
+      { label:'Target', data:zcBrandTargets, type:'line',
         borderColor:'rgba(107,126,148,0.5)', borderWidth:1.5, borderDash:[4,4],
         pointRadius:0, fill:false, yAxisID:'y' }
     ]
@@ -831,6 +836,7 @@ const zcBrandChart = new Chart(document.getElementById('zcBrandChart'), {
 });
 
 // ── 7. ZS BRAND ──────────────────────────────────────────────────────
+const zsBrandTargets = [2000, 2000];
 const zsBrandChart = new Chart(document.getElementById('zsBrandChart'), {
   type:'bar',
   data:{
@@ -840,7 +846,7 @@ const zsBrandChart = new Chart(document.getElementById('zsBrandChart'), {
         backgroundColor:['rgba(224,93,93,0.65)','rgba(224,93,93,0.55)'],
         borderColor:['#e05d5d','#e05d5d'], borderWidth:1,
         borderRadius:6, borderSkipped:'bottom', yAxisID:'y' },
-      { label:'Target', data:[4000,4000], type:'line',
+      { label:'Target', data:zsBrandTargets, type:'line',
         borderColor:'rgba(107,126,148,0.5)', borderWidth:1.5, borderDash:[4,4],
         pointRadius:0, fill:false, yAxisID:'y' }
     ]
