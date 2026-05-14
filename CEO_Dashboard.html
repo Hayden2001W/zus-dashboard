@@ -224,6 +224,15 @@ body {
   padding: 22px 24px 20px;
   scroll-margin-top: 20px;
 }
+.brand-card-full .brand-card-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  .brand-card-full .brand-card-body { grid-template-columns: 1fr; }
+}
 .card-header {
   display: flex; align-items: flex-start;
   justify-content: space-between; margin-bottom: 20px;
@@ -524,54 +533,67 @@ body {
 
 </div>
 
-<div class="grid-bottom">
-
-  <div class="card" id="channels">
-    <div class="card-header">
-      <div>
-        <div class="card-title">2026 YTD Channel Mix</div>
-        <div class="card-sub">Jan 1 – Apr 12, 2026 (102 days) · % of Gross Revenue</div>
-      </div>
+<!-- Channel mix — full-width row -->
+<div class="card" id="channels" style="margin-bottom:16px;">
+  <div class="card-header">
+    <div>
+      <div class="card-title">2026 YTD Channel Mix</div>
+      <div class="card-sub">Jan 1 – Apr 12, 2026 (102 days) · % of Gross Revenue</div>
     </div>
-    <div class="channel-list" id="channelList"></div>
   </div>
+  <div class="channel-list" id="channelList"></div>
+</div>
 
-  <div class="card" id="brands">
-    <div class="card-header">
-      <div>
-        <div class="card-title">ZUS Coffee PSPD by Quarter</div>
-        <div class="card-sub">CY2026 Q1 & Q2 vs Target</div>
-      </div>
+<!-- ZUS Coffee — stacked full-width -->
+<div class="card brand-card-full" id="brands" data-brand-card="zc" style="margin-bottom:16px;">
+  <div class="card-header">
+    <div>
+      <div class="card-title">ZUS Coffee PSPD by Quarter</div>
+      <div class="card-sub" id="zcBrandSub">FY vs FY · Actual vs Target</div>
     </div>
-    <div class="chart-wrap" style="height:180px;">
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:var(--cyan)"></div> PSPD 2026</div>
+      <div class="leg-item"><div class="leg-line" style="background:var(--muted)"></div> PSPD 2025 (PY)</div>
+      <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted2)"></div> Target</div>
+    </div>
+  </div>
+  <div class="brand-card-body">
+    <div class="chart-wrap" style="height:240px;">
       <canvas id="zcBrandChart"></canvas>
     </div>
-    <div class="card-divider"></div>
-    <div class="stat-row">
-      <div class="stat"><span class="stat-label">Q1 PSPD</span><span class="stat-val cyan">3,786.34</span></div>
-      <div class="stat"><span class="stat-label">Q2 PSPD</span><span class="stat-val green">4,396.86</span></div>
-      <div class="stat"><span class="stat-label">vs Target Q2</span><span class="stat-val green">+9.9%</span></div>
+    <table class="qoq-table">
+      <thead><tr>
+        <th>Quarter</th><th>Revenue</th><th>PSPD</th><th>PY PSPD</th><th>YoY %</th><th>vs Target</th>
+      </tr></thead>
+      <tbody id="zcTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ZUS Signature — stacked full-width -->
+<div class="card brand-card-full" data-brand-card="zs">
+  <div class="card-header">
+    <div>
+      <div class="card-title">ZUS Signature PSPD by Quarter</div>
+      <div class="card-sub" id="zsBrandSub">FY vs FY · Actual vs Target</div>
+    </div>
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:var(--red)"></div> PSPD 2026</div>
+      <div class="leg-item"><div class="leg-line" style="background:var(--muted)"></div> PSPD 2025 (PY)</div>
+      <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted2)"></div> Target</div>
     </div>
   </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div>
-        <div class="card-title">ZUS Signature PSPD by Quarter</div>
-        <div class="card-sub">CY2026 Q1 & Q2 vs Target</div>
-      </div>
-    </div>
-    <div class="chart-wrap" style="height:180px;">
+  <div class="brand-card-body">
+    <div class="chart-wrap" style="height:240px;">
       <canvas id="zsBrandChart"></canvas>
     </div>
-    <div class="card-divider"></div>
-    <div class="stat-row">
-      <div class="stat"><span class="stat-label">Q1 PSPD</span><span class="stat-val red">2,645.16</span></div>
-      <div class="stat"><span class="stat-label">Q2 PSPD</span><span class="stat-val red">2,639.29</span></div>
-      <div class="stat"><span class="stat-label">vs Target Q2</span><span class="stat-val red">-34.0%</span></div>
-    </div>
+    <table class="qoq-table">
+      <thead><tr>
+        <th>Quarter</th><th>Revenue</th><th>PSPD</th><th>PY PSPD</th><th>YoY %</th><th>vs Target</th>
+      </tr></thead>
+      <tbody id="zsTableBody"></tbody>
+    </table>
   </div>
-
 </div>
 
 </main>
@@ -826,43 +848,96 @@ channels.forEach(ch => {
     </div>`;
 });
 
-// ── 6. ZC BRAND ──────────────────────────────────────────────────────
-const zcBrandTargets = [4000, 4000];
-const zcBrandChart = new Chart(document.getElementById('zcBrandChart'), {
-  type:'bar',
-  data:{
-    labels:['Q1 2026','Q2 2026'],
-    datasets:[
-      { label:'ZC PSPD', data:[3786.34, 4396.86],
-        backgroundColor:['rgba(57,208,216,0.7)','rgba(62,207,108,0.7)'],
-        borderColor:['#39d0d8','#3ecf6c'], borderWidth:1,
-        borderRadius:6, borderSkipped:'bottom', yAxisID:'y' },
-      { label:'Target', data:zcBrandTargets, type:'line',
-        borderColor:'rgba(107,126,148,0.5)', borderWidth:1.5, borderDash:[4,4],
-        pointRadius:0, fill:false, yAxisID:'y' }
-    ]
-  },
-  options: brandChartOptions(3000,5000)
-});
+// ── 6+7. BRAND QUARTERLY CARDS — CY bars + PY line + Target ──────────
+// These arrays are rewritten by update_dashboard.py from Monthly_Brand_Summary
+// (aggregated to brand × year × quarter). Do not hardcode.
+const zcCyRev    = [289.65, 45.55, null, null];   // Revenue (RM millions)
+const zcCyPspd   = [3786.34, 4396.86, null, null];
+const zcPyPspd   = [3412.30, 4234.57, 4133.38, 3985.65];
+const zcTargets  = [4000, 4000, 4000, 4000];
 
-// ── 7. ZS BRAND ──────────────────────────────────────────────────────
-const zsBrandTargets = [2500, 2500];
-const zsBrandChart = new Chart(document.getElementById('zsBrandChart'), {
-  type:'bar',
-  data:{
-    labels:['Q1 2026','Q2 2026'],
-    datasets:[
-      { label:'ZS PSPD', data:[2645.16, 2639.29],
-        backgroundColor:['rgba(224,93,93,0.65)','rgba(224,93,93,0.55)'],
-        borderColor:['#e05d5d','#e05d5d'], borderWidth:1,
-        borderRadius:6, borderSkipped:'bottom', yAxisID:'y' },
-      { label:'Target', data:zsBrandTargets, type:'line',
-        borderColor:'rgba(107,126,148,0.5)', borderWidth:1.5, borderDash:[4,4],
-        pointRadius:0, fill:false, yAxisID:'y' }
-    ]
-  },
-  options: brandChartOptions(0, 5000)
-});
+const zsCyRev    = [1.11, 0.15, null, null];
+const zsCyPspd   = [2645.16, 2639.29, null, null];
+const zsPyPspd   = [2743.91, 3131.16, 3230.46, 2908.33];
+const zsTargets  = [2500, 2500, 2500, 2500];
+
+const brandQuarterColors = ['#4d9de0', '#3ecf6c', '#f5a623', '#a57af5'];
+
+function brandChartConfig(cyData, pyData, targets, yMax) {
+  return {
+    type: 'bar',
+    data: {
+      labels: ['Q1','Q2','Q3','Q4'],
+      datasets: [
+        { label: `PSPD ${qoqCyYear}`, data: cyData,
+          backgroundColor: brandQuarterColors.map(c => hexToRgba(c, 0.80)),
+          borderColor: brandQuarterColors, borderWidth: 1,
+          borderRadius: 4, borderSkipped: 'bottom', yAxisID: 'y', order: 2 },
+        { label: `PSPD ${qoqPyYear} (PY)`, data: pyData, type: 'line',
+          borderColor: '#6b7e94', backgroundColor: 'rgba(107,126,148,0.06)',
+          borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#6b7e94',
+          pointBorderColor: '#111820', pointBorderWidth: 2, tension: 0.4,
+          fill: false, yAxisID: 'y', order: 1 },
+        { label: 'Target', data: targets, type: 'line',
+          borderColor: 'rgba(107,126,148,0.5)', borderWidth: 1.5,
+          borderDash: [4,4], pointRadius: 0, tension: 0, fill: false,
+          yAxisID: 'y', order: 0 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip: { ...tooltipDefaults,
+        callbacks: { label: ctx => ctx.raw === null ? null : `  ${ctx.dataset.label}: ${fmt2(ctx.raw)}` }
+      }},
+      scales: {
+        x: { grid: { color: gridColor, drawTicks: false }, border: { display: false },
+             ticks: { color: tickColor, font: tickFont, padding: 6 } },
+        y: { min: 0, max: yMax, grid: { color: gridColor, drawTicks: false },
+             border: { display: false },
+             ticks: { color: tickColor, font: tickFont, padding: 8,
+               callback: v => v === 0 ? '0' : (v/1000).toFixed(1) + 'k', maxTicksLimit: 5 } }
+      }
+    }
+  };
+}
+
+function renderBrandTable(tbodyId, cyRev, cyPspd, pyPspd, targets) {
+  const tbody = document.getElementById(tbodyId);
+  tbody.innerHTML = ['Q1','Q2','Q3','Q4'].map((q, i) => {
+    const cy  = cyPspd[i];
+    const py  = pyPspd[i];
+    const tgt = targets[i];
+    const rev = cyRev[i];
+    const yoy   = (cy !== null && py) ? (cy - py) / py : null;
+    const vsTgt = (cy !== null)       ? (cy - tgt) / tgt : null;
+    const hasCy = cy !== null;
+    return `<tr>
+      <td><span class="quarter-badge ${qClassMap[q]}">${q} ${qoqCyYear}</span></td>
+      <td class="${hasCy?'fy':''}">${rev !== null ? 'RM ' + rev.toFixed(1) + 'M' : '—'}</td>
+      <td class="${hasCy?'fy':''}">${hasCy ? fmt2(cy) : '—'}</td>
+      <td>${py !== null ? fmt2(py) : '—'}</td>
+      <td class="${yoy===null?'':(yoy>=0?'hit-pos':'hit-neg')}">${yoy===null?'—':fmtPct(yoy)}</td>
+      <td class="${vsTgt===null?'':(vsTgt>=0?'hit-pos':'hit-neg')}">${vsTgt===null?'—':fmtPct(vsTgt)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// Dynamic subtitles
+document.getElementById('zcBrandSub').textContent =
+  `FY ${qoqCyYear} vs FY ${qoqPyYear} · Actual vs Target (${fmt0(zcTargets[zcTargets.length-1])})`;
+document.getElementById('zsBrandSub').textContent =
+  `FY ${qoqCyYear} vs FY ${qoqPyYear} · Actual vs Target (${fmt0(zsTargets[zsTargets.length-1])})`;
+
+const zcBrandChart = new Chart(
+  document.getElementById('zcBrandChart'),
+  brandChartConfig(zcCyPspd, zcPyPspd, zcTargets, 5000));
+const zsBrandChart = new Chart(
+  document.getElementById('zsBrandChart'),
+  brandChartConfig(zsCyPspd, zsPyPspd, zsTargets, 5000));
+
+renderBrandTable('zcTableBody', zcCyRev, zcCyPspd, zcPyPspd, zcTargets);
+renderBrandTable('zsTableBody', zsCyRev, zsCyPspd, zsPyPspd, zsTargets);
 
 // ── UTILS ─────────────────────────────────────────────────────────────
 function trendBadge(label, val) {
