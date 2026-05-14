@@ -553,7 +553,7 @@ body {
     </div>
     <div class="legend">
       <div class="leg-item"><div class="leg-dot" style="background:var(--cyan)"></div> PSPD 2026</div>
-      <div class="leg-item"><div class="leg-line" style="background:var(--muted)"></div> PSPD 2025 (PY)</div>
+      <div class="leg-item"><div class="leg-line" style="background:#e4ecf5"></div> PSPD 2025 (PY)</div>
       <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted2)"></div> Target</div>
     </div>
   </div>
@@ -579,7 +579,7 @@ body {
     </div>
     <div class="legend">
       <div class="leg-item"><div class="leg-dot" style="background:var(--red)"></div> PSPD 2026</div>
-      <div class="leg-item"><div class="leg-line" style="background:var(--muted)"></div> PSPD 2025 (PY)</div>
+      <div class="leg-item"><div class="leg-line" style="background:#e4ecf5"></div> PSPD 2025 (PY)</div>
       <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted2)"></div> Target</div>
     </div>
   </div>
@@ -874,9 +874,9 @@ function brandChartConfig(cyData, pyData, targets, yMax) {
           borderColor: brandQuarterColors, borderWidth: 1,
           borderRadius: 4, borderSkipped: 'bottom', yAxisID: 'y', order: 2 },
         { label: `PSPD ${qoqPyYear} (PY)`, data: pyData, type: 'line',
-          borderColor: '#6b7e94', backgroundColor: 'rgba(107,126,148,0.06)',
-          borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#6b7e94',
-          pointBorderColor: '#111820', pointBorderWidth: 2, tension: 0.4,
+          borderColor: '#e4ecf5', backgroundColor: 'rgba(228,236,245,0.08)',
+          borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#e4ecf5',
+          pointBorderColor: '#0a0e14', pointBorderWidth: 2, tension: 0.4,
           fill: false, yAxisID: 'y', order: 1 },
         { label: 'Target', data: targets, type: 'line',
           borderColor: 'rgba(107,126,148,0.5)', borderWidth: 1.5,
