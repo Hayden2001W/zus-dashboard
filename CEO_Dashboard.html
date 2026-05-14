@@ -312,6 +312,70 @@ body {
 .trend-badge.neg { color: var(--red);   background: var(--red-dim); }
 .trend-badge .trend-label { color: var(--muted); font-weight: 400; margin-right: 2px; }
 
+/* ── YTD CHANNEL MIX TILES ─────────────────────────────── */
+.mix-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr;
+  gap: 16px;
+}
+.mix-tile {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  position: relative;
+}
+.mix-tile::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; border-radius: 10px 10px 0 0;
+}
+.mix-tile.app::before    { background: #f5a623; }
+.mix-tile.retail::before { background: #d97757; }
+.mix-tile.tpl::before    { background: #8b5a3c; }
+.mix-channel { font-size: 13px; color: var(--muted); font-weight: 600;
+               text-transform: uppercase; letter-spacing: 0.08em; }
+.mix-actual  { font-family: 'DM Mono', monospace; font-size: 30px;
+               font-weight: 500; line-height: 1; margin-top: 6px; }
+.mix-tile.app    .mix-actual { color: #f5a623; }
+.mix-tile.retail .mix-actual { color: #d97757; }
+.mix-tile.tpl    .mix-actual { color: #8b5a3c; }
+.mix-bar {
+  height: 7px; background: var(--border2); border-radius: 4px;
+  overflow: hidden; margin: 12px 0 6px; position: relative;
+}
+.mix-bar .fill { height: 100%; border-radius: 4px; }
+.mix-bar .target-marker {
+  position: absolute; top: -2px; bottom: -2px; width: 2px;
+  background: var(--text);
+}
+.mix-bar .target-marker::after {
+  content: '▼'; position: absolute; top: -10px; left: -5px;
+  font-size: 9px; color: var(--text);
+}
+.mix-tile.app    .fill { background: #f5a623; }
+.mix-tile.retail .fill { background: #d97757; }
+.mix-tile.tpl    .fill { background: #8b5a3c; }
+.mix-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: var(--muted); margin-top: 4px;
+}
+.mix-delta {
+  font-family: 'DM Mono', monospace; font-weight: 600;
+  padding: 2px 7px; border-radius: 4px; font-size: 11px;
+}
+.mix-delta.pos { color: var(--green); background: var(--green-dim); }
+.mix-delta.neg { color: var(--red);   background: var(--red-dim); }
+.mix-subs {
+  margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px 18px;
+}
+.mix-sub {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px;
+}
+.mix-sub-name { color: var(--muted); }
+.mix-sub-val  { font-family: 'DM Mono', monospace; font-weight: 600; }
+
 .channel-list { display: flex; flex-direction: column; gap: 11px; }
 .channel-top {
   display: flex; justify-content: space-between; align-items: center;
@@ -570,14 +634,68 @@ body {
 </div>
 
 <!-- Channel mix — full-width row -->
+<!-- YTD Channel Mix — Actual vs Target tiles -->
 <div class="card" id="channels" style="margin-bottom:16px;">
   <div class="card-header">
     <div>
-      <div class="card-title">2026 YTD Channel Mix</div>
-      <div class="card-sub">Jan 1 – Apr 12, 2026 (102 days) · % of Gross Revenue</div>
+      <div class="card-title">2026 YTD Channel Mix — Actual vs Target</div>
+      <div class="card-sub" id="channelYtdSub">Jan 1 – Apr 12, 2026 (102 days) · Rolling % of Gross Revenue</div>
     </div>
   </div>
-  <div class="channel-list" id="channelList"></div>
+  <div class="mix-grid">
+    <div class="mix-tile app">
+      <div class="mix-channel">ZUSAPP</div>
+      <div class="mix-actual" id="ytdAppActual">—</div>
+      <div class="mix-bar"><div class="fill" id="ytdAppFill" style="width:0%"></div><div class="target-marker" id="ytdAppTarget" style="left:0%"></div></div>
+      <div class="mix-foot"><span id="ytdAppTargetLbl">Target —</span><span class="mix-delta" id="ytdAppDelta">—</span></div>
+    </div>
+    <div class="mix-tile retail">
+      <div class="mix-channel">Retail</div>
+      <div class="mix-actual" id="ytdRetailActual">—</div>
+      <div class="mix-bar"><div class="fill" id="ytdRetailFill" style="width:0%"></div><div class="target-marker" id="ytdRetailTarget" style="left:0%"></div></div>
+      <div class="mix-foot"><span id="ytdRetailTargetLbl">Target —</span><span class="mix-delta" id="ytdRetailDelta">—</span></div>
+    </div>
+    <div class="mix-tile tpl">
+      <div class="mix-channel">3PL · Delivery</div>
+      <div class="mix-actual" id="ytdTplActual">—</div>
+      <div class="mix-bar"><div class="fill" id="ytdTplFill" style="width:0%"></div><div class="target-marker" id="ytdTplTarget" style="left:0%"></div></div>
+      <div class="mix-foot"><span id="ytdTplTargetLbl">Target —</span><span class="mix-delta" id="ytdTplDelta">—</span></div>
+      <div class="mix-subs" id="ytdTplSubs"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Monthly Channel % Share — stacked area -->
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Monthly Channel % Share</div>
+      <div class="card-sub">FY 2026 · 100% stacked composition</div>
+    </div>
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#f5a623"></div> ZUSAPP</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#d97757"></div> Retail</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#8b5a3c"></div> 3PL total</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#4a5a6d"></div> Others</div>
+    </div>
+  </div>
+  <div class="chart-wrap" style="height:260px;"><canvas id="channelStackedChart"></canvas></div>
+</div>
+
+<!-- 3PL Sub-channel Detail — zoomed line -->
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-header">
+    <div>
+      <div class="card-title">3PL Sub-channel Detail</div>
+      <div class="card-sub">FY 2026 · % of monthly gross revenue</div>
+    </div>
+    <div class="legend">
+      <div class="leg-item"><div class="leg-line" style="background:#3ecf6c"></div> GrabFood</div>
+      <div class="leg-item"><div class="leg-line" style="background:#e05d5d"></div> FoodPanda</div>
+      <div class="leg-item"><div class="leg-line" style="background:#a57af5"></div> ShopeeFood</div>
+    </div>
+  </div>
+  <div class="chart-wrap" style="height:240px;"><canvas id="channelDetailChart"></canvas></div>
 </div>
 
 <!-- ZUS Coffee — stacked full-width -->
@@ -868,28 +986,146 @@ qoqLabels.forEach((q, i) => {
   </tr>`;
 });
 
-// ── 5. CHANNEL MIX ───────────────────────────────────────────────────
-const channels = [
-  { name:'ZUSAPP', rev:202171944, pct:60.07, color:'#4d9de0' },
-  { name:'Retail', rev:97555858, pct:28.99, color:'#3ecf6c' },
-  { name:'GrabFood', rev:21712533, pct:6.45, color:'#f5a623' },
-  { name:'FoodPanda', rev:9627521, pct:2.86, color:'#e05d5d' },
-  { name:'ShopeeFood', rev:5409199, pct:1.61, color:'#a57af5' },
-  { name:'Others', rev:96520, pct:0.03, color:'#6b7e94' }
-];
+// ── 5. CHANNEL MIX (YTD tiles + monthly stacked area + 3PL detail) ──
+// All arrays below are rewritten by update_dashboard.py — do NOT hardcode.
+// YTD per-channel % (Jan-1 → last data day)
+const channelYtdApp        = 60.07;
+const channelYtdRetail     = 28.99;
+const channelYtdGrabFood   =  6.45;
+const channelYtdFoodPanda  =  2.86;
+const channelYtdShopeeFood =  1.61;
+const channelYtdOthers     =  0.03;
+// Combined 3PL group (GrabFood + FoodPanda + ShopeeFood + Others)
+const channelYtdTpl = channelYtdGrabFood + channelYtdFoodPanda
+                    + channelYtdShopeeFood + channelYtdOthers;
 
-const channelListEl = document.getElementById('channelList');
-channels.forEach(ch => {
-  channelListEl.innerHTML += `
-    <div class="channel-item">
-      <div class="channel-top">
-        <span class="channel-name">${ch.name}</span>
-        <span class="channel-pct" style="color:${ch.color}">${ch.pct.toFixed(1)}%</span>
-      </div>
-      <div class="channel-bar">
-        <div class="channel-fill" style="width:${ch.pct}%;background:${ch.color}"></div>
-      </div>
-    </div>`;
+// Targets — read from Excel 'Sales Channel by Quarter' if filled,
+// else placeholder defaults from the planning sketch.
+const channelTargetApp    = 55.0;
+const channelTargetRetail = 30.0;
+const channelTargetTpl    = 15.0;
+
+// Monthly % share (Jan→Dec, null if no data yet that month)
+const channelMonthlyZusapp     = [58.57, 59.80, 61.77, 59.52, null, null, null, null, null, null, null, null];
+const channelMonthlyRetail     = [29.91, 28.63, 28.50, 28.93, null, null, null, null, null, null, null, null];
+const channelMonthlyTpl        = [11.48, 11.51, 9.72, 11.54, null, null, null, null, null, null, null, null];
+const channelMonthlyOthers     = [0.04, 0.05, 0.01, 0.00, null, null, null, null, null, null, null, null];
+const channelMonthlyGrabFood   = [6.87, 7.02, 5.54, 6.73, null, null, null, null, null, null, null, null];
+const channelMonthlyFoodPanda  = [2.85, 2.89, 2.81, 2.97, null, null, null, null, null, null, null, null];
+const channelMonthlyShopeeFood = [1.77, 1.61, 1.37, 1.84, null, null, null, null, null, null, null, null];
+
+// ── Render YTD tiles ─────────────────────────────────────────────────
+function renderMixTile(prefix, actual, target) {
+  const delta = actual - target;
+  const deltaSign = delta >= 0 ? '▲' : '▼';
+  const deltaCls  = delta >= 0 ? 'pos' : 'neg';
+  document.getElementById(`ytd${prefix}Actual`).textContent     = actual.toFixed(1) + '%';
+  document.getElementById(`ytd${prefix}Fill`).style.width        = Math.min(actual, 100) + '%';
+  document.getElementById(`ytd${prefix}Target`).style.left       = Math.min(target, 100) + '%';
+  document.getElementById(`ytd${prefix}TargetLbl`).textContent   = `Target ${target}%`;
+  const deltaEl = document.getElementById(`ytd${prefix}Delta`);
+  deltaEl.textContent = `${deltaSign} ${Math.abs(delta).toFixed(1)}pp`;
+  deltaEl.classList.add(deltaCls);
+}
+renderMixTile('App',    channelYtdApp,    channelTargetApp);
+renderMixTile('Retail', channelYtdRetail, channelTargetRetail);
+renderMixTile('Tpl',    channelYtdTpl,    channelTargetTpl);
+
+// 3PL sub-channel breakdown inside the 3PL tile
+document.getElementById('ytdTplSubs').innerHTML = [
+  { name: 'GrabFood',   pct: channelYtdGrabFood,   color: '#3ecf6c' },
+  { name: 'FoodPanda',  pct: channelYtdFoodPanda,  color: '#e05d5d' },
+  { name: 'ShopeeFood', pct: channelYtdShopeeFood, color: '#a57af5' },
+  { name: 'Others',     pct: channelYtdOthers,     color: '#6b7e94' },
+].map(s =>
+  `<div class="mix-sub"><span class="mix-sub-name">${s.name}</span>` +
+  `<span class="mix-sub-val" style="color:${s.color}">${s.pct.toFixed(2)}%</span></div>`
+).join('');
+
+// ── Stacked area: Monthly Channel % Share ────────────────────────────
+const monthLabels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function areaDataset(label, data, color, alpha) {
+  return {
+    label, data,
+    backgroundColor: hexToRgba(color, alpha),
+    borderColor: color,
+    borderWidth: 1.5,
+    pointRadius: 0, pointHoverRadius: 4,
+    tension: 0.35,
+    fill: true,
+  };
+}
+
+const channelStackedChart = new Chart(document.getElementById('channelStackedChart'), {
+  type: 'line',
+  data: {
+    labels: monthLabels,
+    datasets: [
+      areaDataset('ZUSAPP',    channelMonthlyZusapp, '#f5a623', 0.65),
+      areaDataset('Retail',    channelMonthlyRetail, '#d97757', 0.65),
+      areaDataset('3PL total', channelMonthlyTpl,    '#8b5a3c', 0.75),
+      areaDataset('Others',    channelMonthlyOthers, '#4a5a6d', 0.65),
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: { legend: { display: false }, tooltip: { ...tooltipDefaults,
+      callbacks: { label: ctx => ctx.raw === null ? null : `  ${ctx.dataset.label}: ${ctx.raw.toFixed(2)}%` }
+    }},
+    scales: {
+      x: { grid: { color: gridColor, drawTicks: false }, border: { display: false },
+           ticks: { color: tickColor, font: tickFont, padding: 6 } },
+      y: { stacked: true, min: 0, max: 100,
+           grid: { color: gridColor, drawTicks: false }, border: { display: false },
+           ticks: { color: tickColor, font: tickFont, padding: 8,
+             callback: v => v + '%', stepSize: 20 } }
+    }
+  }
+});
+
+// ── 3PL Sub-channel Detail (zoomed line) ─────────────────────────────
+function detailLine(label, data, color) {
+  return {
+    label, data,
+    borderColor: color,
+    backgroundColor: 'transparent',
+    borderWidth: 2.5,
+    pointRadius: 4,
+    pointBackgroundColor: color,
+    pointBorderColor: '#111820',
+    pointBorderWidth: 1.5,
+    tension: 0.35,
+    fill: false,
+  };
+}
+
+const channelDetailChart = new Chart(document.getElementById('channelDetailChart'), {
+  type: 'line',
+  data: {
+    labels: monthLabels,
+    datasets: [
+      detailLine('GrabFood',   channelMonthlyGrabFood,   '#3ecf6c'),
+      detailLine('FoodPanda',  channelMonthlyFoodPanda,  '#e05d5d'),
+      detailLine('ShopeeFood', channelMonthlyShopeeFood, '#a57af5'),
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: { legend: { display: false }, tooltip: { ...tooltipDefaults,
+      callbacks: { label: ctx => ctx.raw === null ? null : `  ${ctx.dataset.label}: ${ctx.raw.toFixed(2)}%` }
+    }},
+    scales: {
+      x: { grid: { color: gridColor, drawTicks: false }, border: { display: false },
+           ticks: { color: tickColor, font: tickFont, padding: 6 } },
+      y: { min: 0, max: 10,
+           grid: { color: gridColor, drawTicks: false }, border: { display: false },
+           ticks: { color: tickColor, font: tickFont, padding: 8,
+             callback: v => v + '%' } }
+    }
+  }
 });
 
 // ── 6+7. BRAND QUARTERLY CARDS — CY bars + PY line + Target ──────────
