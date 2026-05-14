@@ -251,6 +251,11 @@ body {
 .leg-dot  { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 .leg-line { width: 16px; height: 2.5px; border-radius: 2px; flex-shrink: 0; }
 .leg-dash { width: 16px; height: 0; border-top: 2px dashed; flex-shrink: 0; }
+.leg-quarters {
+  display: inline-flex; width: 20px; height: 8px;
+  border-radius: 2px; overflow: hidden; flex-shrink: 0;
+}
+.leg-quarters span { flex: 1; }
 
 .card-divider { height: 1px; background: var(--border); margin: 14px 0 12px; }
 .stat-row { display: flex; gap: 20px; flex-wrap: wrap; }
@@ -466,7 +471,7 @@ body {
       <div class="legend">
         <div class="leg-item"><div class="leg-line" style="background:var(--blue)"></div> Overall</div>
         <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> ZC</div>
-        <div class="leg-item"><div class="leg-line" style="background:var(--amber)"></div> ZS</div>
+        <div class="leg-item"><div class="leg-dash" style="border-color:var(--amber)"></div> ZS</div>
       </div>
     </div>
     <div class="trend-row" id="l6mTrendRow"></div>
@@ -490,7 +495,7 @@ body {
       <div class="legend">
         <div class="leg-item"><div class="leg-line" style="background:var(--blue)"></div> Overall</div>
         <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> ZC</div>
-        <div class="leg-item"><div class="leg-line" style="background:var(--amber)"></div> ZS</div>
+        <div class="leg-item"><div class="leg-dash" style="border-color:var(--amber)"></div> ZS</div>
       </div>
     </div>
     <div class="trend-row" id="l6wTrendRow"></div>
@@ -508,7 +513,7 @@ body {
         <div class="card-sub">Actual vs Target</div>
       </div>
       <div class="legend">
-        <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> PSPD 2026</div>
+        <div class="leg-item"><span class="leg-quarters"><span style="background:var(--blue)"></span><span style="background:var(--green)"></span><span style="background:var(--amber)"></span><span style="background:var(--purple)"></span></span> PSPD 2026</div>
         <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> PSPD 2025 (PY)</div>
         <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted2)"></div> Target</div>
       </div>
@@ -552,7 +557,7 @@ body {
       <div class="card-sub" id="zcBrandSub">FY vs FY · Actual vs Target</div>
     </div>
     <div class="legend">
-      <div class="leg-item"><div class="leg-dot" style="background:var(--cyan)"></div> PSPD 2026</div>
+      <div class="leg-item"><span class="leg-quarters"><span style="background:var(--blue)"></span><span style="background:var(--green)"></span><span style="background:var(--amber)"></span><span style="background:var(--purple)"></span></span> PSPD 2026</div>
       <div class="leg-item"><div class="leg-line" style="background:#e4ecf5"></div> PSPD 2025 (PY)</div>
       <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted2)"></div> Target</div>
     </div>
@@ -578,7 +583,7 @@ body {
       <div class="card-sub" id="zsBrandSub">FY vs FY · Actual vs Target</div>
     </div>
     <div class="legend">
-      <div class="leg-item"><div class="leg-dot" style="background:var(--red)"></div> PSPD 2026</div>
+      <div class="leg-item"><span class="leg-quarters"><span style="background:var(--blue)"></span><span style="background:var(--green)"></span><span style="background:var(--amber)"></span><span style="background:var(--purple)"></span></span> PSPD 2026</div>
       <div class="leg-item"><div class="leg-line" style="background:#e4ecf5"></div> PSPD 2025 (PY)</div>
       <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted2)"></div> Target</div>
     </div>
