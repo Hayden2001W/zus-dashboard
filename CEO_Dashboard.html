@@ -601,7 +601,7 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
   </div>
   <div class="card-header">
     <div>
-      <div class="card-title">Quarterly PSPD — QoQ Overview</div>
+      <div class="card-title" id="qoqCardTitle">Quarterly PSPD — QoQ Overview</div>
       <div class="card-sub">Actual vs Target</div>
     </div>
     <div class="legend">
@@ -785,70 +785,6 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
     </div>
   </div>
   <div class="chart-wrap" style="height:260px;"><canvas id="channelDetailChart"></canvas></div>
-</div>
-
-</div>
-
-<!-- ZUS Coffee + ZUS Signature (2-col row, chart-on-top inside each) -->
-<div class="grid-2">
-
-<div class="card brand-card-full card-has-toggle" id="brands" data-brand-card="zc" data-tab-hide="zc zs">
-  <div class="view-toggle" data-target="zc">
-    <button class="active" data-view="both">CY + PY</button>
-    <button data-view="cy">CY only</button>
-  </div>
-  <div class="card-header">
-    <div>
-      <div class="card-title">ZUS Coffee PSPD by Quarter</div>
-      <div class="card-sub" id="zcBrandSub">FY vs FY · Actual vs Target</div>
-    </div>
-    <div class="legend">
-      <div class="leg-item"><span class="leg-quarters"><span style="background:var(--blue)"></span><span style="background:var(--green)"></span><span style="background:var(--amber)"></span><span style="background:var(--purple)"></span></span> PSPD 2026</div>
-      <div class="leg-item"><div class="leg-line" style="background:#e4ecf5"></div> PSPD 2025 (PY)</div>
-      <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted2)"></div> Target</div>
-    </div>
-  </div>
-  <div class="brand-card-body">
-    <div class="chart-wrap" style="height:240px;">
-      <canvas id="zcBrandChart"></canvas>
-    </div>
-    <table class="qoq-table">
-      <thead><tr>
-        <th>Quarter</th><th>Revenue</th><th>PSPD</th><th>PY PSPD</th><th>YoY %</th><th>vs Target</th>
-      </tr></thead>
-      <tbody id="zcTableBody"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- ZUS Signature — stacked full-width -->
-<div class="card brand-card-full card-has-toggle" data-brand-card="zs" data-tab-hide="zc zs">
-  <div class="view-toggle" data-target="zs">
-    <button class="active" data-view="both">CY + PY</button>
-    <button data-view="cy">CY only</button>
-  </div>
-  <div class="card-header">
-    <div>
-      <div class="card-title">ZUS Signature PSPD by Quarter</div>
-      <div class="card-sub" id="zsBrandSub">FY vs FY · Actual vs Target</div>
-    </div>
-    <div class="legend">
-      <div class="leg-item"><span class="leg-quarters"><span style="background:var(--blue)"></span><span style="background:var(--green)"></span><span style="background:var(--amber)"></span><span style="background:var(--purple)"></span></span> PSPD 2026</div>
-      <div class="leg-item"><div class="leg-line" style="background:#e4ecf5"></div> PSPD 2025 (PY)</div>
-      <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted2)"></div> Target</div>
-    </div>
-  </div>
-  <div class="brand-card-body">
-    <div class="chart-wrap" style="height:240px;">
-      <canvas id="zsBrandChart"></canvas>
-    </div>
-    <table class="qoq-table">
-      <thead><tr>
-        <th>Quarter</th><th>Revenue</th><th>PSPD</th><th>PY PSPD</th><th>YoY %</th><th>vs Target</th>
-      </tr></thead>
-      <tbody id="zsTableBody"></tbody>
-    </table>
-  </div>
 </div>
 
 </div>
@@ -1266,83 +1202,6 @@ const zsCyPspd   = [2645.16, 2639.29, null, null];
 const zsPyPspd   = [2743.91, 3131.16, 3230.46, 2908.33];
 const zsTargets  = [2500, 2500, 2500, 2500];
 
-const brandQuarterColors = ['#4d9de0', '#3ecf6c', '#f5a623', '#a57af5'];
-
-function brandChartConfig(cyData, pyData, targets, yMax) {
-  return {
-    type: 'bar',
-    data: {
-      labels: ['Q1','Q2','Q3','Q4'],
-      datasets: [
-        { label: `PSPD ${qoqCyYear}`, data: cyData,
-          backgroundColor: brandQuarterColors.map(c => hexToRgba(c, 0.80)),
-          borderColor: brandQuarterColors, borderWidth: 1,
-          borderRadius: 4, borderSkipped: 'bottom', yAxisID: 'y', order: 2 },
-        { label: `PSPD ${qoqPyYear} (PY)`, data: pyData, type: 'line',
-          borderColor: '#e4ecf5', backgroundColor: 'rgba(228,236,245,0.08)',
-          borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#e4ecf5',
-          pointBorderColor: '#0a0e14', pointBorderWidth: 2, tension: 0.4,
-          fill: false, yAxisID: 'y', order: 1 },
-        { label: 'Target', data: targets, type: 'line',
-          borderColor: 'rgba(107,126,148,0.5)', borderWidth: 1.5,
-          borderDash: [4,4], pointRadius: 0, tension: 0, fill: false,
-          yAxisID: 'y', order: 0 }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { display: false }, tooltip: { ...tooltipDefaults,
-        callbacks: { label: ctx => ctx.raw === null ? null : `  ${ctx.dataset.label}: ${fmt2(ctx.raw)}` }
-      }},
-      scales: {
-        x: { grid: { color: gridColor, drawTicks: false }, border: { display: false },
-             ticks: { color: tickColor, font: tickFont, padding: 6 } },
-        y: { min: 0, max: yMax, grid: { color: gridColor, drawTicks: false },
-             border: { display: false },
-             ticks: { color: tickColor, font: tickFont, padding: 8,
-               callback: v => v === 0 ? '0' : (v/1000).toFixed(1) + 'k', maxTicksLimit: 5 } }
-      }
-    }
-  };
-}
-
-function renderBrandTable(tbodyId, cyRev, cyPspd, pyPspd, targets) {
-  const tbody = document.getElementById(tbodyId);
-  tbody.innerHTML = ['Q1','Q2','Q3','Q4'].map((q, i) => {
-    const cy  = cyPspd[i];
-    const py  = pyPspd[i];
-    const tgt = targets[i];
-    const rev = cyRev[i];
-    const yoy   = (cy !== null && py) ? (cy - py) / py : null;
-    const vsTgt = (cy !== null)       ? (cy - tgt) / tgt : null;
-    const hasCy = cy !== null;
-    return `<tr>
-      <td><span class="quarter-badge ${qClassMap[q]}">${q} ${qoqCyYear}</span></td>
-      <td class="${hasCy?'fy':''}">${rev !== null ? 'RM ' + rev.toFixed(1) + 'M' : '—'}</td>
-      <td class="${hasCy?'fy':''}">${hasCy ? fmt2(cy) : '—'}</td>
-      <td>${py !== null ? fmt2(py) : '—'}</td>
-      <td class="${yoy===null?'':(yoy>=0?'hit-pos':'hit-neg')}">${yoy===null?'—':fmtPct(yoy)}</td>
-      <td class="${vsTgt===null?'':(vsTgt>=0?'hit-pos':'hit-neg')}">${vsTgt===null?'—':fmtPct(vsTgt)}</td>
-    </tr>`;
-  }).join('');
-}
-
-// Dynamic subtitles
-document.getElementById('zcBrandSub').textContent =
-  `FY ${qoqCyYear} vs FY ${qoqPyYear} · Actual vs Target (${fmt0(zcTargets[zcTargets.length-1])})`;
-document.getElementById('zsBrandSub').textContent =
-  `FY ${qoqCyYear} vs FY ${qoqPyYear} · Actual vs Target (${fmt0(zsTargets[zsTargets.length-1])})`;
-
-const zcBrandChart = new Chart(
-  document.getElementById('zcBrandChart'),
-  brandChartConfig(zcCyPspd, zcPyPspd, zcTargets, 5000));
-const zsBrandChart = new Chart(
-  document.getElementById('zsBrandChart'),
-  brandChartConfig(zsCyPspd, zsPyPspd, zsTargets, 3500));
-
-renderBrandTable('zcTableBody', zcCyRev, zcCyPspd, zcPyPspd, zcTargets);
-renderBrandTable('zsTableBody', zsCyRev, zsCyPspd, zsPyPspd, zsTargets);
 
 // ── UTILS ─────────────────────────────────────────────────────────────
 function trendBadge(label, val) {
@@ -1389,23 +1248,6 @@ function lineOptions(yMin, yMax) {
       y:{ min:yMin, max:yMax, grid:{color:gridColor,drawTicks:false}, border:{display:false},
           ticks:{color:tickColor,font:tickFont,padding:8,
             callback:v=>(v/1000).toFixed(1)+'k', maxTicksLimit:5} }
-    }
-  };
-}
-
-function brandChartOptions(yMin, yMax) {
-  return {
-    responsive:true, maintainAspectRatio:false,
-    interaction:{ mode:'index', intersect:false },
-    plugins:{ legend:{display:false}, tooltip:{ ...tooltipDefaults,
-      callbacks:{ label:ctx=>`  ${ctx.dataset.label}: ${fmt2(ctx.raw)}` }
-    }},
-    scales:{
-      x:{ grid:{color:gridColor,drawTicks:false}, border:{display:false},
-          ticks:{color:tickColor,font:tickFont,padding:6} },
-      y:{ min:yMin, max:yMax, grid:{color:gridColor,drawTicks:false}, border:{display:false},
-          ticks:{color:tickColor,font:tickFont,padding:8,
-            callback:v=>v===0?'0':(v/1000).toFixed(1)+'k', maxTicksLimit:5} }
     }
   };
 }
@@ -1588,11 +1430,15 @@ function applyFilters() {
   renderPeriodTable('l6wTableBody', l6wLabels, l6wPeriods, l6wOverall, l6wZC, l6wZS, tc.l6w.deltas);
   renderPeriodTable('l6mTableBody', l6mLabels, l6mPeriods, l6mOverall, l6mZC, l6mZS, tc.l6m.deltas);
 
-  // QoQ chart: swap CY bars, PY line, Target line per tab
+  // QoQ chart: swap CY bars, PY line, Target line + card title per tab
   qoqChart.data.datasets[0].data = cfg.qoqCy().slice();
   qoqChart.data.datasets[1].data = cfg.qoqPy().slice();
   qoqChart.data.datasets[2].data = cfg.qoqTgt().slice();
   qoqChart.update();
+  document.getElementById('qoqCardTitle').textContent =
+    brand === 'zc' ? 'ZUS Coffee PSPD by Quarter' :
+    brand === 'zs' ? 'ZUS Signature PSPD by Quarter' :
+                     'Quarterly PSPD — QoQ Overview';
 
   // YTD KPI cards — all 4 cards swap per tab
   document.getElementById('ytdRevValue').textContent  = cfg.revValue;
@@ -1688,10 +1534,8 @@ document.querySelectorAll('#periodFilter button').forEach(btn => {
 // Per-chart View toggles — each card has its own CY/PY toggle in the top-right corner.
 // dataset indexes refer to PY-related datasets that should be hidden when "CY only" is active.
 const viewToggleMap = {
-  monthly: { chart: () => pspdChart,    pyIndexes: [1, 3] },   // PY PSPD bars + PY AOV line
-  qoq:     { chart: () => qoqChart,     pyIndexes: [1] },      // PY PSPD line
-  zc:      { chart: () => zcBrandChart, pyIndexes: [1] },      // PY PSPD line
-  zs:      { chart: () => zsBrandChart, pyIndexes: [1] },
+  monthly: { chart: () => pspdChart, pyIndexes: [1, 3] },   // PY PSPD bars + PY AOV line
+  qoq:     { chart: () => qoqChart,  pyIndexes: [1] },      // PY PSPD line
 };
 document.querySelectorAll('.view-toggle').forEach(toggle => {
   const cfg = viewToggleMap[toggle.dataset.target];
@@ -1720,7 +1564,7 @@ document.querySelectorAll('#navList a').forEach(link => {
 });
 
 // Active-nav-on-scroll via IntersectionObserver
-const sectionIds = ['kpis','monthly','l6m','l6w','qoq','channels','brands'];
+const sectionIds = ['kpis','monthly','l6m','l6w','qoq','channels'];
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
