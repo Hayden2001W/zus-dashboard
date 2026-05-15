@@ -128,15 +128,30 @@ body {
 .filter-chip .check { color: var(--blue); }
 
 /* ── MAIN ────────────────────────────────────────────────── */
-.main { flex: 1; padding: 28px 32px 48px; min-width: 0; }
+.main { flex: 1; padding: 0 32px 48px; min-width: 0; }
 
 .top-bar {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   margin-bottom: 28px;
+  padding-top: 28px;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+}
+.top-bar > .page-title { justify-self: start; }
+.top-bar > #dashboardTabs { justify-self: center; }
+.top-bar > .top-meta { justify-self: end; }
+
+/* Lock tab widths so the active-bold state doesn't reflow the switcher */
+#dashboardTabs button {
+  min-width: 110px;
+  white-space: nowrap;
+  flex: none;
 }
 .page-title { font-size: 22px; font-weight: 700; }
 .page-title .filter-active { color: var(--blue); font-weight: 600; }
@@ -150,9 +165,29 @@ body {
   margin: 0 0 12px;
 }
 
+/* Headline section panels wrapping MTD + YTD kpi rows */
+.headline-row {
+  display: grid;
+  grid-template-columns: 4fr 3fr;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.headline-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px 20px 6px;
+  min-width: 0;
+}
+.headline-block .kpi-row { margin-bottom: 12px; }
+.headline-block .kpi-card { background: var(--surface2); }
+@media (max-width: 1100px) {
+  .headline-row { grid-template-columns: 1fr; }
+}
+
 .kpi-row {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin-bottom: 24px;
 }
@@ -460,6 +495,16 @@ body {
   .grid-2, .grid-bottom { grid-template-columns: 1fr; }
   .split-ct { grid-template-columns: 1fr; }
 }
+
+/* ── TAB-SCOPED VISIBILITY ─────────────────────────────────
+   data-tab-hide="zc"   -> hide on ZC tab
+   data-tab-hide="zs"   -> hide on ZS tab
+   data-tab-hide="zc zs"-> hide on both brand tabs (i.e. show only on Overall)
+*/
+body.tab-zc [data-tab-hide~="zc"],
+body.tab-zs [data-tab-hide~="zs"],
+body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
+
 </style>
 </head>
 <body>
@@ -469,56 +514,81 @@ body {
 
 <div class="top-bar">
   <div class="page-title">FY 2026 Performance — <span class="filter-active" id="filterLabel">Overall · YTD</span></div>
+  <div class="seg-row" id="dashboardTabs" style="width:fit-content;">
+    <button class="active" data-tab="overall">Overall</button>
+    <button data-tab="zc">ZUS Coffee</button>
+    <button data-tab="zs">ZUS Signature</button>
+  </div>
   <div class="top-meta">
     <div class="top-meta-label">Last Refreshed</div>
     <div class="top-meta-val">12th Apr 2026</div>
   </div>
 </div>
 
+<div class="headline-row">
+
+<div class="headline-block">
 <p class="section-label" id="kpis">YTD Headline KPIs</p>
-<div class="kpi-row">
+<div class="kpi-row" id="ytdKpiRow">
 
   <div class="kpi-card blue" data-brand-card="all">
     <div class="kpi-label">YTD Revenue</div>
-    <div class="kpi-value">RM 336.5M</div>
-    <div class="kpi-sub">Target: RM 349.3M</div>
-    <span class="kpi-badge neg">▼ 3.7% vs Target</span>
+    <div class="kpi-value" id="ytdRevValue">RM 336.5M</div>
+    <div class="kpi-sub" id="ytdRevSub">Target: RM 326.9M</div>
+    <span class="kpi-badge pos" id="ytdRevBadge">▲ 2.9% vs Target</span>
   </div>
 
-  <div class="kpi-card amber" data-brand-card="overall">
-    <div class="kpi-label">YTD PSPD (Overall)</div>
-    <div class="kpi-value">3,852.55</div>
-    <div class="kpi-sub">Target: 4,000.00</div>
-    <span class="kpi-badge neg">▼ 3.7% vs Target</span>
+  <div class="kpi-card amber">
+    <div class="kpi-label" id="ytdPspdLabel">YTD PSPD</div>
+    <div class="kpi-value" id="ytdPspdValue">3,852.55</div>
+    <div class="kpi-sub" id="ytdPspdSub">Target: 3,743.67</div>
+    <span class="kpi-badge pos" id="ytdPspdBadge">▲ 2.9% vs Target</span>
   </div>
 
-  <div class="kpi-card cyan" data-brand-card="zc">
-    <div class="kpi-label">YTD PSPD (ZUS Coffee)</div>
-    <div class="kpi-value">3,859.16</div>
-    <div class="kpi-sub">Target: 4,000.00</div>
-    <span class="kpi-badge neg">▼ 3.5% vs Target</span>
-  </div>
-
-  <div class="kpi-card red" data-brand-card="zs">
-    <div class="kpi-label">YTD PSPD (ZUS Sig.)</div>
-    <div class="kpi-value">2,644.46</div>
-    <div class="kpi-sub">Target: 2,500.00</div>
-    <span class="kpi-badge neg">▲ 5.8% vs Target</span>
-  </div>
-
-  <div class="kpi-card green" data-brand-card="all">
+  <div class="kpi-card green">
     <div class="kpi-label">YTD AOV</div>
-    <div class="kpi-value">RM 20.30</div>
+    <div class="kpi-value" id="ytdAovValue">RM 20.30</div>
     <div class="kpi-sub">Per order average</div>
     <span class="kpi-badge neu">No Target Set</span>
   </div>
 
-  <div class="kpi-card blue" data-brand-card="all" style="--blue:#a57af5;">
+  <div class="kpi-card blue" style="--blue:#a57af5;">
     <div class="kpi-label">Total Orders YTD</div>
-    <div class="kpi-value" style="color:#a57af5;font-size:22px;">16.57M</div>
-    <div class="kpi-sub">Jan – Apr 2026</div>
+    <div class="kpi-value" id="ytdOrdersValue" style="color:#a57af5;font-size:22px;">16.57M</div>
+    <div class="kpi-sub" id="ytdOrdersSub">Jan – Apr 2026</div>
     <span class="kpi-badge neu">Cumulative</span>
   </div>
+
+</div>
+</div>
+
+<div class="headline-block">
+<p class="section-label" id="mtd">MTD Performance</p>
+<div class="kpi-row" style="grid-template-columns: repeat(3,1fr);">
+
+  <div class="kpi-card amber">
+    <div class="kpi-label">MTD PSPD</div>
+    <div class="kpi-value" id="mtdPspd">4,387.41</div>
+    <div class="kpi-sub" id="mtdPspdSub">Month to date · Apr 2026 · Target: 4,279</div>
+    <span class="kpi-badge pos" id="mtdPspdBadge">▲ 16.6% vs Mar</span>
+  </div>
+
+  <div class="kpi-card green">
+    <div class="kpi-label">MTD AOV</div>
+    <div class="kpi-value" id="mtdAov">19.98</div>
+    <div class="kpi-sub">Month to date · Apr 2026</div>
+    <span class="kpi-badge neg" id="mtdAovBadge">▼ 6.2% vs Mar</span>
+  </div>
+
+  <div class="kpi-card blue">
+    <div class="kpi-label">MTD Total Orders</div>
+    <div class="kpi-value" id="mtdOrders">2.29M</div>
+    <div class="kpi-sub">Month to date · Apr 2026</div>
+    <span class="kpi-badge pos" id="mtdOrdersBadge">▲ 12.8% vs Mar</span>
+  </div>
+
+</div>
+</div>
 
 </div>
 
@@ -560,19 +630,20 @@ body {
 
 <div class="card card-has-toggle" id="monthly">
   <div class="view-toggle" data-target="monthly">
-    <button class="active" data-view="both">CY + PY</button>
-    <button data-view="cy">CY only</button>
+    <button data-view="both">CY + PY</button>
+    <button class="active" data-view="cy">CY only</button>
   </div>
   <div class="card-header">
     <div>
       <div class="card-title">PSPD &amp; AOV × TIME</div>
-      <div class="card-sub">FY 2026 — Monthly Performance · Jan–Dec (PY overlay)</div>
+      <div class="card-sub">FY 2026 · Monthly PSPD vs Variable Target · AOV on secondary axis</div>
     </div>
     <div class="legend">
       <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> PSPD</div>
       <div class="leg-item"><div class="leg-dot" style="background:var(--cyan)"></div> PY PSPD</div>
       <div class="leg-item"><div class="leg-line" style="background:var(--green)"></div> AOV</div>
       <div class="leg-item"><div class="leg-dash" style="border-color:var(--amber)"></div> PY AOV</div>
+      <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted)"></div> Target</div>
     </div>
   </div>
   <div class="chart-wrap" style="height:240px;">
@@ -580,9 +651,8 @@ body {
   </div>
   <div class="card-divider"></div>
   <div class="stat-row">
-    <div class="stat"><span class="stat-label">Peak PSPD</span><span class="stat-val blue">4,545.74</span></div>
-    <div class="stat"><span class="stat-label">Avg PSPD (Actual)</span><span class="stat-val blue">3,926.16</span></div>
-    <div class="stat"><span class="stat-label">Avg PY PSPD</span><span class="stat-val cyan">3,938.97</span></div>
+    <div class="stat"><span class="stat-label">Avg PSPD (Actual)</span><span class="stat-val blue" id="statAvgPspd">3,926.16</span></div>
+    <div class="stat"><span class="stat-label">vs YTD Target</span><span class="stat-val" id="statVsTarget">—</span></div>
     <div class="stat"><span class="stat-label">Avg AOV (Actual)</span><span class="stat-val green">20.23</span></div>
   </div>
 </div>
@@ -611,8 +681,8 @@ body {
     <table class="period-table">
       <thead>
         <tr>
-          <th>Label</th><th>Period</th>
-          <th>Overall</th><th>ZC</th><th>ZS</th><th>WoW %</th>
+          <th>Week End</th><th>Period</th>
+          <th>Overall</th><th>ZC</th><th>ZS</th><th id="l6wDeltaHeader">Overall WoW %</th>
         </tr>
       </thead>
       <tbody id="l6wTableBody"></tbody>
@@ -640,8 +710,8 @@ body {
     <table class="period-table">
       <thead>
         <tr>
-          <th>Label</th><th>Period</th>
-          <th>Overall</th><th>ZC</th><th>ZS</th><th>MoM %</th>
+          <th>Month End</th><th>Period</th>
+          <th>Overall</th><th>ZC</th><th>ZS</th><th id="l6mDeltaHeader">Overall MoM %</th>
         </tr>
       </thead>
       <tbody id="l6mTableBody"></tbody>
@@ -653,7 +723,7 @@ body {
 
 <!-- Channel mix — full-width row -->
 <!-- YTD Channel Mix — Actual vs Target tiles -->
-<div class="card" id="channels" style="margin-bottom:16px;">
+<div class="card" id="channels" data-tab-hide="zc zs" style="margin-bottom:16px;">
   <div class="card-header">
     <div>
       <div class="card-title">2026 YTD Channel Mix — Actual vs Target</div>
@@ -684,7 +754,7 @@ body {
 </div>
 
 <!-- Monthly Channel % Share + 3PL Sub-channel Detail (2-col row) -->
-<div class="grid-2">
+<div class="grid-2" data-tab-hide="zc zs">
 
 <div class="card">
   <div class="card-header">
@@ -722,7 +792,7 @@ body {
 <!-- ZUS Coffee + ZUS Signature (2-col row, chart-on-top inside each) -->
 <div class="grid-2">
 
-<div class="card brand-card-full card-has-toggle" id="brands" data-brand-card="zc">
+<div class="card brand-card-full card-has-toggle" id="brands" data-brand-card="zc" data-tab-hide="zc zs">
   <div class="view-toggle" data-target="zc">
     <button class="active" data-view="both">CY + PY</button>
     <button data-view="cy">CY only</button>
@@ -752,7 +822,7 @@ body {
 </div>
 
 <!-- ZUS Signature — stacked full-width -->
-<div class="card brand-card-full card-has-toggle" data-brand-card="zs">
+<div class="card brand-card-full card-has-toggle" data-brand-card="zs" data-tab-hide="zc zs">
   <div class="view-toggle" data-target="zs">
     <button class="active" data-view="both">CY + PY</button>
     <button data-view="cy">CY only</button>
@@ -815,6 +885,38 @@ const pyAov          = [19.57, 19.56, 20.10, 20.53, 19.81, 20.39, 20.28, 19.87, 
 const monthlyZcPspd  = [3585.79, 3577.56, 4172.41, 4396.86, null, null, null, null, null, null, null, null];
 const monthlyZsPspd  = [3012.18, 2559.51, 2352.90, 2639.29, null, null, null, null, null, null, null, null];
 
+// Brand-specific AOV (CY 2026 + PY 2025) — Total Revenue / Total Orders per month, per brand
+const monthlyZcAov   = [19.57, 20.08, 21.31, 19.98, null, null, null, null, null, null, null, null];
+const monthlyZsAov   = [20.17, 20.27, 19.35, 19.59, null, null, null, null, null, null, null, null];
+const monthlyZcPyAov = [19.57, 19.56, 20.10, 20.53, 19.81, 20.39, 20.28, 19.87, 19.95, 20.01, 19.49, 20.37];
+const monthlyZsPyAov = [19.13, 21.44, 19.78, 19.86, 19.92, 20.21, 20.07, 20.52, 19.58, 18.90, 19.21, 20.16];
+
+// Brand-specific PY 2025 PSPD (Total Revenue / Total Store-Days per month, per brand)
+const monthlyZcPyPspd = [3515.10, 3698.49, 3060.47, 4035.20, 4110.76, 4553.24, 4493.23, 3996.24, 3910.87, 3901.87, 3942.71, 4105.23];
+const monthlyZsPyPspd = [2913.09, 3025.52, 2414.97, 2870.48, 3262.00, 3213.25, 3377.94, 3350.11, 2944.43, 3035.94, 2808.03, 2870.01];
+
+// Monthly PSPD Target — Jan to Dec 2026 (from Input sheet)
+const monthlyPspdTarget   = [3980, 3758, 3493, 4279, 4663, 5150, 4332, 4301, 4063, 4884, 4584, 4386];
+const monthlyZcPspdTarget = [4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000];
+const monthlyZsPspdTarget = [2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500];
+
+// YTD blended PSPD target (used for stat row calculation)
+const ytdPspdTarget = 3743.67;
+
+// Monthly Revenue Target — Jan to Dec 2026 (from Input sheet, in RM)
+const monthlyRevTarget = [105810157,
+  91013873,
+  94474401,
+  112975190,
+  128277539,
+  138284400,
+  121199935,
+  121321579,
+  111836337,
+  140039713,
+  128237244,
+  127796595];
+
 const pspdChart = new Chart(document.getElementById('pspdAovChart'), {
   type: 'bar',
   data: {
@@ -831,7 +933,10 @@ const pspdChart = new Chart(document.getElementById('pspdAovChart'), {
         pointBorderWidth:2, tension:0.4, fill:false, yAxisID:'y2', order:1 },
       { label:'PY AOV', data:pyAov, type:'line', borderColor:'#f5a623', borderWidth:2,
         borderDash:[5,4], pointRadius:3, pointBackgroundColor:'#f5a623', pointBorderColor:'#111820',
-        pointBorderWidth:1.5, tension:0.4, fill:false, yAxisID:'y2', order:1 }
+        pointBorderWidth:1.5, tension:0.4, fill:false, yAxisID:'y2', order:1 },
+      { label:'PSPD Target', data:monthlyPspdTarget.slice(), type:'line',
+        borderColor:'rgba(107,126,148,0.6)', borderWidth:1.5, borderDash:[4,4],
+        pointRadius:0, tension:0, fill:false, yAxisID:'y', order:0 }
     ]
   },
   options: {
@@ -864,18 +969,21 @@ const pspdChart = new Chart(document.getElementById('pspdAovChart'), {
 });
 
 // ── 2. L6M MoM ───────────────────────────────────────────────────────
-const l6mLabels  = ['L6M-5', 'L6M-4', 'L6M-3', 'L6M-2', 'L6M-1', 'L6M'];
 const l6mOverall = [4151.67, 4121.81, 4052.36, 3900.52, 3833.04, 3879.20];
 const l6mZC      = [4157.02, 4127.56, 4057.91, 3905.47, 3838.27, 3885.19];
 const l6mZS      = [3196.84, 3128.35, 3075.17, 3009.53, 2877.32, 2774.18];
 const l6mMoM     = [null, -0.00719, -0.01685, -0.03747, -0.01730, 0.01204];
 const l6mPeriods = ["May–Oct '25", "Jun–Nov '25", "Jul–Dec '25", "Aug '25–Jan '26", "Sep '25–Feb '26", "Oct '25–Mar '26"];
+const l6mLabels  = l6mPeriods.map(p => {
+  const parts = p.split('–');
+  return parts[parts.length - 1].trim();
+});
 
 const l6mLatestMoM = l6mMoM[l6mMoM.length-1];
 const l6mPrevMoM   = l6mMoM[l6mMoM.length-2];
 document.getElementById('l6mTrendRow').innerHTML =
-  trendBadge('Latest L6M Growth', l6mLatestMoM) +
-  trendBadge('Prev L6M Growth', l6mPrevMoM);
+  trendBadge('This Month vs Prev', l6mLatestMoM) +
+  trendBadge('Prev Month vs Before', l6mPrevMoM);
 
 renderPeriodTable('l6mTableBody', l6mLabels, l6mPeriods, l6mOverall, l6mZC, l6mZS, l6mMoM);
 
@@ -899,18 +1007,18 @@ const l6mChart = new Chart(document.getElementById('l6mChart'), {
 });
 
 // ── 3. L6W WoW ───────────────────────────────────────────────────────
-const l6wLabels  = ['L6W-5', 'L6W-4', 'L6W-3', 'L6W-2', 'L6W-1', 'L6W'];
 const l6wOverall = [3492.00, 3357.69, 3509.21, 3868.47, 4019.91, 4251.04];
 const l6wZC      = [3497.37, 3362.99, 3515.62, 3876.95, 4029.10, 4260.98];
 const l6wZS      = [2512.73, 2388.90, 2337.39, 2310.89, 2334.17, 2425.91];
 const l6wWoW     = [null, -0.03846, 0.04512, 0.10238, 0.03915, 0.05750];
 const l6wPeriods = ["26 Jan – 8 Mar", "2 Feb – 15 Mar", "9 Feb – 22 Mar", "16 Feb – 29 Mar", "23 Feb – 5 Apr", "2 Mar – 12 Apr"];
+const l6wLabels  = l6wPeriods.map(p => p.split('–')[1].trim());
 
 const l6wLatestWoW = l6wWoW[l6wWoW.length-1];
 const l6wPrevWoW   = l6wWoW[l6wWoW.length-2];
 document.getElementById('l6wTrendRow').innerHTML =
-  trendBadge('Latest L6W Growth', l6wLatestWoW) +
-  trendBadge('Prev L6W Growth', l6wPrevWoW);
+  trendBadge('This Week vs Prev', l6wLatestWoW) +
+  trendBadge('Prev Week vs Before', l6wPrevWoW);
 
 renderPeriodTable('l6wTableBody', l6wLabels, l6wPeriods, l6wOverall, l6wZC, l6wZS, l6wWoW);
 
@@ -939,13 +1047,13 @@ const qoqCyRev   = [290.8, 45.7, null, null];
 const qoqCyPspd  = [3780.12, 4387.41, null, null];
 const qoqPyRev   = [216.5, 288.3, 299.2, 301.2];
 const qoqPyPspd  = [3410.00, 4229.54, 4127.99, 3979.92];
-const qoqTargets = [4000, 4000, 4000, 4000];
+const qoqTargets = [3743, 3743, 3743, 3743];
 const qoqCyYear  = 2026;
 const qoqPyYear  = 2025;
 const qColors    = ['#4d9de0', '#3ecf6c', '#f5a623', '#a57af5'];
 
 document.querySelector('#qoq .card-sub').textContent =
-  `FY ${qoqCyYear} vs FY ${qoqPyYear} · Actual vs Target (${fmt0(qoqTargets[qoqTargets.length-1])})`;
+  `FY ${qoqCyYear} vs FY ${qoqPyYear} · Actual vs Variable Quarterly Target`;
 
 const qoqChart = new Chart(document.getElementById('qoqChart'), {
   type:'bar',
@@ -1314,31 +1422,206 @@ const PERIOD_LABEL = { ytd: 'YTD', l6m: 'L6M', l6w: 'L6W' };
   c.data.datasets.forEach(ds => { ds._origColor = ds.borderColor; });
 });
 
-function applyFilters() {
-  document.getElementById('filterLabel').textContent =
-    `${BRAND_LABEL[filterState.brand]} · ${PERIOD_LABEL[filterState.period]}`;
+// Brand-specific data sources for tab switching
+const tabData = {
+  overall: {
+    monthlyPspd:  () => pspd,
+    monthlyPyPspd:() => pyPspd,
+    monthlyAov:   () => aov,
+    monthlyPyAov: () => pyAov,
+    monthlyTarget: () => monthlyPspdTarget,
+    l6m: () => l6mOverall, l6w: () => l6wOverall,
+    qoqCy: () => qoqCyPspd, qoqPy: () => qoqPyPspd, qoqTgt: () => qoqTargets,
+    pspdLabel: 'YTD PSPD',
+    pspdValue: '3,852.55',  pspdSub: 'Target: 3,743.67',
+    pspdBadgeCls: 'pos',    pspdBadgeTxt: '▲ 2.9% vs Target',
+    revValue:  'RM 336.5M', revSub: 'Target: RM 326.9M',
+    revBadgeCls: 'pos',     revBadgeTxt: '▲ 2.9% vs Target',
+    aovValue:  'RM 20.30',
+    ordersValue: '16.57M',  ordersSub: 'Jan – Apr 2026',
+  },
+  zc: {
+    monthlyPspd:  () => monthlyZcPspd,
+    monthlyPyPspd:() => monthlyZcPyPspd,
+    monthlyAov:   () => monthlyZcAov,
+    monthlyPyAov: () => monthlyZcPyAov,
+    monthlyTarget: () => monthlyZcPspdTarget,
+    l6m: () => l6mZC, l6w: () => l6wZC,
+    qoqCy: () => zcCyPspd, qoqPy: () => zcPyPspd, qoqTgt: () => zcTargets,
+    pspdLabel: 'YTD ZUS Coffee',
+    pspdValue: '3,859.16',  pspdSub: 'Target: 4,000.00',
+    pspdBadgeCls: 'neg',    pspdBadgeTxt: '▼ 3.5% vs Target',
+    revValue:  'RM 335.2M', revSub: 'ZUS Coffee · YTD',
+    revBadgeCls: 'neu',     revBadgeTxt: 'Brand-only',
+    aovValue:  'RM 20.30',
+    ordersValue: '16.51M',  ordersSub: 'ZUS Coffee · Jan – Apr 2026',
+  },
+  zs: {
+    monthlyPspd:  () => monthlyZsPspd,
+    monthlyPyPspd:() => monthlyZsPyPspd,
+    monthlyAov:   () => monthlyZsAov,
+    monthlyPyAov: () => monthlyZsPyAov,
+    monthlyTarget: () => monthlyZsPspdTarget,
+    l6m: () => l6mZS, l6w: () => l6wZS,
+    qoqCy: () => zsCyPspd, qoqPy: () => zsPyPspd, qoqTgt: () => zsTargets,
+    pspdLabel: 'YTD ZUS Signature',
+    pspdValue: '2,644.46',  pspdSub: 'Target: 2,500.00',
+    pspdBadgeCls: 'pos',    pspdBadgeTxt: '▲ 5.8% vs Target',
+    revValue:  'RM 1.3M', revSub: 'ZUS Signature · YTD',
+    revBadgeCls: 'neu',     revBadgeTxt: 'Brand-only',
+    aovValue:  'RM 19.90',
+    ordersValue: '63.1K',  ordersSub: 'ZUS Signature · Jan – Apr 2026',
+  },
+};
 
+function sumMillions(arr) {
+  const s = arr.reduce((a, b) => a + (b || 0), 0);
+  return 'RM ' + s.toFixed(1) + 'M';
+}
+
+// Period-over-period % change for a series (returns array with null at index 0)
+function pctChanges(arr) {
+  return arr.map((v, i) => {
+    if (i === 0 || v == null) return null;
+    const p = arr[i - 1];
+    if (!p) return null;
+    return (v - p) / p;
+  });
+}
+const l6mZcMoM = pctChanges(l6mZC);
+const l6mZsMoM = pctChanges(l6mZS);
+const l6wZcWoW = pctChanges(l6wZC);
+const l6wZsWoW = pctChanges(l6wZS);
+
+// Per-brand trend config for the L6W / L6M cards
+const trendCfg = {
+  overall: {
+    l6w: { deltas: l6wWoW,   header: 'Overall WoW %',
+           latest: 'This Week vs Prev',   prev: 'Prev Week vs Before' },
+    l6m: { deltas: l6mMoM,   header: 'Overall MoM %',
+           latest: 'This Month vs Prev',  prev: 'Prev Month vs Before' },
+  },
+  zc: {
+    l6w: { deltas: l6wZcWoW, header: 'ZC WoW %',
+           latest: 'ZC: This Week vs Prev',   prev: 'ZC: Prev Week vs Before' },
+    l6m: { deltas: l6mZcMoM, header: 'ZC MoM %',
+           latest: 'ZC: This Month vs Prev',  prev: 'ZC: Prev Month vs Before' },
+  },
+  zs: {
+    l6w: { deltas: l6wZsWoW, header: 'ZS WoW %',
+           latest: 'ZS: This Week vs Prev',   prev: 'ZS: Prev Week vs Before' },
+    l6m: { deltas: l6mZsMoM, header: 'ZS MoM %',
+           latest: 'ZS: This Month vs Prev',  prev: 'ZS: Prev Month vs Before' },
+  },
+};
+
+function applyFilters() {
+  const brand = filterState.brand;
+  const cfg = tabData[brand] || tabData.overall;
+
+  // Body class drives the data-tab-hide CSS rules
+  document.body.classList.remove('tab-overall', 'tab-zc', 'tab-zs');
+  document.body.classList.add('tab-' + brand);
+
+  document.getElementById('filterLabel').textContent =
+    `${BRAND_LABEL[brand]} · ${PERIOD_LABEL[filterState.period]}`;
+
+  // Highlight active tab button
+  document.querySelectorAll('#dashboardTabs button').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === brand);
+  });
+
+  // Dim cards via existing data-brand-card mechanism (Overall tab only)
   document.querySelectorAll('[data-brand-card]').forEach(card => {
     const tag = card.dataset.brandCard;
     let dim = false;
-    if (filterState.brand === 'zc' && tag === 'zs') dim = true;
-    if (filterState.brand === 'zs' && tag === 'zc') dim = true;
-    if (filterState.brand !== 'overall' && tag === 'overall') dim = true;
+    if (brand === 'zc' && tag === 'zs') dim = true;
+    if (brand === 'zs' && tag === 'zc') dim = true;
+    if (brand !== 'overall' && tag === 'overall') dim = true;
     card.classList.toggle('dim', dim);
   });
 
-  const monthlySrc =
-    filterState.brand === 'zc' ? monthlyZcPspd :
-    filterState.brand === 'zs' ? monthlyZsPspd : pspd;
-  pspdChart.data.datasets[0].data = monthlySrc.slice();
+  // Monthly PSPD chart: swap CY PSPD bars + PY PSPD bars + AOV line + PY AOV line + target line
+  pspdChart.data.datasets[0].data = cfg.monthlyPspd().slice();
   pspdChart.data.datasets[0].label =
-    filterState.brand === 'zc' ? 'ZC PSPD' :
-    filterState.brand === 'zs' ? 'ZS PSPD' : 'PSPD';
+    brand === 'zc' ? 'ZC PSPD' : brand === 'zs' ? 'ZS PSPD' : 'PSPD';
+  pspdChart.data.datasets[1].data = cfg.monthlyPyPspd().slice();
+  pspdChart.data.datasets[2].data = cfg.monthlyAov().slice();
+  pspdChart.data.datasets[3].data = cfg.monthlyPyAov().slice();
+  pspdChart.data.datasets[4].data = cfg.monthlyTarget().slice();
+
+  // Dynamic Y-axis max: largest of CY/PY/target + 12% headroom, rounded up to next 500
+  const pspdSeries = [
+    ...cfg.monthlyPspd(), ...cfg.monthlyPyPspd(), ...cfg.monthlyTarget()
+  ].filter(v => v !== null && v !== undefined);
+  const pspdMax = Math.max(...pspdSeries);
+  pspdChart.options.scales.y.max = Math.ceil(pspdMax * 1.12 / 500) * 500;
+
+  // AOV right axis: tighten to data range
+  const aovSeries = [...cfg.monthlyAov(), ...cfg.monthlyPyAov()]
+    .filter(v => v !== null && v !== undefined);
+  const aovMin = Math.min(...aovSeries);
+  const aovMax = Math.max(...aovSeries);
+  pspdChart.options.scales.y2.min = Math.floor((aovMin - 1));
+  pspdChart.options.scales.y2.max = Math.ceil((aovMax + 1));
 
   pspdChart.update();
+  renderVsTargetStat();
 
-  emphasiseLines(l6mChart, filterState.brand);
-  emphasiseLines(l6wChart, filterState.brand);
+  // L6M / L6W: keep all 3 lines visible, just emphasize the active brand.
+  // Trend badges, table delta column, and column header switch per tab.
+  emphasiseLines(l6mChart, brand);
+  emphasiseLines(l6wChart, brand);
+
+  const tc = trendCfg[brand] || trendCfg.overall;
+
+  document.getElementById('l6wTrendRow').innerHTML =
+    trendBadge(tc.l6w.latest, tc.l6w.deltas[tc.l6w.deltas.length - 1]) +
+    trendBadge(tc.l6w.prev,   tc.l6w.deltas[tc.l6w.deltas.length - 2]);
+  document.getElementById('l6mTrendRow').innerHTML =
+    trendBadge(tc.l6m.latest, tc.l6m.deltas[tc.l6m.deltas.length - 1]) +
+    trendBadge(tc.l6m.prev,   tc.l6m.deltas[tc.l6m.deltas.length - 2]);
+
+  document.getElementById('l6wDeltaHeader').textContent = tc.l6w.header;
+  document.getElementById('l6mDeltaHeader').textContent = tc.l6m.header;
+
+  renderPeriodTable('l6wTableBody', l6wLabels, l6wPeriods, l6wOverall, l6wZC, l6wZS, tc.l6w.deltas);
+  renderPeriodTable('l6mTableBody', l6mLabels, l6mPeriods, l6mOverall, l6mZC, l6mZS, tc.l6m.deltas);
+
+  // QoQ chart: swap CY bars, PY line, Target line per tab
+  qoqChart.data.datasets[0].data = cfg.qoqCy().slice();
+  qoqChart.data.datasets[1].data = cfg.qoqPy().slice();
+  qoqChart.data.datasets[2].data = cfg.qoqTgt().slice();
+  qoqChart.update();
+
+  // YTD KPI cards — all 4 cards swap per tab
+  document.getElementById('ytdRevValue').textContent  = cfg.revValue;
+  document.getElementById('ytdRevSub').textContent    = cfg.revSub;
+  const revBadge = document.getElementById('ytdRevBadge');
+  revBadge.className = 'kpi-badge ' + cfg.revBadgeCls;
+  revBadge.textContent = cfg.revBadgeTxt;
+
+  document.getElementById('ytdPspdLabel').textContent = cfg.pspdLabel;
+  document.getElementById('ytdPspdValue').textContent = cfg.pspdValue;
+  document.getElementById('ytdPspdSub').textContent   = cfg.pspdSub;
+  const pspdBadge = document.getElementById('ytdPspdBadge');
+  pspdBadge.className = 'kpi-badge ' + cfg.pspdBadgeCls;
+  pspdBadge.textContent = cfg.pspdBadgeTxt;
+
+  document.getElementById('ytdAovValue').textContent    = cfg.aovValue;
+  document.getElementById('ytdOrdersValue').textContent = cfg.ordersValue;
+  document.getElementById('ytdOrdersSub').textContent   = cfg.ordersSub;
+
+  // MTD cards (PSPD + AOV + Orders) per tab
+  setMtdCards(brand);
+
+  // YTD AOV per tab
+  const aovEl = document.getElementById('ytdAovValue');
+  if (aovEl) aovEl.textContent = 'RM ' + fmt2(ytdAovByBrand[brand] ?? ytdAovByBrand.overall);
+
+  // Hide sidebar brand chips on ZC/ZS (defensive — element may not exist)
+  const bf = document.getElementById('brandFilter');
+  if (bf) bf.style.display = brand === 'overall' ? '' : 'none';
 }
 
 function emphasiseLines(chart, brand) {
@@ -1367,6 +1650,14 @@ function hexToRgba(hex, alpha) {
   const b = parseInt(h.substring(4,6),16);
   return `rgba(${r},${g},${b},${alpha})`;
 }
+
+// Top-bar dashboard tabs (Overall / ZC / ZS)
+document.querySelectorAll('#dashboardTabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterState.brand = btn.dataset.tab;
+    applyFilters();
+  });
+});
 
 // Brand chips
 document.querySelectorAll('#brandFilter .filter-chip').forEach(chip => {
@@ -1444,6 +1735,87 @@ sectionIds.forEach(id => {
   const el = document.getElementById(id);
   if (el) observer.observe(el);
 });
+
+// ── MTD KPI cards ────────────────────────────────────────────────────
+const mtdMonth     = 'Apr 2026';
+const prevMonthLbl = 'Mar';
+
+// All MTD metrics + their previous-month counterparts, per brand
+const mtdData = {
+  overall: {
+    pspd:   4387.41, prevPspd:   4162.57, target: 4279,
+    aov:    19.98,   prevAov:    21.30,
+    orders: 2286908, prevOrders: 5203343,
+  },
+  zc: {
+    pspd:   4396.86, prevPspd:   4172.41, target: 4000,
+    aov:    19.98,   prevAov:    21.31,
+    orders: 2279363, prevOrders: 5185837,
+  },
+  zs: {
+    pspd:   2639.29, prevPspd:   2352.90, target: 2500,
+    aov:    19.59,   prevAov:    19.35,
+    orders: 7545, prevOrders: 17506,
+  },
+};
+
+// YTD AOV per brand (Jan-Apr 2026 weighted average)
+const ytdAovByBrand = { overall: 20.30, zc: 20.30, zs: 19.90 };
+
+function mtdBadge(current, previous, prevLabel) {
+  const pct = (current - previous) / previous;
+  const cls = pct >= 0 ? 'pos' : 'neg';
+  const arrow = pct >= 0 ? '▲' : '▼';
+  return { cls, text: `${arrow} ${Math.abs(pct * 100).toFixed(1)}% vs ${prevLabel}` };
+}
+
+function fmtOrders(n) {
+  if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return fmt0(n);
+}
+
+function setMtdCards(brand) {
+  const d = mtdData[brand] || mtdData.overall;
+
+  document.getElementById('mtdPspd').textContent = fmt2(d.pspd);
+  document.getElementById('mtdPspdSub').textContent =
+    `Month to date · ${mtdMonth} · Target: ${fmt0(d.target)}`;
+  const pBadge = mtdBadge(d.pspd, d.prevPspd, prevMonthLbl);
+  const pEl = document.getElementById('mtdPspdBadge');
+  pEl.className = 'kpi-badge ' + pBadge.cls; pEl.textContent = pBadge.text;
+
+  document.getElementById('mtdAov').textContent = fmt2(d.aov);
+  const aBadge = mtdBadge(d.aov, d.prevAov, prevMonthLbl);
+  const aEl = document.getElementById('mtdAovBadge');
+  aEl.className = 'kpi-badge ' + aBadge.cls; aEl.textContent = aBadge.text;
+
+  document.getElementById('mtdOrders').textContent = fmtOrders(d.orders);
+  const oBadge = mtdBadge(d.orders, d.prevOrders, prevMonthLbl);
+  const oEl = document.getElementById('mtdOrdersBadge');
+  oEl.className = 'kpi-badge ' + oBadge.cls; oEl.textContent = oBadge.text;
+}
+setMtdCards('overall');
+
+// Default monthly chart to "CY only" — hide PY PSPD bars (idx 1) and PY AOV line (idx 3)
+[1, 3].forEach(i => { pspdChart.data.datasets[i].hidden = true; });
+pspdChart.update();
+
+// Compute the "vs YTD Target" stat dynamically
+function renderVsTargetStat() {
+  const series = pspdChart.data.datasets[0].data;
+  const actualMonths = series.filter(v => v !== null && v !== undefined);
+  if (!actualMonths.length) return;
+  const avgPspd = actualMonths.reduce((a, b) => a + b, 0) / actualMonths.length;
+  document.getElementById('statAvgPspd').textContent = fmt2(avgPspd);
+  const vsTarget = (avgPspd - ytdPspdTarget) / ytdPspdTarget;
+  const statEl = document.getElementById('statVsTarget');
+  statEl.textContent =
+    (vsTarget >= 0 ? '▲ ' : '▼ ') +
+    Math.abs(vsTarget * 100).toFixed(1) + '% vs ' + fmt2(ytdPspdTarget);
+  statEl.className = 'stat-val ' + (vsTarget >= 0 ? 'green' : 'red');
+}
+renderVsTargetStat();
 
 applyFilters();
 </script>
