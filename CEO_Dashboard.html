@@ -262,6 +262,8 @@ body {
 @media (max-width: 1100px) {
   .brand-card-full .brand-card-body { grid-template-columns: 1fr; }
 }
+/* When inside a 2-col grid, stack brand chart over its table */
+.grid-2 .brand-card-full .brand-card-body { grid-template-columns: 1fr; gap: 18px; }
 .card-header {
   display: flex; align-items: flex-start;
   justify-content: space-between; margin-bottom: 20px;
@@ -311,6 +313,39 @@ body {
 .trend-badge.pos { color: var(--green); background: var(--green-dim); }
 .trend-badge.neg { color: var(--red);   background: var(--red-dim); }
 .trend-badge .trend-label { color: var(--muted); font-weight: 400; margin-right: 2px; }
+
+/* ── Chart-left / Table-right split (L6M, L6W) ───────────── */
+.split-ct {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+/* When inside a 2-col grid (half-width card), stack chart over table */
+.grid-2 .split-ct { grid-template-columns: 1fr; gap: 16px; }
+.period-table { width: 100%; border-collapse: collapse; }
+.period-table th, .period-table td {
+  padding: 12px 11px; text-align: right;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.period-table th {
+  font-size: 11.5px; color: var(--muted); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.period-table th:first-child, .period-table td:first-child,
+.period-table th:nth-child(2), .period-table td:nth-child(2) { text-align: left; }
+.period-table td { font-family: 'DM Mono', monospace; color: var(--text); }
+.period-table td:first-child { font-family: 'DM Sans'; font-weight: 600; }
+.period-table td:nth-child(2) { font-family: 'DM Sans'; color: var(--muted); font-size: 13.5px; }
+.period-table tr.latest td {
+  background: rgba(77, 157, 224, 0.06);
+  border-bottom-color: var(--blue);
+}
+.period-table tr.latest td:first-child { color: var(--blue); }
+.period-table .pos { color: var(--green); }
+.period-table .neg { color: var(--red); }
+.period-table .mut { color: var(--muted2); }
 
 /* ── YTD CHANNEL MIX TILES ─────────────────────────────── */
 .mix-grid {
@@ -423,6 +458,7 @@ body {
   .sidebar { width: 100%; position: relative; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
   .kpi-row { grid-template-columns: repeat(2, 1fr); }
   .grid-2, .grid-bottom { grid-template-columns: 1fr; }
+  .split-ct { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -435,7 +471,7 @@ body {
   <div class="page-title">FY 2026 Performance — <span class="filter-active" id="filterLabel">Overall · YTD</span></div>
   <div class="top-meta">
     <div class="top-meta-label">Last Refreshed</div>
-    <div class="top-meta-val">15 May 2026 &nbsp;·&nbsp; YTD Jan–Apr 2026</div>
+    <div class="top-meta-val">12th Apr 2026</div>
   </div>
 </div>
 
@@ -488,112 +524,130 @@ body {
 
 <div class="grid-2">
 
-  <div class="card card-has-toggle" id="monthly">
-    <div class="view-toggle" data-target="monthly">
-      <button class="active" data-view="both">CY + PY</button>
-      <button data-view="cy">CY only</button>
+<div class="card card-has-toggle" id="qoq">
+  <div class="view-toggle" data-target="qoq">
+    <button class="active" data-view="both">CY + PY</button>
+    <button data-view="cy">CY only</button>
+  </div>
+  <div class="card-header">
+    <div>
+      <div class="card-title">Quarterly PSPD — QoQ Overview</div>
+      <div class="card-sub">Actual vs Target</div>
     </div>
-    <div class="card-header">
-      <div>
-        <div class="card-title">PSPD &amp; AOV × TIME</div>
-        <div class="card-sub">FY 2026 — Monthly Performance · Jan–Dec (PY overlay)</div>
-      </div>
-      <div class="legend">
-        <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> PSPD</div>
-        <div class="leg-item"><div class="leg-dot" style="background:var(--cyan)"></div> PY PSPD</div>
-        <div class="leg-item"><div class="leg-line" style="background:var(--green)"></div> AOV</div>
-        <div class="leg-item"><div class="leg-dash" style="border-color:var(--amber)"></div> PY AOV</div>
-      </div>
-    </div>
-    <div class="chart-wrap" style="height:240px;">
-      <canvas id="pspdAovChart"></canvas>
-    </div>
-    <div class="card-divider"></div>
-    <div class="stat-row">
-      <div class="stat"><span class="stat-label">Peak PSPD</span><span class="stat-val blue">4,545.74</span></div>
-      <div class="stat"><span class="stat-label">Avg PSPD (Actual)</span><span class="stat-val blue">3,926.16</span></div>
-      <div class="stat"><span class="stat-label">Avg PY PSPD</span><span class="stat-val cyan">3,938.97</span></div>
-      <div class="stat"><span class="stat-label">Avg AOV (Actual)</span><span class="stat-val green">20.23</span></div>
+    <div class="legend">
+      <div class="leg-item"><span class="leg-quarters"><span style="background:var(--blue)"></span><span style="background:var(--green)"></span><span style="background:var(--amber)"></span><span style="background:var(--purple)"></span></span> PSPD 2026</div>
+      <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> PSPD 2025 (PY)</div>
+      <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted2)"></div> Target</div>
     </div>
   </div>
+  <div class="chart-wrap" style="height:170px; margin-bottom:14px;">
+    <canvas id="qoqChart"></canvas>
+  </div>
+  <table class="qoq-table">
+    <thead>
+      <tr>
+        <th>Quarter</th>
+        <th>Revenue</th>
+        <th>PSPD</th>
+        <th>PY PSPD</th>
+        <th>YoY %</th>
+        <th>vs Target</th>
+      </tr>
+    </thead>
+    <tbody id="qoqTableBody"></tbody>
+  </table>
+</div>
 
-  <div class="card" id="l6m">
-    <div class="card-header">
-      <div>
-        <div class="card-title">L6M MoM PSPD Trend</div>
-        <div class="card-sub">Last 6 months rolling — Overall vs ZUS Coffee vs ZUS Signature</div>
-      </div>
-      <div class="legend">
-        <div class="leg-item"><div class="leg-line" style="background:var(--blue)"></div> Overall</div>
-        <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> ZC</div>
-        <div class="leg-item"><div class="leg-dash" style="border-color:var(--amber)"></div> ZS</div>
-      </div>
-    </div>
-    <div class="trend-row" id="l6mTrendRow"></div>
-    <div class="chart-wrap" style="height:200px;">
-      <canvas id="l6mChart"></canvas>
-    </div>
-    <div class="card-divider"></div>
-    <div class="stat-row" id="l6mStats"></div>
+<div class="card card-has-toggle" id="monthly">
+  <div class="view-toggle" data-target="monthly">
+    <button class="active" data-view="both">CY + PY</button>
+    <button data-view="cy">CY only</button>
   </div>
+  <div class="card-header">
+    <div>
+      <div class="card-title">PSPD &amp; AOV × TIME</div>
+      <div class="card-sub">FY 2026 — Monthly Performance · Jan–Dec (PY overlay)</div>
+    </div>
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> PSPD</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--cyan)"></div> PY PSPD</div>
+      <div class="leg-item"><div class="leg-line" style="background:var(--green)"></div> AOV</div>
+      <div class="leg-item"><div class="leg-dash" style="border-color:var(--amber)"></div> PY AOV</div>
+    </div>
+  </div>
+  <div class="chart-wrap" style="height:240px;">
+    <canvas id="pspdAovChart"></canvas>
+  </div>
+  <div class="card-divider"></div>
+  <div class="stat-row">
+    <div class="stat"><span class="stat-label">Peak PSPD</span><span class="stat-val blue">4,545.74</span></div>
+    <div class="stat"><span class="stat-label">Avg PSPD (Actual)</span><span class="stat-val blue">3,926.16</span></div>
+    <div class="stat"><span class="stat-label">Avg PY PSPD</span><span class="stat-val cyan">3,938.97</span></div>
+    <div class="stat"><span class="stat-label">Avg AOV (Actual)</span><span class="stat-val green">20.23</span></div>
+  </div>
+</div>
 
 </div>
 
 <div class="grid-2">
 
-  <div class="card" id="l6w">
-    <div class="card-header">
-      <div>
-        <div class="card-title">L6W WoW PSPD Trend</div>
-        <div class="card-sub">Last 6 weeks rolling — Overall vs ZUS Coffee vs ZUS Signature</div>
-      </div>
-      <div class="legend">
-        <div class="leg-item"><div class="leg-line" style="background:var(--blue)"></div> Overall</div>
-        <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> ZC</div>
-        <div class="leg-item"><div class="leg-dash" style="border-color:var(--amber)"></div> ZS</div>
-      </div>
+<div class="card" id="l6w">
+  <div class="card-header">
+    <div>
+      <div class="card-title">L6W WoW PSPD Trend</div>
+      <div class="card-sub">Last 6 weeks rolling — each row is a 6-week window · Overall vs ZUS Coffee vs ZUS Signature</div>
     </div>
-    <div class="trend-row" id="l6wTrendRow"></div>
-    <div class="chart-wrap" style="height:200px;">
+    <div class="legend">
+      <div class="leg-item"><div class="leg-line" style="background:var(--blue)"></div> Overall</div>
+      <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> ZC</div>
+      <div class="leg-item"><div class="leg-dash" style="border-color:var(--amber)"></div> ZS</div>
+    </div>
+  </div>
+  <div class="trend-row" id="l6wTrendRow"></div>
+  <div class="split-ct">
+    <div class="chart-wrap" style="height:280px;">
       <canvas id="l6wChart"></canvas>
     </div>
-    <div class="card-divider"></div>
-    <div class="stat-row" id="l6wStats"></div>
-  </div>
-
-  <div class="card card-has-toggle" id="qoq">
-    <div class="view-toggle" data-target="qoq">
-      <button class="active" data-view="both">CY + PY</button>
-      <button data-view="cy">CY only</button>
-    </div>
-    <div class="card-header">
-      <div>
-        <div class="card-title">Quarterly PSPD — QoQ Overview</div>
-        <div class="card-sub">Actual vs Target</div>
-      </div>
-      <div class="legend">
-        <div class="leg-item"><span class="leg-quarters"><span style="background:var(--blue)"></span><span style="background:var(--green)"></span><span style="background:var(--amber)"></span><span style="background:var(--purple)"></span></span> PSPD 2026</div>
-        <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> PSPD 2025 (PY)</div>
-        <div class="leg-item"><div class="leg-dash" style="border-color:var(--muted2)"></div> Target</div>
-      </div>
-    </div>
-    <div class="chart-wrap" style="height:170px; margin-bottom:14px;">
-      <canvas id="qoqChart"></canvas>
-    </div>
-    <table class="qoq-table">
+    <table class="period-table">
       <thead>
         <tr>
-          <th>Quarter</th>
-          <th>Revenue</th>
-          <th>PSPD</th>
-          <th>PY PSPD</th>
-          <th>YoY %</th>
-          <th>vs Target</th>
+          <th>Label</th><th>Period</th>
+          <th>Overall</th><th>ZC</th><th>ZS</th><th>WoW %</th>
         </tr>
       </thead>
-      <tbody id="qoqTableBody"></tbody>
+      <tbody id="l6wTableBody"></tbody>
     </table>
   </div>
+</div>
+
+<div class="card" id="l6m">
+  <div class="card-header">
+    <div>
+      <div class="card-title">L6M MoM PSPD Trend</div>
+      <div class="card-sub">Last 6 months rolling — each row is a 6-month window · Overall vs ZUS Coffee vs ZUS Signature</div>
+    </div>
+    <div class="legend">
+      <div class="leg-item"><div class="leg-line" style="background:var(--blue)"></div> Overall</div>
+      <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> ZC</div>
+      <div class="leg-item"><div class="leg-dash" style="border-color:var(--amber)"></div> ZS</div>
+    </div>
+  </div>
+  <div class="trend-row" id="l6mTrendRow"></div>
+  <div class="split-ct">
+    <div class="chart-wrap" style="height:280px;">
+      <canvas id="l6mChart"></canvas>
+    </div>
+    <table class="period-table">
+      <thead>
+        <tr>
+          <th>Label</th><th>Period</th>
+          <th>Overall</th><th>ZC</th><th>ZS</th><th>MoM %</th>
+        </tr>
+      </thead>
+      <tbody id="l6mTableBody"></tbody>
+    </table>
+  </div>
+</div>
 
 </div>
 
@@ -629,8 +683,10 @@ body {
   </div>
 </div>
 
-<!-- Monthly Channel % Share — stacked area -->
-<div class="card" style="margin-bottom:16px;">
+<!-- Monthly Channel % Share + 3PL Sub-channel Detail (2-col row) -->
+<div class="grid-2">
+
+<div class="card">
   <div class="card-header">
     <div>
       <div class="card-title">Monthly Channel % Share</div>
@@ -646,8 +702,7 @@ body {
   <div class="chart-wrap" style="height:260px;"><canvas id="channelStackedChart"></canvas></div>
 </div>
 
-<!-- 3PL Sub-channel Detail — zoomed line -->
-<div class="card" style="margin-bottom:16px;">
+<div class="card">
   <div class="card-header">
     <div>
       <div class="card-title">3PL Sub-channel Detail</div>
@@ -659,11 +714,15 @@ body {
       <div class="leg-item"><div class="leg-line" style="background:#a57af5"></div> ShopeeFood</div>
     </div>
   </div>
-  <div class="chart-wrap" style="height:240px;"><canvas id="channelDetailChart"></canvas></div>
+  <div class="chart-wrap" style="height:260px;"><canvas id="channelDetailChart"></canvas></div>
 </div>
 
-<!-- ZUS Coffee — stacked full-width -->
-<div class="card brand-card-full card-has-toggle" id="brands" data-brand-card="zc" style="margin-bottom:16px;">
+</div>
+
+<!-- ZUS Coffee + ZUS Signature (2-col row, chart-on-top inside each) -->
+<div class="grid-2">
+
+<div class="card brand-card-full card-has-toggle" id="brands" data-brand-card="zc">
   <div class="view-toggle" data-target="zc">
     <button class="active" data-view="both">CY + PY</button>
     <button data-view="cy">CY only</button>
@@ -720,6 +779,8 @@ body {
       <tbody id="zsTableBody"></tbody>
     </table>
   </div>
+</div>
+
 </div>
 
 </main>
@@ -808,19 +869,15 @@ const l6mOverall = [4151.67, 4121.81, 4052.36, 3900.52, 3833.04, 3879.20];
 const l6mZC      = [4157.02, 4127.56, 4057.91, 3905.47, 3838.27, 3885.19];
 const l6mZS      = [3196.84, 3128.35, 3075.17, 3009.53, 2877.32, 2774.18];
 const l6mMoM     = [null, -0.00719, -0.01685, -0.03747, -0.01730, 0.01204];
+const l6mPeriods = ['May–Oct '25', 'Jun–Nov '25', 'Jul–Dec '25', 'Aug '25–Jan '26', 'Sep '25–Feb '26', 'Oct '25–Mar '26'];
 
 const l6mLatestMoM = l6mMoM[l6mMoM.length-1];
 const l6mPrevMoM   = l6mMoM[l6mMoM.length-2];
 document.getElementById('l6mTrendRow').innerHTML =
-  trendBadge('Overall MoM', l6mLatestMoM) +
-  trendBadge('Prev Month', l6mPrevMoM);
+  trendBadge('Latest L6M Growth', l6mLatestMoM) +
+  trendBadge('Prev L6M Growth', l6mPrevMoM);
 
-document.getElementById('l6mStats').innerHTML = `
-  <div class="stat"><span class="stat-label">Latest PSPD</span><span class="stat-val blue">${fmt2(l6mOverall[5])}</span></div>
-  <div class="stat"><span class="stat-label">Peak (6M)</span><span class="stat-val blue">${fmt2(Math.max(...l6mOverall))}</span></div>
-  <div class="stat"><span class="stat-label">ZC Latest</span><span class="stat-val cyan">${fmt2(l6mZC[5])}</span></div>
-  <div class="stat"><span class="stat-label">ZS Latest</span><span class="stat-val amber">${fmt2(l6mZS[5])}</span></div>
-`;
+renderPeriodTable('l6mTableBody', l6mLabels, l6mPeriods, l6mOverall, l6mZC, l6mZS, l6mMoM);
 
 const l6mChart = new Chart(document.getElementById('l6mChart'), {
   type:'line',
@@ -847,19 +904,15 @@ const l6wOverall = [3492.00, 3357.69, 3509.21, 3868.47, 4019.91, 4251.04];
 const l6wZC      = [3497.37, 3362.99, 3515.62, 3876.95, 4029.10, 4260.98];
 const l6wZS      = [2512.73, 2388.90, 2337.39, 2310.89, 2334.17, 2425.91];
 const l6wWoW     = [null, -0.03846, 0.04512, 0.10238, 0.03915, 0.05750];
+const l6wPeriods = ['26 Jan – 8 Mar', '2 Feb – 15 Mar', '9 Feb – 22 Mar', '16 Feb – 29 Mar', '23 Feb – 5 Apr', '2 Mar – 12 Apr'];
 
 const l6wLatestWoW = l6wWoW[l6wWoW.length-1];
 const l6wPrevWoW   = l6wWoW[l6wWoW.length-2];
 document.getElementById('l6wTrendRow').innerHTML =
-  trendBadge('Latest WoW', l6wLatestWoW) +
-  trendBadge('Prev Week', l6wPrevWoW);
+  trendBadge('Latest L6W Growth', l6wLatestWoW) +
+  trendBadge('Prev L6W Growth', l6wPrevWoW);
 
-document.getElementById('l6wStats').innerHTML = `
-  <div class="stat"><span class="stat-label">Latest PSPD</span><span class="stat-val blue">${fmt2(l6wOverall[5])}</span></div>
-  <div class="stat"><span class="stat-label">Peak (6W)</span><span class="stat-val blue">${fmt2(Math.max(...l6wOverall))}</span></div>
-  <div class="stat"><span class="stat-label">ZC Latest</span><span class="stat-val cyan">${fmt2(l6wZC[5])}</span></div>
-  <div class="stat"><span class="stat-label">ZS Latest</span><span class="stat-val amber">${fmt2(l6wZS[5])}</span></div>
-`;
+renderPeriodTable('l6wTableBody', l6wLabels, l6wPeriods, l6wOverall, l6wZC, l6wZS, l6wWoW);
 
 const l6wChart = new Chart(document.getElementById('l6wChart'), {
   type:'line',
@@ -1178,7 +1231,7 @@ const zcBrandChart = new Chart(
   brandChartConfig(zcCyPspd, zcPyPspd, zcTargets, 5000));
 const zsBrandChart = new Chart(
   document.getElementById('zsBrandChart'),
-  brandChartConfig(zsCyPspd, zsPyPspd, zsTargets, 5000));
+  brandChartConfig(zsCyPspd, zsPyPspd, zsTargets, 3500));
 
 renderBrandTable('zcTableBody', zcCyRev, zcCyPspd, zcPyPspd, zcTargets);
 renderBrandTable('zsTableBody', zsCyRev, zsCyPspd, zsPyPspd, zsTargets);
@@ -1192,6 +1245,27 @@ function trendBadge(label, val) {
     <span class="trend-label">${label}</span>
     ${arrow} ${Math.abs(val*100).toFixed(1)}%
   </div>`;
+}
+
+function renderPeriodTable(tbodyId, labels, periods, overall, zc, zs, deltas) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  const last = labels.length - 1;
+  tbody.innerHTML = labels.map((lab, i) => {
+    const d = deltas[i];
+    const dCls = (d === null || d === undefined) ? 'mut' : (d >= 0 ? 'pos' : 'neg');
+    const dTxt = (d === null || d === undefined) ? '—' :
+                 `${d >= 0 ? '+' : ''}${(d * 100).toFixed(1)}%`;
+    const period = periods && periods[i] ? periods[i] : '';
+    return `<tr${i === last ? ' class="latest"' : ''}>
+      <td>${lab}</td>
+      <td>${period}</td>
+      <td>${overall[i] === null ? '—' : fmt2(overall[i])}</td>
+      <td>${zc[i] === null ? '—' : fmt2(zc[i])}</td>
+      <td>${zs[i] === null ? '—' : fmt2(zs[i])}</td>
+      <td class="${dCls}">${dTxt}</td>
+    </tr>`;
+  }).join('');
 }
 
 function lineOptions(yMin, yMax) {
