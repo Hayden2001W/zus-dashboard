@@ -509,6 +509,82 @@ body.tab-zc [data-tab-hide~="zc"],
 body.tab-zs [data-tab-hide~="zs"],
 body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
 
+/* ── Loyalty tier card (Overall tab only) ───────────────────────────── */
+.loy-table-wrap { overflow-x: auto; }
+.loy-table {
+  width: 100%; table-layout: fixed;
+  border-collapse: separate; border-spacing: 0;
+  min-width: 900px;
+}
+.loy-table th, .loy-table td {
+  padding: 9px 8px; text-align: right; font-size: 12.5px;
+  height: 38px; box-sizing: border-box;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.loy-table td.tier {
+  text-align: left; font-family: 'DM Sans';
+  font-weight: 500; color: var(--text); white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+.loy-table th.tier-hdr {
+  text-align: left; font-size: 10.5px; color: var(--muted);
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--border);
+}
+.loy-table .group-cc  { background: rgba(77,157,224,0.12); color: var(--blue);  }
+.loy-table .group-rev { background: rgba(245,166,35,0.11); color: var(--amber); }
+.loy-table .group-oc  { background: rgba(57,208,216,0.10); color: var(--cyan);  }
+.loy-table .group-aov { background: rgba(62,207,108,0.10); color: var(--green); }
+.loy-table th.group-hdr {
+  font-size: 11px; font-weight: 700; text-align: center;
+  text-transform: uppercase; letter-spacing: 0.10em;
+  padding: 8px 6px; border-bottom: 1px solid var(--border);
+}
+.loy-table th.month-hdr {
+  font-size: 10.5px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 7px 6px;
+}
+.loy-table .grp-div { border-left: 2px solid var(--border2); }
+.loy-table .section-divider td { padding: 18px 0 6px; border-bottom: none; height: auto; }
+.loy-table .section-divider .loy-section-label {
+  font-size: 11px; font-weight: 600; color: var(--muted2);
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin: 0; padding-top: 6px; border-top: 1px solid var(--border);
+}
+.loy-table .first-section td { padding-top: 14px !important; }
+.loy-table .first-section .loy-section-label { border-top: none; padding-top: 0; }
+.loy-table td.num {
+  font-family: 'DM Mono', monospace; color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+.loy-table .mom-neg-3 { background: rgba(224,93,93,0.50); color: #fff; }
+.loy-table .mom-neg-2 { background: rgba(224,93,93,0.32); color: #fff; }
+.loy-table .mom-neg-1 { background: rgba(224,93,93,0.16); color: var(--red); }
+.loy-table .mom-pos-1 { background: rgba(62,207,108,0.16); color: var(--green); }
+.loy-table .mom-pos-2 { background: rgba(62,207,108,0.32); color: #fff; }
+.loy-table .mom-pos-3 { background: rgba(62,207,108,0.55); color: #fff; }
+.loy-table .mom-na    { color: var(--muted2); }
+.loy-table .share-cell {
+  position: relative; font-family: 'DM Mono', monospace;
+  color: var(--text); border-bottom: 1px solid var(--border);
+  padding: 9px 8px;
+}
+.loy-table .share-bar-bg {
+  position: absolute; left: 4px; right: 4px; bottom: 0;
+  height: 3px; background: var(--border2);
+}
+.loy-table .share-bar-fill { height: 100%; background: var(--blue); }
+.loy-table .share-na { background: rgba(255,255,255,0.012); color: var(--muted2); }
+.loy-table .share-na .share-bar-bg { display: none; }
+.loy-table .totals-row td {
+  border-top: 1px solid var(--border2); border-bottom: none;
+  color: var(--muted); font-size: 11px; font-family: 'DM Sans';
+  padding: 7px 8px; font-style: italic; text-align: right; height: auto;
+}
+
 </style>
 </head>
 <body>
@@ -798,6 +874,25 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
   <div class="chart-wrap" style="height:260px;"><canvas id="channelDetailChart"></canvas></div>
 </div>
 
+</div>
+
+<!-- Loyalty Tier Performance — Overall tab only -->
+<div class="card" data-tab-hide="zc zs" style="margin-bottom:16px;">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Loyalty Tier Performance — FY 2026 YTD</div>
+      <div class="card-sub">By tier · monthly values · MoM growth · % share of total</div>
+    </div>
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> Customer Count</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--amber)"></div> Revenue</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--cyan)"></div> Order Count</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div> AOV</div>
+    </div>
+  </div>
+  <div class="loy-table-wrap">
+    <table class="loy-table" id="loyaltyTable"></table>
+  </div>
 </div>
 
 </main>
@@ -1699,6 +1794,163 @@ function renderVsTargetStat() {
 renderVsTargetStat();
 
 applyFilters();
+
+// ══════════════════════════════════════════════════════════════════════
+//  LOYALTY TIER CARD — Overall tab only · all arrays rewritten by update_dashboard.py
+// ══════════════════════════════════════════════════════════════════════
+const loyMonths = ['Jan', 'Feb', 'Mar', 'Apr'];
+
+const loyCustEG = [62220, 67529, 96853, 115506];
+const loyCustRS = [360, 1373, 3226, 5653];
+const loyCustSA = [50, 313, 821, 1626];
+const loyCustZE = [18, 118, 407, 978];
+
+const loyRevEG = [1874274.81, 2113175.78, 3288169.47, 3766537.80];
+const loyRevRS = [30507.20, 102573.57, 227368.20, 364747.83];
+const loyRevSA = [4327.44, 25329.44, 59601.78, 114060.54];
+const loyRevZE = [3334.98, 15316.05, 65356.96, 158576.02];
+
+const loyOrdEG = [81162, 94549, 145616, 178369];
+const loyOrdRS = [969, 3873, 8970, 15648];
+const loyOrdSA = [152, 1127, 2685, 5591];
+const loyOrdZE = [89, 744, 3140, 7918];
+
+const loyAovEG = [23.09, 22.35, 22.58, 21.12];
+const loyAovRS = [31.48, 26.48, 25.35, 23.31];
+const loyAovSA = [28.47, 22.48, 22.20, 20.40];
+const loyAovZE = [37.47, 20.59, 20.81, 20.03];
+
+(function renderLoyaltyTable() {
+  const tiers = ['Easy Goer', 'Rising Star', 'Super Addict', 'ZUS Elite'];
+  const data = {
+    customers: { 'Easy Goer': loyCustEG, 'Rising Star': loyCustRS, 'Super Addict': loyCustSA, 'ZUS Elite': loyCustZE },
+    revenue:   { 'Easy Goer': loyRevEG,  'Rising Star': loyRevRS,  'Super Addict': loyRevSA,  'ZUS Elite': loyRevZE  },
+    orders:    { 'Easy Goer': loyOrdEG,  'Rising Star': loyOrdRS,  'Super Addict': loyOrdSA,  'ZUS Elite': loyOrdZE  },
+    aov:       { 'Easy Goer': loyAovEG,  'Rising Star': loyAovRS,  'Super Addict': loyAovSA,  'ZUS Elite': loyAovZE  },
+  };
+  const fmtInt = v => (v === null || v === undefined) ? '—' : Math.round(v).toLocaleString('en-MY');
+  const fmtNum = v => (v === null || v === undefined) ? '—' : v.toLocaleString('en-MY', {maximumFractionDigits: 0});
+  const fmtDec = v => (v === null || v === undefined) ? '—' : v.toFixed(1);
+  const metricSpecs = [
+    { key: 'customers', label: 'Customer Count', cls: 'group-cc',  fmt: fmtInt, hasShare: true  },
+    { key: 'revenue',   label: 'Revenue',        cls: 'group-rev', fmt: fmtNum, hasShare: true  },
+    { key: 'orders',    label: 'Order Count',    cls: 'group-oc',  fmt: fmtInt, hasShare: true  },
+    { key: 'aov',       label: 'AOV',            cls: 'group-aov', fmt: fmtDec, hasShare: false },
+  ];
+
+  const table = document.getElementById('loyaltyTable');
+  if (!table || !loyMonths || !loyMonths.length) return;
+  const nMonths   = loyMonths.length;
+  const totalCols = 1 + 4 * nMonths;
+
+  // Dynamic colgroup: 10% for tier label, equal split of remaining 90% for data
+  const tierW = 10;
+  const dataW = (100 - tierW) / (4 * nMonths);
+  let colgroup = `<colgroup><col style="width:${tierW}%;">`;
+  for (let i = 0; i < 4 * nMonths; i++) colgroup += `<col style="width:${dataW.toFixed(4)}%;">`;
+  colgroup += '</colgroup>';
+
+  // Head — group row + month row
+  let groupRow = '<tr><th class="tier-hdr">Loyalty Level</th>';
+  metricSpecs.forEach((m, gi) => {
+    const div = gi > 0 ? ' grp-div' : '';
+    groupRow += `<th class="group-hdr ${m.cls}${div}" colspan="${nMonths}">${m.label}</th>`;
+  });
+  groupRow += '</tr>';
+  let monthRow = '<tr><th class="tier-hdr"></th>';
+  metricSpecs.forEach((m, gi) => {
+    loyMonths.forEach((mo, mi) => {
+      const div = gi > 0 && mi === 0 ? ' grp-div' : '';
+      monthRow += `<th class="month-hdr${div}">${mo}</th>`;
+    });
+  });
+  monthRow += '</tr>';
+  const head = '<thead>' + groupRow + monthRow + '</thead>';
+
+  // Section 1 — Monthly Values
+  const sect1 = tiers.map(t => {
+    let row = `<tr><td class="tier">${t}</td>`;
+    metricSpecs.forEach((m, gi) => {
+      loyMonths.forEach((mo, mi) => {
+        const v = data[m.key][t][mi];
+        const div = gi > 0 && mi === 0 ? ' grp-div' : '';
+        row += `<td class="num${div}">${m.fmt(v)}</td>`;
+      });
+    });
+    return row + '</tr>';
+  }).join('');
+
+  // Section 2 — MoM (heatmap colors computed at runtime → adjust with new data)
+  const momCls = v => {
+    if (v === null) return 'mom-na';
+    if (v <= -15) return 'mom-neg-3';
+    if (v <= -5)  return 'mom-neg-2';
+    if (v <  0)   return 'mom-neg-1';
+    if (v <  5)   return 'mom-pos-1';
+    if (v <  15)  return 'mom-pos-2';
+    return 'mom-pos-3';
+  };
+  const fmtMom = v => v === null ? '—' :
+    (v >= 0 ? '+' : '') + (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(1)) + '%';
+  const sect2 = tiers.map(t => {
+    let row = `<tr><td class="tier">${t}</td>`;
+    metricSpecs.forEach((m, gi) => {
+      const arr = data[m.key][t];
+      loyMonths.forEach((mo, mi) => {
+        let mom = null;
+        if (mi > 0 && arr[mi-1]) mom = ((arr[mi] - arr[mi-1]) / arr[mi-1]) * 100;
+        const cls = momCls(mom);
+        const div = gi > 0 && mi === 0 ? ' grp-div' : '';
+        row += `<td class="num ${cls}${div}">${fmtMom(mom)}</td>`;
+      });
+    });
+    return row + '</tr>';
+  }).join('');
+
+  // Section 3 — % Share with mini bars (computed at runtime)
+  const totals = {};
+  metricSpecs.forEach(m => {
+    totals[m.key] = loyMonths.map((_, mi) =>
+      tiers.reduce((sum, t) => sum + (data[m.key][t][mi] || 0), 0)
+    );
+  });
+  const sect3 = tiers.map(t => {
+    let row = `<tr><td class="tier">${t}</td>`;
+    metricSpecs.forEach((m, gi) => {
+      loyMonths.forEach((mo, mi) => {
+        const div = gi > 0 && mi === 0 ? ' grp-div' : '';
+        if (!m.hasShare) { row += `<td class="share-cell share-na${div}">—</td>`; return; }
+        const v = data[m.key][t][mi] || 0;
+        const total = totals[m.key][mi];
+        const pct = total > 0 ? (v / total * 100) : 0;
+        const pctTxt = pct >= 10 ? pct.toFixed(0) + '%' : pct.toFixed(1) + '%';
+        row += `<td class="share-cell${div}">${pctTxt}<div class="share-bar-bg"><div class="share-bar-fill" style="width:${pct.toFixed(1)}%"></div></div></td>`;
+      });
+    });
+    return row + '</tr>';
+  }).join('');
+  let totalsRow = '<tr class="totals-row"><td></td>';
+  metricSpecs.forEach((m, gi) => {
+    loyMonths.forEach((mo, mi) => {
+      const div = gi > 0 && mi === 0 ? ' grp-div' : '';
+      totalsRow += `<td class="${div}">${m.hasShare ? '100%' : ''}</td>`;
+    });
+  });
+  totalsRow += '</tr>';
+
+  const divider = (label, isFirst) => {
+    const cls = 'section-divider' + (isFirst ? ' first-section' : '');
+    return `<tr class="${cls}"><td colspan="${totalCols}"><div class="loy-section-label">${label}</div></td></tr>`;
+  };
+
+  const body = '<tbody>' +
+    divider('Monthly · Values per Tier', true) + sect1 +
+    divider('Month-on-Month Growth') + sect2 +
+    divider('% Share of Total · per Metric') + sect3 + totalsRow +
+    '</tbody>';
+
+  table.innerHTML = colgroup + head + body;
+})();
 </script>
 </body>
 </html>
