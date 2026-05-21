@@ -510,79 +510,98 @@ body.tab-zs [data-tab-hide~="zs"],
 body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
 
 /* ── Loyalty tier card (Overall tab only) ───────────────────────────── */
-.loy-table-wrap { overflow-x: auto; }
+.loy-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 1000px) {
+  .loy-grid { grid-template-columns: 1fr; }
+}
+.metric-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  min-width: 0;
+}
+.metric-block.cc  { border-left: 3px solid var(--blue);  }
+.metric-block.rev { border-left: 3px solid var(--amber); }
+.metric-block.oc  { border-left: 3px solid var(--cyan);  }
+.metric-block.aov { border-left: 3px solid var(--green); }
+.metric-title {
+  font-size: 13.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.10em;
+  margin-bottom: 12px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.metric-block.cc  .metric-title { color: var(--blue);  }
+.metric-block.rev .metric-title { color: var(--amber); }
+.metric-block.oc  .metric-title { color: var(--cyan);  }
+.metric-block.aov .metric-title { color: var(--green); }
+.metric-title .metric-unit {
+  font-size: 10.5px; font-weight: 500; color: var(--muted);
+  text-transform: none; letter-spacing: 0; font-family: 'DM Sans';
+}
+.loy-section-label {
+  font-size: 10.5px; font-weight: 600; color: var(--muted2);
+  text-transform: uppercase; letter-spacing: 0.10em;
+  margin: 14px 0 6px; padding-bottom: 4px;
+  border-bottom: 1px dashed var(--border);
+}
+.loy-section-label:first-child { margin-top: 0; }
 .loy-table {
   width: 100%; table-layout: fixed;
   border-collapse: separate; border-spacing: 0;
-  min-width: 900px;
 }
 .loy-table th, .loy-table td {
-  padding: 9px 8px; text-align: right; font-size: 12.5px;
-  height: 38px; box-sizing: border-box;
-  overflow: hidden; text-overflow: ellipsis;
+  padding: 7px 6px; font-size: 12.5px;
+  text-align: right; height: 34px; box-sizing: border-box;
+  overflow: hidden;
+}
+.loy-table th.tier-hdr {
+  text-align: left; font-size: 10px; color: var(--muted);
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+.loy-table th.month-hdr {
+  font-size: 10px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--border);
 }
 .loy-table td.tier {
   text-align: left; font-family: 'DM Sans';
-  font-weight: 500; color: var(--text); white-space: nowrap;
-  border-bottom: 1px solid var(--border);
+  font-weight: 500; color: var(--text); font-size: 12.5px;
+  white-space: nowrap; border-bottom: 1px solid var(--border);
 }
-.loy-table th.tier-hdr {
-  text-align: left; font-size: 10.5px; color: var(--muted);
-  font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
-  border-bottom: 1px solid var(--border);
-}
-.loy-table .group-cc  { background: rgba(77,157,224,0.12); color: var(--blue);  }
-.loy-table .group-rev { background: rgba(245,166,35,0.11); color: var(--amber); }
-.loy-table .group-oc  { background: rgba(57,208,216,0.10); color: var(--cyan);  }
-.loy-table .group-aov { background: rgba(62,207,108,0.10); color: var(--green); }
-.loy-table th.group-hdr {
-  font-size: 11px; font-weight: 700; text-align: center;
-  text-transform: uppercase; letter-spacing: 0.10em;
-  padding: 8px 6px; border-bottom: 1px solid var(--border);
-}
-.loy-table th.month-hdr {
-  font-size: 10.5px; font-weight: 600; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 0.06em;
-  background: var(--surface2);
-  border-bottom: 1px solid var(--border);
-  padding: 7px 6px;
-}
-.loy-table .grp-div { border-left: 2px solid var(--border2); }
-.loy-table .section-divider td { padding: 18px 0 6px; border-bottom: none; height: auto; }
-.loy-table .section-divider .loy-section-label {
-  font-size: 11px; font-weight: 600; color: var(--muted2);
-  text-transform: uppercase; letter-spacing: 0.12em;
-  margin: 0; padding-top: 6px; border-top: 1px solid var(--border);
-}
-.loy-table .first-section td { padding-top: 14px !important; }
-.loy-table .first-section .loy-section-label { border-top: none; padding-top: 0; }
 .loy-table td.num {
   font-family: 'DM Mono', monospace; color: var(--text);
   border-bottom: 1px solid var(--border);
 }
-.loy-table .mom-neg-3 { background: rgba(224,93,93,0.50); color: #fff; }
-.loy-table .mom-neg-2 { background: rgba(224,93,93,0.32); color: #fff; }
-.loy-table .mom-neg-1 { background: rgba(224,93,93,0.16); color: var(--red); }
-.loy-table .mom-pos-1 { background: rgba(62,207,108,0.16); color: var(--green); }
-.loy-table .mom-pos-2 { background: rgba(62,207,108,0.32); color: #fff; }
-.loy-table .mom-pos-3 { background: rgba(62,207,108,0.55); color: #fff; }
-.loy-table .mom-na    { color: var(--muted2); }
-.loy-table .share-cell {
+/* MoM heatmap — amped contrast (~25% higher alpha than v3) */
+.mom-neg-3 { background: rgba(224,93,93,0.65); color: #fff; }
+.mom-neg-2 { background: rgba(224,93,93,0.45); color: #fff; }
+.mom-neg-1 { background: rgba(224,93,93,0.25); color: #ffb9b9; }
+.mom-pos-1 { background: rgba(62,207,108,0.25); color: #c1f3d1; }
+.mom-pos-2 { background: rgba(62,207,108,0.45); color: #fff; }
+.mom-pos-3 { background: rgba(62,207,108,0.65); color: #fff; }
+.mom-na    { color: var(--muted2); }
+.share-cell {
   position: relative; font-family: 'DM Mono', monospace;
   color: var(--text); border-bottom: 1px solid var(--border);
-  padding: 9px 8px;
+  padding: 7px 6px;
 }
-.loy-table .share-bar-bg {
+.share-bar-bg {
   position: absolute; left: 4px; right: 4px; bottom: 0;
   height: 3px; background: var(--border2);
 }
-.loy-table .share-bar-fill { height: 100%; background: var(--blue); }
-.loy-table .share-na { background: rgba(255,255,255,0.012); color: var(--muted2); }
-.loy-table .share-na .share-bar-bg { display: none; }
-.loy-table .totals-row td {
+.share-bar-fill { height: 100%; background: var(--blue); }
+.totals-row td {
   border-top: 1px solid var(--border2); border-bottom: none;
-  color: var(--muted); font-size: 11px; font-family: 'DM Sans';
-  padding: 7px 8px; font-style: italic; text-align: right; height: auto;
+  color: var(--muted); font-size: 10.5px; font-family: 'DM Sans';
+  padding: 7px 6px; font-style: italic;
 }
 
 </style>
@@ -881,7 +900,7 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
   <div class="card-header">
     <div>
       <div class="card-title">Loyalty Tier Performance — FY 2026 YTD</div>
-      <div class="card-sub">By tier · monthly values · MoM growth · % share of total</div>
+      <div class="card-sub">By tier (Easy Goer · Rising Star · Super Addict · ZUS Elite) · monthly values · MoM growth · % share of total</div>
     </div>
     <div class="legend">
       <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> Customer Count</div>
@@ -890,9 +909,7 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
       <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div> AOV</div>
     </div>
   </div>
-  <div class="loy-table-wrap">
-    <table class="loy-table" id="loyaltyTable"></table>
-  </div>
+  <div class="loy-grid" id="loyGrid"></div>
 </div>
 
 </main>
@@ -1820,7 +1837,7 @@ const loyAovRS = [20.92, 21.52, 22.87, 21.18];
 const loyAovSA = [19.10, 19.96, 21.89, 20.21];
 const loyAovZE = [19.82, 20.28, 21.71, 20.21];
 
-(function renderLoyaltyTable() {
+(function renderLoyaltyGrid() {
   const tiers = ['Easy Goer', 'Rising Star', 'Super Addict', 'ZUS Elite'];
   const data = {
     customers: { 'Easy Goer': loyCustEG, 'Rising Star': loyCustRS, 'Super Addict': loyCustSA, 'ZUS Elite': loyCustZE },
@@ -1830,57 +1847,40 @@ const loyAovZE = [19.82, 20.28, 21.71, 20.21];
   };
   const fmtInt = v => (v === null || v === undefined) ? '—' : Math.round(v).toLocaleString('en-MY');
   const fmtNum = v => (v === null || v === undefined) ? '—' : v.toLocaleString('en-MY', {maximumFractionDigits: 0});
-  const fmtDec = v => (v === null || v === undefined) ? '—' : v.toFixed(1);
+  const fmtDec = v => (v === null || v === undefined) ? '—' : v.toFixed(2);
   const metricSpecs = [
-    { key: 'customers', label: 'Customer Count', cls: 'group-cc',  fmt: fmtInt, hasShare: true  },
-    { key: 'revenue',   label: 'Revenue',        cls: 'group-rev', fmt: fmtNum, hasShare: true  },
-    { key: 'orders',    label: 'Order Count',    cls: 'group-oc',  fmt: fmtInt, hasShare: true  },
-    { key: 'aov',       label: 'AOV',            cls: 'group-aov', fmt: fmtDec, hasShare: false },
+    { key: 'customers', label: 'Customer Count', unit: 'count', cls: 'cc',  fmt: fmtInt, hasShare: true  },
+    { key: 'revenue',   label: 'Revenue',        unit: 'RM',    cls: 'rev', fmt: fmtNum, hasShare: true  },
+    { key: 'orders',    label: 'Order Count',    unit: 'count', cls: 'oc',  fmt: fmtInt, hasShare: true  },
+    { key: 'aov',       label: 'AOV',            unit: 'RM',    cls: 'aov', fmt: fmtDec, hasShare: false },
   ];
 
-  const table = document.getElementById('loyaltyTable');
-  if (!table || !loyMonths || !loyMonths.length) return;
-  const nMonths   = loyMonths.length;
-  const totalCols = 1 + 4 * nMonths;
+  const grid = document.getElementById('loyGrid');
+  if (!grid || !loyMonths || !loyMonths.length) return;
+  const nMonths = loyMonths.length;
 
-  // Dynamic colgroup: 10% for tier label, equal split of remaining 90% for data
-  const tierW = 10;
-  const dataW = (100 - tierW) / (4 * nMonths);
+  // Colgroup: tighter tier column (18%) + equal-width data columns
+  const tierW = 18;
+  const dataW = (100 - tierW) / nMonths;
   let colgroup = `<colgroup><col style="width:${tierW}%;">`;
-  for (let i = 0; i < 4 * nMonths; i++) colgroup += `<col style="width:${dataW.toFixed(4)}%;">`;
+  for (let i = 0; i < nMonths; i++) colgroup += `<col style="width:${dataW.toFixed(3)}%;">`;
   colgroup += '</colgroup>';
 
-  // Head — group row + month row
-  let groupRow = '<tr><th class="tier-hdr">Loyalty Level</th>';
-  metricSpecs.forEach((m, gi) => {
-    const div = gi > 0 ? ' grp-div' : '';
-    groupRow += `<th class="group-hdr ${m.cls}${div}" colspan="${nMonths}">${m.label}</th>`;
-  });
-  groupRow += '</tr>';
-  let monthRow = '<tr><th class="tier-hdr"></th>';
-  metricSpecs.forEach((m, gi) => {
-    loyMonths.forEach((mo, mi) => {
-      const div = gi > 0 && mi === 0 ? ' grp-div' : '';
-      monthRow += `<th class="month-hdr${div}">${mo}</th>`;
-    });
-  });
-  monthRow += '</tr>';
-  const head = '<thead>' + groupRow + monthRow + '</thead>';
-
-  // Section 1 — Monthly Values
-  const sect1 = tiers.map(t => {
-    let row = `<tr><td class="tier">${t}</td>`;
-    metricSpecs.forEach((m, gi) => {
-      loyMonths.forEach((mo, mi) => {
-        const v = data[m.key][t][mi];
-        const div = gi > 0 && mi === 0 ? ' grp-div' : '';
-        row += `<td class="num${div}">${m.fmt(v)}</td>`;
-      });
-    });
+  function headerRow() {
+    let row = '<tr><th class="tier-hdr">Tier</th>';
+    loyMonths.forEach(m => row += `<th class="month-hdr">${m}</th>`);
     return row + '</tr>';
-  }).join('');
+  }
 
-  // Section 2 — MoM (heatmap colors computed at runtime → adjust with new data)
+  function valuesRows(key, fmt) {
+    return tiers.map(t => {
+      let row = `<tr><td class="tier">${t}</td>`;
+      loyMonths.forEach((_, mi) => row += `<td class="num">${fmt(data[key][t][mi])}</td>`);
+      return row + '</tr>';
+    }).join('');
+  }
+
+  // MoM heatmap — bucketed colors computed at runtime; shifts automatically when data updates.
   const momCls = v => {
     if (v === null) return 'mom-na';
     if (v <= -15) return 'mom-neg-3';
@@ -1892,64 +1892,63 @@ const loyAovZE = [19.82, 20.28, 21.71, 20.21];
   };
   const fmtMom = v => v === null ? '—' :
     (v >= 0 ? '+' : '') + (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(1)) + '%';
-  const sect2 = tiers.map(t => {
-    let row = `<tr><td class="tier">${t}</td>`;
-    metricSpecs.forEach((m, gi) => {
-      const arr = data[m.key][t];
-      loyMonths.forEach((mo, mi) => {
+  function momRows(key) {
+    return tiers.map(t => {
+      const arr = data[key][t];
+      let row = `<tr><td class="tier">${t}</td>`;
+      loyMonths.forEach((_, mi) => {
         let mom = null;
         if (mi > 0 && arr[mi-1]) mom = ((arr[mi] - arr[mi-1]) / arr[mi-1]) * 100;
-        const cls = momCls(mom);
-        const div = gi > 0 && mi === 0 ? ' grp-div' : '';
-        row += `<td class="num ${cls}${div}">${fmtMom(mom)}</td>`;
+        row += `<td class="num ${momCls(mom)}">${fmtMom(mom)}</td>`;
       });
-    });
-    return row + '</tr>';
-  }).join('');
+      return row + '</tr>';
+    }).join('');
+  }
 
-  // Section 3 — % Share with mini bars (computed at runtime)
-  const totals = {};
-  metricSpecs.forEach(m => {
-    totals[m.key] = loyMonths.map((_, mi) =>
-      tiers.reduce((sum, t) => sum + (data[m.key][t][mi] || 0), 0)
+  function shareRows(key) {
+    const totals = loyMonths.map((_, mi) =>
+      tiers.reduce((sum, t) => sum + (data[key][t][mi] || 0), 0)
     );
-  });
-  const sect3 = tiers.map(t => {
-    let row = `<tr><td class="tier">${t}</td>`;
-    metricSpecs.forEach((m, gi) => {
-      loyMonths.forEach((mo, mi) => {
-        const div = gi > 0 && mi === 0 ? ' grp-div' : '';
-        if (!m.hasShare) { row += `<td class="share-cell share-na${div}">—</td>`; return; }
-        const v = data[m.key][t][mi] || 0;
-        const total = totals[m.key][mi];
+    const tierRows = tiers.map(t => {
+      let row = `<tr><td class="tier">${t}</td>`;
+      loyMonths.forEach((_, mi) => {
+        const v = data[key][t][mi] || 0;
+        const total = totals[mi];
         const pct = total > 0 ? (v / total * 100) : 0;
         const pctTxt = pct >= 10 ? pct.toFixed(0) + '%' : pct.toFixed(1) + '%';
-        row += `<td class="share-cell${div}">${pctTxt}<div class="share-bar-bg"><div class="share-bar-fill" style="width:${pct.toFixed(1)}%"></div></div></td>`;
+        row += `<td class="share-cell">${pctTxt}<div class="share-bar-bg"><div class="share-bar-fill" style="width:${pct.toFixed(1)}%"></div></div></td>`;
       });
-    });
-    return row + '</tr>';
-  }).join('');
-  let totalsRow = '<tr class="totals-row"><td></td>';
-  metricSpecs.forEach((m, gi) => {
-    loyMonths.forEach((mo, mi) => {
-      const div = gi > 0 && mi === 0 ? ' grp-div' : '';
-      totalsRow += `<td class="${div}">${m.hasShare ? '100%' : ''}</td>`;
-    });
-  });
-  totalsRow += '</tr>';
+      return row + '</tr>';
+    }).join('');
+    let totalsRow = '<tr class="totals-row"><td>Total</td>';
+    loyMonths.forEach(() => totalsRow += '<td>100%</td>');
+    totalsRow += '</tr>';
+    return tierRows + totalsRow;
+  }
 
-  const divider = (label, isFirst) => {
-    const cls = 'section-divider' + (isFirst ? ' first-section' : '');
-    return `<tr class="${cls}"><td colspan="${totalCols}"><div class="loy-section-label">${label}</div></td></tr>`;
-  };
+  function buildBlock(spec) {
+    const head = headerRow();
+    let html = `<div class="metric-block ${spec.cls}">
+      <div class="metric-title"><span>${spec.label}</span><span class="metric-unit">${spec.unit}</span></div>
 
-  const body = '<tbody>' +
-    divider('Monthly · Values per Tier', true) + sect1 +
-    divider('Month-on-Month Growth') + sect2 +
-    divider('% Share of Total · per Metric') + sect3 + totalsRow +
-    '</tbody>';
+      <div class="loy-section-label">Monthly Values</div>
+      <table class="loy-table">${colgroup}<thead>${head}</thead><tbody>${valuesRows(spec.key, spec.fmt)}</tbody></table>
 
-  table.innerHTML = colgroup + head + body;
+      <div class="loy-section-label">MoM Growth</div>
+      <table class="loy-table">${colgroup}<thead>${head}</thead><tbody>${momRows(spec.key)}</tbody></table>`;
+
+    if (spec.hasShare) {
+      html += `
+      <div class="loy-section-label">% Share of Total</div>
+      <table class="loy-table">${colgroup}<thead>${head}</thead><tbody>${shareRows(spec.key)}</tbody></table>`;
+    } else {
+      html += `
+      <div class="loy-section-label">% Share of Total <span style="color:var(--muted2); font-weight:500; letter-spacing:0; text-transform:none;">— not applicable for AOV (per-customer rate)</span></div>`;
+    }
+    return html + '</div>';
+  }
+
+  grid.innerHTML = metricSpecs.map(buildBlock).join('');
 })();
 </script>
 </body>
