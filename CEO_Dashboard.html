@@ -827,10 +827,7 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
     </div>
     <table class="period-table">
       <thead>
-        <tr>
-          <th>Week End</th><th>Period</th>
-          <th>Overall</th><th>ZC</th><th>ZS</th><th id="l6wDeltaHeader">Overall WoW %</th>
-        </tr>
+        <tr id="l6wTableHead"></tr>
       </thead>
       <tbody id="l6wTableBody"></tbody>
     </table>
@@ -856,10 +853,7 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
     </div>
     <table class="period-table">
       <thead>
-        <tr>
-          <th>Month End</th><th>Period</th>
-          <th>Overall</th><th>ZC</th><th>ZS</th><th id="l6mDeltaHeader">Overall MoM %</th>
-        </tr>
+        <tr id="l6mTableHead"></tr>
       </thead>
       <tbody id="l6mTableBody"></tbody>
     </table>
@@ -1085,7 +1079,11 @@ document.getElementById('l6mTrendRow').innerHTML =
   trendBadge('This Month vs Prev', l6mLatestMoM) +
   trendBadge('Prev Month vs Before', l6mPrevMoM);
 
-renderPeriodTable('l6mTableBody', l6mLabels, l6mPeriods, l6mOverall, l6mZC, l6mZS, l6mMoM);
+renderPeriodTable({
+  headId: 'l6mTableHead', bodyId: 'l6mTableBody', endLabel: 'Month End', brand: 'overall',
+  labels: l6mLabels, periods: l6mPeriods, overall: l6mOverall, zc: l6mZC, zs: l6mZS,
+  deltas: l6mMoM, deltaHeader: 'Overall MoM %'
+});
 
 const l6mChart = new Chart(document.getElementById('l6mChart'), {
   type:'line',
@@ -1120,7 +1118,11 @@ document.getElementById('l6wTrendRow').innerHTML =
   trendBadge('This Week vs Prev', l6wLatestWoW) +
   trendBadge('Prev Week vs Before', l6wPrevWoW);
 
-renderPeriodTable('l6wTableBody', l6wLabels, l6wPeriods, l6wOverall, l6wZC, l6wZS, l6wWoW);
+renderPeriodTable({
+  headId: 'l6wTableHead', bodyId: 'l6wTableBody', endLabel: 'Week End', brand: 'overall',
+  labels: l6wLabels, periods: l6wPeriods, overall: l6wOverall, zc: l6wZC, zs: l6wZS,
+  deltas: l6wWoW, deltaHeader: 'Overall WoW %'
+});
 
 const l6wChart = new Chart(document.getElementById('l6wChart'), {
   type:'line',
@@ -1378,24 +1380,40 @@ function trendBadge(label, val) {
   </div>`;
 }
 
-function renderPeriodTable(tbodyId, labels, periods, overall, zc, zs, deltas) {
-  const tbody = document.getElementById(tbodyId);
-  if (!tbody) return;
-  const last = labels.length - 1;
-  tbody.innerHTML = labels.map((lab, i) => {
-    const d = deltas[i];
+function renderPeriodTable(cfg) {
+  const body = document.getElementById(cfg.bodyId);
+  if (!body) return;
+  const head = document.getElementById(cfg.headId);
+  const num  = v => (v === null || v === undefined) ? '—' : fmt2(v);
+
+  // The WoW/MoM delta column sits immediately after the active brand's
+  // value column: after Overall on the Overall tab, after ZC on the ZC
+  // tab, after ZS on the ZS tab.
+  if (head) {
+    let h = `<th>${cfg.endLabel}</th><th>Period</th><th>Overall</th>`;
+    if (cfg.brand === 'overall') h += `<th>${cfg.deltaHeader}</th>`;
+    h += '<th>ZC</th>';
+    if (cfg.brand === 'zc') h += `<th>${cfg.deltaHeader}</th>`;
+    h += '<th>ZS</th>';
+    if (cfg.brand === 'zs') h += `<th>${cfg.deltaHeader}</th>`;
+    head.innerHTML = h;
+  }
+
+  const last = cfg.labels.length - 1;
+  body.innerHTML = cfg.labels.map((lab, i) => {
+    const d = cfg.deltas[i];
     const dCls = (d === null || d === undefined) ? 'mut' : (d >= 0 ? 'pos' : 'neg');
     const dTxt = (d === null || d === undefined) ? '—' :
                  `${d >= 0 ? '+' : ''}${(d * 100).toFixed(1)}%`;
-    const period = periods && periods[i] ? periods[i] : '';
-    return `<tr${i === last ? ' class="latest"' : ''}>
-      <td>${lab}</td>
-      <td>${period}</td>
-      <td>${overall[i] === null ? '—' : fmt2(overall[i])}</td>
-      <td>${zc[i] === null ? '—' : fmt2(zc[i])}</td>
-      <td>${zs[i] === null ? '—' : fmt2(zs[i])}</td>
-      <td class="${dCls}">${dTxt}</td>
-    </tr>`;
+    const deltaCell = `<td class="${dCls}">${dTxt}</td>`;
+    const period = cfg.periods && cfg.periods[i] ? cfg.periods[i] : '';
+    let c = `<td>${lab}</td><td>${period}</td><td>${num(cfg.overall[i])}</td>`;
+    if (cfg.brand === 'overall') c += deltaCell;
+    c += `<td>${num(cfg.zc[i])}</td>`;
+    if (cfg.brand === 'zc') c += deltaCell;
+    c += `<td>${num(cfg.zs[i])}</td>`;
+    if (cfg.brand === 'zs') c += deltaCell;
+    return `<tr${i === last ? ' class="latest"' : ''}>${c}</tr>`;
   }).join('');
 }
 
@@ -1588,11 +1606,16 @@ function applyFilters() {
     trendBadge(tc.l6m.latest, tc.l6m.deltas[tc.l6m.deltas.length - 1]) +
     trendBadge(tc.l6m.prev,   tc.l6m.deltas[tc.l6m.deltas.length - 2]);
 
-  document.getElementById('l6wDeltaHeader').textContent = tc.l6w.header;
-  document.getElementById('l6mDeltaHeader').textContent = tc.l6m.header;
-
-  renderPeriodTable('l6wTableBody', l6wLabels, l6wPeriods, l6wOverall, l6wZC, l6wZS, tc.l6w.deltas);
-  renderPeriodTable('l6mTableBody', l6mLabels, l6mPeriods, l6mOverall, l6mZC, l6mZS, tc.l6m.deltas);
+  renderPeriodTable({
+    headId: 'l6wTableHead', bodyId: 'l6wTableBody', endLabel: 'Week End', brand,
+    labels: l6wLabels, periods: l6wPeriods, overall: l6wOverall, zc: l6wZC, zs: l6wZS,
+    deltas: tc.l6w.deltas, deltaHeader: tc.l6w.header
+  });
+  renderPeriodTable({
+    headId: 'l6mTableHead', bodyId: 'l6mTableBody', endLabel: 'Month End', brand,
+    labels: l6mLabels, periods: l6mPeriods, overall: l6mOverall, zc: l6mZC, zs: l6mZS,
+    deltas: tc.l6m.deltas, deltaHeader: tc.l6m.header
+  });
 
   // QoQ chart: swap CY bars, PY line, Target line + card title per tab
   qoqChart.data.datasets[0].data = cfg.qoqCy().slice();
