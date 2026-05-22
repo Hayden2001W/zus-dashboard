@@ -1388,14 +1388,16 @@ function renderPeriodTable(cfg) {
 
   // The WoW/MoM delta column sits immediately after the active brand's
   // value column: after Overall on the Overall tab, after ZC on the ZC
-  // tab, after ZS on the ZS tab.
+  // tab, after ZS on the ZS tab. Its header wraps to two lines (brand /
+  // metric) so the column stays narrow.
   if (head) {
+    const deltaTh = `<th>${cfg.deltaHeader.replace(' ', '<br>')}</th>`;
     let h = `<th>${cfg.endLabel}</th><th>Period</th><th>Overall</th>`;
-    if (cfg.brand === 'overall') h += `<th>${cfg.deltaHeader}</th>`;
+    if (cfg.brand === 'overall') h += deltaTh;
     h += '<th>ZC</th>';
-    if (cfg.brand === 'zc') h += `<th>${cfg.deltaHeader}</th>`;
+    if (cfg.brand === 'zc') h += deltaTh;
     h += '<th>ZS</th>';
-    if (cfg.brand === 'zs') h += `<th>${cfg.deltaHeader}</th>`;
+    if (cfg.brand === 'zs') h += deltaTh;
     head.innerHTML = h;
   }
 
