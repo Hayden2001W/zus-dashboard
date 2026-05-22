@@ -11,25 +11,25 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:        #0a0e14;
-  --surface:   #111820;
-  --surface2:  #161e28;
-  --border:    #1e2c3a;
-  --border2:   #243040;
-  --text:      #e4ecf5;
-  --muted:     #6b7e94;
-  --muted2:    #4a5a6d;
-  --blue:      #4d9de0;
-  --blue-dim:  rgba(77,157,224,0.12);
-  --cyan:      #39d0d8;
-  --cyan-dim:  rgba(57,208,216,0.12);
-  --green:     #3ecf6c;
-  --green-dim: rgba(62,207,108,0.10);
-  --amber:     #f5a623;
-  --amber-dim: rgba(245,166,35,0.10);
-  --red:       #e05d5d;
-  --red-dim:   rgba(224,93,93,0.10);
-  --purple:    #a57af5;
+  --bg:        #eef1f6;
+  --surface:   #ffffff;
+  --surface2:  #f4f6fa;
+  --border:    #e2e7ef;
+  --border2:   #cdd5e0;
+  --text:      #1a2533;
+  --muted:     #5c6b7e;
+  --muted2:    #94a1b2;
+  --blue:      #2b7fc4;
+  --blue-dim:  rgba(43,127,196,0.12);
+  --cyan:      #1499a0;
+  --cyan-dim:  rgba(20,153,160,0.12);
+  --green:     #1f9d52;
+  --green-dim: rgba(31,157,82,0.12);
+  --amber:     #c97d09;
+  --amber-dim: rgba(201,125,9,0.12);
+  --red:       #cf3f3f;
+  --red-dim:   rgba(207,63,63,0.12);
+  --purple:    #7c4fd0;
   --r:         12px;
 }
 
@@ -61,7 +61,7 @@ body {
 }
 .brand-dot {
   width: 36px; height: 36px; border-radius: 9px;
-  background: linear-gradient(135deg, #f5a623, #e05d5d);
+  background: linear-gradient(135deg, #c97d09, #cf3f3f);
   display: flex; align-items: center; justify-content: center;
   font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.5px;
 }
@@ -106,7 +106,7 @@ body {
 }
 .seg-row button.active {
   background: var(--blue);
-  color: #0a0e14;
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -285,7 +285,7 @@ body {
   cursor: pointer;
   transition: background .15s, color .15s;
 }
-.view-toggle button.active { background: var(--blue); color: #0a0e14; }
+.view-toggle button.active { background: var(--blue); color: #ffffff; }
 .view-toggle button:hover:not(.active) { color: var(--text); }
 .card-has-toggle .card-header { padding-right: 165px; }
 .brand-card-full .brand-card-body {
@@ -403,15 +403,15 @@ body {
   content: ''; position: absolute; top: 0; left: 0; right: 0;
   height: 2px; border-radius: 10px 10px 0 0;
 }
-.mix-tile.app::before    { background: #f5a623; }
-.mix-tile.retail::before { background: #d97757; }
+.mix-tile.app::before    { background: #c97d09; }
+.mix-tile.retail::before { background: #c05f3c; }
 .mix-tile.tpl::before    { background: #8b5a3c; }
 .mix-channel { font-size: 13px; color: var(--muted); font-weight: 600;
                text-transform: uppercase; letter-spacing: 0.08em; }
 .mix-actual  { font-family: 'DM Mono', monospace; font-size: 30px;
                font-weight: 500; line-height: 1; margin-top: 6px; }
-.mix-tile.app    .mix-actual { color: #f5a623; }
-.mix-tile.retail .mix-actual { color: #d97757; }
+.mix-tile.app    .mix-actual { color: #c97d09; }
+.mix-tile.retail .mix-actual { color: #c05f3c; }
 .mix-tile.tpl    .mix-actual { color: #8b5a3c; }
 .mix-bar {
   height: 7px; background: var(--border2); border-radius: 4px;
@@ -426,8 +426,8 @@ body {
   content: '▼'; position: absolute; top: -10px; left: -5px;
   font-size: 9px; color: var(--text);
 }
-.mix-tile.app    .fill { background: #f5a623; }
-.mix-tile.retail .fill { background: #d97757; }
+.mix-tile.app    .fill { background: #c97d09; }
+.mix-tile.retail .fill { background: #c05f3c; }
 .mix-tile.tpl    .fill { background: #8b5a3c; }
 .mix-foot {
   display: flex; justify-content: space-between; align-items: center;
@@ -483,10 +483,10 @@ body {
   display: inline-block; padding: 2px 8px; border-radius: 4px;
   font-size: 12px; font-weight: 600; font-family: 'DM Sans';
 }
-.qoq-table .q1 { background: rgba(77,157,224,0.12); color: var(--blue); }
-.qoq-table .q2 { background: rgba(62,207,108,0.10); color: var(--green); }
-.qoq-table .q3 { background: rgba(245,166,35,0.10); color: var(--amber); }
-.qoq-table .q4 { background: rgba(165,122,245,0.10); color: var(--purple); }
+.qoq-table .q1 { background: rgba(43,127,196,0.12); color: var(--blue); }
+.qoq-table .q2 { background: rgba(31,157,82,0.10); color: var(--green); }
+.qoq-table .q3 { background: rgba(201,125,9,0.10); color: var(--amber); }
+.qoq-table .q4 { background: rgba(124,79,208,0.10); color: var(--purple); }
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -568,7 +568,7 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
 .loy-table th.month-hdr {
   font-size: 10px; font-weight: 600; color: var(--muted);
   text-transform: uppercase; letter-spacing: 0.05em;
-  background: rgba(255,255,255,0.02);
+  background: rgba(26,37,51,0.04);
   border-bottom: 1px solid var(--border);
 }
 .loy-table td.tier {
@@ -580,13 +580,13 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
   font-family: 'DM Mono', monospace; color: var(--text);
   border-bottom: 1px solid var(--border);
 }
-/* MoM heatmap — amped contrast (~25% higher alpha than v3) */
-.mom-neg-3 { background: rgba(224,93,93,0.65); color: #fff; }
-.mom-neg-2 { background: rgba(224,93,93,0.45); color: #fff; }
-.mom-neg-1 { background: rgba(224,93,93,0.25); color: #ffb9b9; }
-.mom-pos-1 { background: rgba(62,207,108,0.25); color: #c1f3d1; }
-.mom-pos-2 { background: rgba(62,207,108,0.45); color: #fff; }
-.mom-pos-3 { background: rgba(62,207,108,0.65); color: #fff; }
+/* MoM heatmap — light theme: solid extremes, tinted mids */
+.mom-neg-3 { background: #c0392b;                color: #fff;     }
+.mom-neg-2 { background: rgba(207,63,63,0.40);   color: #8f2020;  }
+.mom-neg-1 { background: rgba(207,63,63,0.15);   color: #a82a2a;  }
+.mom-pos-1 { background: rgba(31,157,82,0.15);   color: #15703a;  }
+.mom-pos-2 { background: rgba(31,157,82,0.40);   color: #0e5a2c;  }
+.mom-pos-3 { background: #15803c;                color: #fff;     }
 .mom-na    { color: var(--muted2); }
 .share-cell {
   position: relative; font-family: 'DM Mono', monospace;
@@ -651,9 +651,9 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
     <span class="kpi-badge neu">No Target Set</span>
   </div>
 
-  <div class="kpi-card blue" style="--blue:#a57af5;">
+  <div class="kpi-card blue" style="--blue:#7c4fd0;">
     <div class="kpi-label">Total Orders YTD</div>
-    <div class="kpi-value" id="ytdOrdersValue" style="color:#a57af5;font-size:22px;">16.57M</div>
+    <div class="kpi-value" id="ytdOrdersValue" style="color:#7c4fd0;font-size:22px;">16.57M</div>
     <div class="kpi-sub" id="ytdOrdersSub">Jan – Apr 2026</div>
     <span class="kpi-badge neu">Cumulative</span>
   </div>
@@ -869,8 +869,8 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
       <div class="card-sub">FY 2026 · 100% stacked composition</div>
     </div>
     <div class="legend">
-      <div class="leg-item"><div class="leg-dot" style="background:#f5a623"></div> ZUSAPP</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#d97757"></div> Retail</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#c97d09"></div> ZUSAPP</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#c05f3c"></div> Retail</div>
       <div class="leg-item"><div class="leg-dot" style="background:#8b5a3c"></div> 3PL total</div>
       <div class="leg-item"><div class="leg-dot" style="background:#4a5a6d"></div> Others</div>
     </div>
@@ -885,9 +885,9 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
       <div class="card-sub">FY 2026 · % of monthly gross revenue</div>
     </div>
     <div class="legend">
-      <div class="leg-item"><div class="leg-line" style="background:#3ecf6c"></div> GrabFood</div>
-      <div class="leg-item"><div class="leg-line" style="background:#e05d5d"></div> FoodPanda</div>
-      <div class="leg-item"><div class="leg-line" style="background:#a57af5"></div> ShopeeFood</div>
+      <div class="leg-item"><div class="leg-line" style="background:#1f9d52"></div> GrabFood</div>
+      <div class="leg-item"><div class="leg-line" style="background:#cf3f3f"></div> FoodPanda</div>
+      <div class="leg-item"><div class="leg-line" style="background:#7c4fd0"></div> ShopeeFood</div>
     </div>
   </div>
   <div class="chart-wrap" style="height:260px;"><canvas id="channelDetailChart"></canvas></div>
@@ -921,18 +921,18 @@ const fmt2 = v => v.toLocaleString('en-MY', {minimumFractionDigits:2, maximumFra
 const fmtPct = v => (v >= 0 ? '+' : '') + (v*100).toFixed(1) + '%';
 
 const tooltipDefaults = {
-  backgroundColor: '#1a2533',
-  borderColor: '#2a3a4d',
+  backgroundColor: '#ffffff',
+  borderColor: '#d9e1ea',
   borderWidth: 1,
-  titleColor: '#e4ecf5',
-  bodyColor: '#8ba0b8',
+  titleColor: '#1a2533',
+  bodyColor: '#5c6b7e',
   titleFont: { family: "'DM Sans', sans-serif", size: 13, weight: '600' },
   bodyFont:  { family: "'DM Mono', monospace",  size: 12 },
   padding: 10,
 };
 
-const gridColor   = 'rgba(255,255,255,0.05)';
-const tickColor   = '#6b7e94';
+const gridColor   = 'rgba(26,37,51,0.07)';
+const tickColor   = '#7d8a9c';
 const tickFont    = { family: "'DM Mono', sans-serif", size: 11 };
 
 // ── 1. PSPD & AOV MONTHLY ────────────────────────────────────────────
@@ -981,17 +981,17 @@ const pspdChart = new Chart(document.getElementById('pspdAovChart'), {
   data: {
     labels: months,
     datasets: [
-      { label:'PSPD', data:pspd.slice(), backgroundColor:'rgba(77,157,224,0.80)', borderColor:'rgba(77,157,224,1)',
+      { label:'PSPD', data:pspd.slice(), backgroundColor:'rgba(43,127,196,0.80)', borderColor:'rgba(43,127,196,1)',
         borderWidth:1, borderRadius:4, borderSkipped:'bottom', yAxisID:'y', order:2,
         barPercentage:0.45, categoryPercentage:0.85 },
-      { label:'PY PSPD', data:pyPspd, backgroundColor:'rgba(57,208,216,0.55)', borderColor:'rgba(57,208,216,1)',
+      { label:'PY PSPD', data:pyPspd, backgroundColor:'rgba(20,153,160,0.55)', borderColor:'rgba(20,153,160,1)',
         borderWidth:1, borderRadius:4, borderSkipped:'bottom', yAxisID:'y', order:2,
         barPercentage:0.45, categoryPercentage:0.85 },
-      { label:'AOV', data:aov, type:'line', borderColor:'#3ecf6c', backgroundColor:'rgba(62,207,108,0.06)',
-        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#3ecf6c', pointBorderColor:'#111820',
+      { label:'AOV', data:aov, type:'line', borderColor:'#1f9d52', backgroundColor:'rgba(31,157,82,0.06)',
+        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#1f9d52', pointBorderColor:'#ffffff',
         pointBorderWidth:2, tension:0.4, fill:false, yAxisID:'y2', order:1 },
-      { label:'PY AOV', data:pyAov, type:'line', borderColor:'#f5a623', borderWidth:2,
-        borderDash:[5,4], pointRadius:3, pointBackgroundColor:'#f5a623', pointBorderColor:'#111820',
+      { label:'PY AOV', data:pyAov, type:'line', borderColor:'#c97d09', borderWidth:2,
+        borderDash:[5,4], pointRadius:3, pointBackgroundColor:'#c97d09', pointBorderColor:'#ffffff',
         pointBorderWidth:1.5, tension:0.4, fill:false, yAxisID:'y2', order:1 },
       { label:'PSPD Target', data:monthlyPspdTarget.slice(), type:'line',
         borderColor:'rgba(107,126,148,0.6)', borderWidth:1.5, borderDash:[4,4],
@@ -1051,15 +1051,15 @@ const l6mChart = new Chart(document.getElementById('l6mChart'), {
   data:{
     labels:l6mLabels,
     datasets:[
-      { label:'Overall', data:l6mOverall, borderColor:'#4d9de0', backgroundColor:'rgba(77,157,224,0.06)',
-        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#4d9de0', pointBorderColor:'#111820',
+      { label:'Overall', data:l6mOverall, borderColor:'#2b7fc4', backgroundColor:'rgba(43,127,196,0.06)',
+        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#2b7fc4', pointBorderColor:'#ffffff',
         pointBorderWidth:2, tension:0.4, fill:false },
-      { label:'ZUS Coffee', data:l6mZC, borderColor:'#39d0d8', backgroundColor:'transparent',
-        borderWidth:2, pointRadius:3.5, pointBackgroundColor:'#39d0d8', pointBorderColor:'#111820',
+      { label:'ZUS Coffee', data:l6mZC, borderColor:'#1499a0', backgroundColor:'transparent',
+        borderWidth:2, pointRadius:3.5, pointBackgroundColor:'#1499a0', pointBorderColor:'#ffffff',
         pointBorderWidth:1.5, tension:0.4, fill:false },
-      { label:'ZUS Signature', data:l6mZS, borderColor:'#f5a623', backgroundColor:'transparent',
-        borderWidth:2, borderDash:[5,3], pointRadius:3.5, pointBackgroundColor:'#f5a623',
-        pointBorderColor:'#111820', pointBorderWidth:1.5, tension:0.4, fill:false }
+      { label:'ZUS Signature', data:l6mZS, borderColor:'#c97d09', backgroundColor:'transparent',
+        borderWidth:2, borderDash:[5,3], pointRadius:3.5, pointBackgroundColor:'#c97d09',
+        pointBorderColor:'#ffffff', pointBorderWidth:1.5, tension:0.4, fill:false }
     ]
   },
   options:lineOptions(2600, 4300)
@@ -1086,15 +1086,15 @@ const l6wChart = new Chart(document.getElementById('l6wChart'), {
   data:{
     labels:l6wLabels,
     datasets:[
-      { label:'Overall', data:l6wOverall, borderColor:'#4d9de0', backgroundColor:'rgba(77,157,224,0.06)',
-        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#4d9de0', pointBorderColor:'#111820',
+      { label:'Overall', data:l6wOverall, borderColor:'#2b7fc4', backgroundColor:'rgba(43,127,196,0.06)',
+        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#2b7fc4', pointBorderColor:'#ffffff',
         pointBorderWidth:2, tension:0.4, fill:false },
-      { label:'ZUS Coffee', data:l6wZC, borderColor:'#39d0d8', backgroundColor:'transparent',
-        borderWidth:2, pointRadius:3.5, pointBackgroundColor:'#39d0d8', pointBorderColor:'#111820',
+      { label:'ZUS Coffee', data:l6wZC, borderColor:'#1499a0', backgroundColor:'transparent',
+        borderWidth:2, pointRadius:3.5, pointBackgroundColor:'#1499a0', pointBorderColor:'#ffffff',
         pointBorderWidth:1.5, tension:0.4, fill:false },
-      { label:'ZUS Signature', data:l6wZS, borderColor:'#f5a623', backgroundColor:'transparent',
-        borderWidth:2, borderDash:[5,3], pointRadius:3.5, pointBackgroundColor:'#f5a623',
-        pointBorderColor:'#111820', pointBorderWidth:1.5, tension:0.4, fill:false }
+      { label:'ZUS Signature', data:l6wZS, borderColor:'#c97d09', backgroundColor:'transparent',
+        borderWidth:2, borderDash:[5,3], pointRadius:3.5, pointBackgroundColor:'#c97d09',
+        pointBorderColor:'#ffffff', pointBorderWidth:1.5, tension:0.4, fill:false }
     ]
   },
   options:lineOptions(2000, 4500)
@@ -1109,7 +1109,7 @@ const qoqPyPspd  = [3410.00, 4229.54, 4127.99, 3979.92];
 const qoqTargets = [3743, 3743, 3743, 3743];
 const qoqCyYear  = 2026;
 const qoqPyYear  = 2025;
-const qColors    = ['#4d9de0', '#3ecf6c', '#f5a623', '#a57af5'];
+const qColors    = ['#2b7fc4', '#1f9d52', '#c97d09', '#7c4fd0'];
 
 document.querySelector('#qoq .card-sub').textContent =
   `FY ${qoqCyYear} vs FY ${qoqPyYear} · Actual vs Variable Quarterly Target`;
@@ -1124,9 +1124,9 @@ const qoqChart = new Chart(document.getElementById('qoqChart'), {
         borderColor: qColors, borderWidth:1, borderRadius:4, borderSkipped:'bottom',
         yAxisID:'y', order:2 },
       { label:`PSPD ${qoqPyYear} (PY)`, data: qoqPyPspd, type:'line',
-        borderColor:'#39d0d8', backgroundColor:'rgba(57,208,216,0.06)',
-        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#39d0d8',
-        pointBorderColor:'#111820', pointBorderWidth:2, tension:0.4, fill:false,
+        borderColor:'#1499a0', backgroundColor:'rgba(20,153,160,0.06)',
+        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#1499a0',
+        pointBorderColor:'#ffffff', pointBorderWidth:2, tension:0.4, fill:false,
         yAxisID:'y', order:1 },
       { label:'Target', data: qoqTargets, type:'line',
         borderColor:'rgba(107,126,148,0.5)', borderWidth:1.5, borderDash:[4,4],
@@ -1217,9 +1217,9 @@ renderMixTile('Tpl',    channelYtdTpl,    channelTargetTpl);
 
 // 3PL sub-channel breakdown inside the 3PL tile
 document.getElementById('ytdTplSubs').innerHTML = [
-  { name: 'GrabFood',   pct: channelYtdGrabFood,   color: '#3ecf6c' },
-  { name: 'FoodPanda',  pct: channelYtdFoodPanda,  color: '#e05d5d' },
-  { name: 'ShopeeFood', pct: channelYtdShopeeFood, color: '#a57af5' },
+  { name: 'GrabFood',   pct: channelYtdGrabFood,   color: '#1f9d52' },
+  { name: 'FoodPanda',  pct: channelYtdFoodPanda,  color: '#cf3f3f' },
+  { name: 'ShopeeFood', pct: channelYtdShopeeFood, color: '#7c4fd0' },
   { name: 'Others',     pct: channelYtdOthers,     color: '#6b7e94' },
 ].map(s =>
   `<div class="mix-sub"><span class="mix-sub-name">${s.name}</span>` +
@@ -1246,8 +1246,8 @@ const channelStackedChart = new Chart(document.getElementById('channelStackedCha
   data: {
     labels: monthLabels,
     datasets: [
-      areaDataset('ZUSAPP',    channelMonthlyZusapp, '#f5a623', 0.65),
-      areaDataset('Retail',    channelMonthlyRetail, '#d97757', 0.65),
+      areaDataset('ZUSAPP',    channelMonthlyZusapp, '#c97d09', 0.65),
+      areaDataset('Retail',    channelMonthlyRetail, '#c05f3c', 0.65),
       areaDataset('3PL total', channelMonthlyTpl,    '#8b5a3c', 0.75),
       areaDataset('Others',    channelMonthlyOthers, '#4a5a6d', 0.65),
     ]
@@ -1278,7 +1278,7 @@ function detailLine(label, data, color) {
     borderWidth: 2.5,
     pointRadius: 4,
     pointBackgroundColor: color,
-    pointBorderColor: '#111820',
+    pointBorderColor: '#ffffff',
     pointBorderWidth: 1.5,
     tension: 0.35,
     fill: false,
@@ -1290,9 +1290,9 @@ const channelDetailChart = new Chart(document.getElementById('channelDetailChart
   data: {
     labels: monthLabels,
     datasets: [
-      detailLine('GrabFood',   channelMonthlyGrabFood,   '#3ecf6c'),
-      detailLine('FoodPanda',  channelMonthlyFoodPanda,  '#e05d5d'),
-      detailLine('ShopeeFood', channelMonthlyShopeeFood, '#a57af5'),
+      detailLine('GrabFood',   channelMonthlyGrabFood,   '#1f9d52'),
+      detailLine('FoodPanda',  channelMonthlyFoodPanda,  '#cf3f3f'),
+      detailLine('ShopeeFood', channelMonthlyShopeeFood, '#7c4fd0'),
     ]
   },
   options: {
