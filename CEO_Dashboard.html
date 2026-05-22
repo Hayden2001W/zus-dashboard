@@ -134,9 +134,9 @@ body {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  margin-bottom: 28px;
-  padding-top: 28px;
-  padding-bottom: 18px;
+  margin-bottom: 22px;
+  padding-top: 13px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
@@ -144,14 +144,52 @@ body {
   background: var(--bg);
 }
 .top-bar > .page-title { justify-self: start; }
-.top-bar > #dashboardTabs { justify-self: center; }
-.top-bar > .top-meta { justify-self: end; }
+.top-bar > .tab-nav   { justify-self: center; }
+.top-bar > .top-meta  { justify-self: end; }
 
-/* Lock tab widths so the active-bold state doesn't reflow the switcher */
+/* ── Tab navigation — labelled, bordered switcher ───────────
+   The "View" label + framed pill group signal a distinct
+   section the user can use to move between dashboard tabs. */
+.tab-nav {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.tab-nav-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+#dashboardTabs.seg-row {
+  gap: 3px;
+  padding: 3px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  box-shadow: 0 1px 2px rgba(26,37,51,0.06);
+}
+/* Lock tab widths so the active state doesn't reflow the switcher */
 #dashboardTabs button {
-  min-width: 110px;
+  min-width: 118px;
   white-space: nowrap;
   flex: none;
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 6px;
+}
+#dashboardTabs button:not(.active):hover {
+  background: rgba(43,127,196,0.09);
+  color: var(--blue);
+}
+#dashboardTabs button.active {
+  background: var(--blue);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(43,127,196,0.33);
 }
 .page-title { font-size: 22px; font-weight: 700; }
 .page-title .filter-active { color: var(--blue); font-weight: 600; }
@@ -613,10 +651,13 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
 
 <div class="top-bar">
   <div class="page-title">FY 2026 Performance — <span class="filter-active" id="filterLabel">Overall · YTD</span></div>
-  <div class="seg-row" id="dashboardTabs" style="width:fit-content;">
-    <button class="active" data-tab="overall">Overall</button>
-    <button data-tab="zc">ZUS Coffee</button>
-    <button data-tab="zs">ZUS Signature</button>
+  <div class="tab-nav">
+    <span class="tab-nav-label">View</span>
+    <div class="seg-row" id="dashboardTabs">
+      <button class="active" data-tab="overall">Overall</button>
+      <button data-tab="zc">ZUS Coffee</button>
+      <button data-tab="zs">ZUS Signature</button>
+    </div>
   </div>
   <div class="top-meta">
     <div class="top-meta-label">Last Refreshed</div>
@@ -1379,7 +1420,7 @@ function lineOptions(yMin, yMax) {
 //  FILTER LOGIC — Brand / Period / View
 // ══════════════════════════════════════════════════════════════════════
 const filterState = { brand: 'overall', period: 'ytd' };
-const BRAND_LABEL  = { overall: 'Overall', zc: 'ZUS Coffee', zs: 'ZUS Signature' };
+const BRAND_LABEL  = { overall: 'Overall', zc: 'ZC', zs: 'ZS' };
 const PERIOD_LABEL = { ytd: 'YTD', l6m: 'L6M', l6w: 'L6W' };
 
 // Cache original line colors so we can dim/restore
