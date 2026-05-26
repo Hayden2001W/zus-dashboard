@@ -1154,12 +1154,12 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
   <div class="card-header">
     <div>
       <div class="card-title">L6W WoW PSPD Trend</div>
-      <div class="card-sub">Last 6 weeks rolling — each row is a 6-week window · Overall vs ZUS Coffee vs ZUS Signature</div>
+      <div class="card-sub" id="l6wSub">Last 6 weeks rolling — each row is a 6-week window · Overall</div>
     </div>
-    <div class="legend">
-      <div class="leg-item"><div class="leg-line" style="background:var(--blue)"></div> Overall</div>
-      <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> ZC</div>
-      <div class="leg-item"><div class="leg-dash" style="border-color:var(--amber)"></div> ZS</div>
+    <div class="legend" id="l6wLegend">
+      <div class="leg-item" data-leg="overall"><div class="leg-line" style="background:var(--blue)"></div> Overall</div>
+      <div class="leg-item" data-leg="zc"><div class="leg-dash" style="border-color:var(--cyan)"></div> ZC</div>
+      <div class="leg-item" data-leg="zs"><div class="leg-line" style="background:var(--amber)"></div> ZS</div>
     </div>
   </div>
   <div class="trend-row" id="l6wTrendRow"></div>
@@ -1180,12 +1180,12 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
   <div class="card-header">
     <div>
       <div class="card-title">L6M MoM PSPD Trend</div>
-      <div class="card-sub">Last 6 months rolling — each row is a 6-month window · Overall vs ZUS Coffee vs ZUS Signature</div>
+      <div class="card-sub" id="l6mSub">Last 6 months rolling — each row is a 6-month window · Overall</div>
     </div>
-    <div class="legend">
-      <div class="leg-item"><div class="leg-line" style="background:var(--blue)"></div> Overall</div>
-      <div class="leg-item"><div class="leg-line" style="background:var(--cyan)"></div> ZC</div>
-      <div class="leg-item"><div class="leg-dash" style="border-color:var(--amber)"></div> ZS</div>
+    <div class="legend" id="l6mLegend">
+      <div class="leg-item" data-leg="overall"><div class="leg-line" style="background:var(--blue)"></div> Overall</div>
+      <div class="leg-item" data-leg="zc"><div class="leg-dash" style="border-color:var(--cyan)"></div> ZC</div>
+      <div class="leg-item" data-leg="zs"><div class="leg-line" style="background:var(--amber)"></div> ZS</div>
     </div>
   </div>
   <div class="trend-row" id="l6mTrendRow"></div>
@@ -1370,6 +1370,78 @@ const fmt0 = v => v.toLocaleString('en-MY', {minimumFractionDigits:0, maximumFra
 const fmt2 = v => v.toLocaleString('en-MY', {minimumFractionDigits:2, maximumFractionDigits:2});
 const fmtPct = v => (v >= 0 ? '+' : '') + (v*100).toFixed(1) + '%';
 
+/* ─── Data-label plugin for L6W / L6M line charts ───────────────────────
+   Draws the absolute value at each data point so users can read exact
+   numbers without hovering. Each brand's value is labelled independently
+   — no merging — so the focus brand's number is always visible:
+     • Overall label sits ABOVE its point
+     • ZC label sits BELOW its point (separates it from the Overall label
+       above when ZC and Overall overlap)
+     • ZS label sits BELOW its point (well separated by y-axis)
+   Brand focus from filterState.brand drives alpha: focus brand at 1.0,
+   inactive brands at 0.35 for context. */
+const lineLabelPlugin = {
+  id: 'lineDataLabels',
+  afterDatasetsDraw(chart) {
+    const ctx = chart.ctx;
+    const dsList = chart.data.datasets;
+    if (dsList.length < 3) return;
+    const overallMeta = chart.getDatasetMeta(0);
+    const zcMeta      = chart.getDatasetMeta(1);
+    const zsMeta      = chart.getDatasetMeta(2);
+
+    let focus = 'overall';
+    try { if (typeof filterState !== 'undefined') focus = filterState.brand || 'overall'; } catch(e) {}
+    const alphaFor = (key) => focus === 'overall' ? 1 : (focus === key ? 1 : 0.35);
+
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const drawPill = (text, x, y, color, alpha, bold) => {
+      ctx.font = (bold ? '700 11px' : '600 10.5px') + ' "DM Sans", system-ui, sans-serif';
+      const pad = 4;
+      const w = ctx.measureText(text).width;
+      ctx.globalAlpha = alpha * 0.92;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(x - w/2 - pad, y - 7, w + 2*pad, 14);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = color;
+      ctx.fillText(text, x, y);
+    };
+
+    // chart.isDatasetVisible() keeps dataset.hidden and meta.hidden in sync.
+    const overallVisible = chart.isDatasetVisible(0);
+    const zcVisible      = chart.isDatasetVisible(1);
+    const zsVisible      = chart.isDatasetVisible(2);
+
+    overallMeta.data.forEach((pt, i) => {
+      const ov = dsList[0].data[i];
+      const zc = dsList[1].data[i];
+      const zs = dsList[2].data[i];
+
+      // Overall label above its point
+      if (overallVisible && ov != null) {
+        drawPill(fmt0(ov), pt.x, pt.y - 14, dsList[0].borderColor,
+                 alphaFor('overall'), focus === 'overall');
+      }
+      // ZC label below its point — keeps it readable when ZC and Overall overlap
+      if (zcVisible && zc != null) {
+        const zcPt = zcMeta.data[i];
+        drawPill(fmt0(zc), zcPt.x, zcPt.y + 14, dsList[1].borderColor,
+                 alphaFor('zc'), focus === 'zc');
+      }
+      // ZS label below its point (well separated from the Overall/ZC pair)
+      if (zsVisible && zs != null) {
+        const zsPt = zsMeta.data[i];
+        drawPill(fmt0(zs), zsPt.x, zsPt.y + 14, dsList[2].borderColor,
+                 alphaFor('zs'), focus === 'zs');
+      }
+    });
+    ctx.restore();
+  }
+};
+
 const tooltipDefaults = {
   backgroundColor: '#ffffff',
   borderColor: '#d9e1ea',
@@ -1505,18 +1577,22 @@ const l6mChart = new Chart(document.getElementById('l6mChart'), {
   data:{
     labels:l6mLabels,
     datasets:[
+      // Overall sits on top — solid bold blue. ZC overlaps it tightly (99.6% of total)
+      // so we render ZC dashed below; the dashes punch through to keep both visible.
+      // ZC + ZS default hidden — applyFilters() shows them only on the ZC/ZS tabs.
       { label:'Overall', data:l6mOverall, borderColor:'#2b7fc4', backgroundColor:'rgba(43,127,196,0.06)',
-        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#2b7fc4', pointBorderColor:'#ffffff',
-        pointBorderWidth:2, tension:0.4, fill:false },
+        borderWidth:3, pointRadius:4.5, pointBackgroundColor:'#2b7fc4', pointBorderColor:'#ffffff',
+        pointBorderWidth:2, tension:0.4, fill:false, order:1 },
       { label:'ZUS Coffee', data:l6mZC, borderColor:'#1499a0', backgroundColor:'transparent',
-        borderWidth:2, pointRadius:3.5, pointBackgroundColor:'#1499a0', pointBorderColor:'#ffffff',
-        pointBorderWidth:1.5, tension:0.4, fill:false },
+        borderWidth:2, borderDash:[6,4], pointRadius:3, pointBackgroundColor:'#1499a0', pointBorderColor:'#ffffff',
+        pointBorderWidth:1.5, tension:0.4, fill:false, order:2, hidden:true },
       { label:'ZUS Signature', data:l6mZS, borderColor:'#c97d09', backgroundColor:'transparent',
-        borderWidth:2, borderDash:[5,3], pointRadius:3.5, pointBackgroundColor:'#c97d09',
-        pointBorderColor:'#ffffff', pointBorderWidth:1.5, tension:0.4, fill:false }
+        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#c97d09',
+        pointBorderColor:'#ffffff', pointBorderWidth:1.5, tension:0.4, fill:false, order:1, hidden:true }
     ]
   },
-  options:lineOptions(2600, 4300)
+  options:lineOptions(2200, 4500),
+  plugins:[lineLabelPlugin]
 });
 
 // ── 3. L6W WoW ───────────────────────────────────────────────────────
@@ -1545,17 +1621,18 @@ const l6wChart = new Chart(document.getElementById('l6wChart'), {
     labels:l6wLabels,
     datasets:[
       { label:'Overall', data:l6wOverall, borderColor:'#2b7fc4', backgroundColor:'rgba(43,127,196,0.06)',
-        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#2b7fc4', pointBorderColor:'#ffffff',
-        pointBorderWidth:2, tension:0.4, fill:false },
+        borderWidth:3, pointRadius:4.5, pointBackgroundColor:'#2b7fc4', pointBorderColor:'#ffffff',
+        pointBorderWidth:2, tension:0.4, fill:false, order:1 },
       { label:'ZUS Coffee', data:l6wZC, borderColor:'#1499a0', backgroundColor:'transparent',
-        borderWidth:2, pointRadius:3.5, pointBackgroundColor:'#1499a0', pointBorderColor:'#ffffff',
-        pointBorderWidth:1.5, tension:0.4, fill:false },
+        borderWidth:2, borderDash:[6,4], pointRadius:3, pointBackgroundColor:'#1499a0', pointBorderColor:'#ffffff',
+        pointBorderWidth:1.5, tension:0.4, fill:false, order:2, hidden:true },
       { label:'ZUS Signature', data:l6wZS, borderColor:'#c97d09', backgroundColor:'transparent',
-        borderWidth:2, borderDash:[5,3], pointRadius:3.5, pointBackgroundColor:'#c97d09',
-        pointBorderColor:'#ffffff', pointBorderWidth:1.5, tension:0.4, fill:false }
+        borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#c97d09',
+        pointBorderColor:'#ffffff', pointBorderWidth:1.5, tension:0.4, fill:false, order:1, hidden:true }
     ]
   },
-  options:lineOptions(2000, 4500)
+  options:lineOptions(2000, 4600),
+  plugins:[lineLabelPlugin]
 });
 
 // ── 4. QoQ — 2026 (bars) vs 2025 PY (line overlay) ──────────────────
@@ -1838,6 +1915,7 @@ function lineOptions(yMin, yMax) {
   return {
     responsive:true, maintainAspectRatio:false,
     interaction:{ mode:'index', intersect:false },
+    layout:{ padding:{ top:20, bottom:8, left:4, right:14 } },
     plugins:{ legend:{display:false}, tooltip:{ ...tooltipDefaults,
       callbacks:{ label:ctx=>ctx.raw===null?null:`  ${ctx.dataset.label}: ${fmt2(ctx.raw)}` }
     }},
@@ -1858,9 +1936,15 @@ const filterState = { brand: 'overall', period: 'ytd' };
 const BRAND_LABEL  = { overall: 'Overall', zc: 'ZC', zs: 'ZS' };
 const PERIOD_LABEL = { ytd: 'YTD', l6m: 'L6M', l6w: 'L6W' };
 
-// Cache original line colors so we can dim/restore
+// Cache original line colors + dash pattern so we can dim/restore on tab switch.
+// The focus line is always rendered solid for clean bold visibility; dimmed
+// inactive lines keep their default dash (ZC's [6,4] still helps distinguish
+// it from Overall when both are dimmed underneath ZS-tab focus).
 [l6mChart, l6wChart].forEach(c => {
-  c.data.datasets.forEach(ds => { ds._origColor = ds.borderColor; });
+  c.data.datasets.forEach(ds => {
+    ds._origColor = ds.borderColor;
+    ds._origDash  = ds.borderDash ? ds.borderDash.slice() : [];
+  });
 });
 
 // Brand-specific data sources for tab switching
@@ -2009,10 +2093,12 @@ function applyFilters() {
   pspdChart.update();
   renderVsTargetStat();
 
-  // L6M / L6W: keep all 3 lines visible, just emphasize the active brand.
-  // Trend badges, table delta column, and column header switch per tab.
+  // L6M / L6W: Overall tab shows only the Overall line; ZC/ZS tabs show
+  // all three with the active brand emphasised. Trend badges, table delta
+  // column, sub-text, and legend chips switch per tab.
   emphasiseLines(l6mChart, brand);
   emphasiseLines(l6wChart, brand);
+  syncL6Chrome(brand);
 
   const tc = trendCfg[brand] || trendCfg.overall;
 
@@ -2078,18 +2164,55 @@ function emphasiseLines(chart, brand) {
   const map = { overall: 0, zc: 1, zs: 2 };
   const focusIdx = brand === 'overall' ? null : map[brand];
   chart.data.datasets.forEach((ds, i) => {
+    // Use setDatasetVisibility — keeps dataset.hidden and meta.hidden in sync.
     if (focusIdx === null) {
-      ds.borderWidth = i === 0 ? 2.5 : 2;
-      ds.pointRadius = i === 0 ? 4 : 3.5;
+      chart.setDatasetVisibility(i, i === 0); // Overall tab: only Overall line
+      ds.borderWidth = i === 0 ? 3 : 2;
+      ds.pointRadius = i === 0 ? 4.5 : 3.5;
       ds.borderColor = ds._origColor;
+      ds.borderDash  = ds._origDash;
     } else {
+      chart.setDatasetVisibility(i, true); // brand tab: all 3 lines
       const isFocus = i === focusIdx;
       ds.borderWidth = isFocus ? 3 : 1.5;
       ds.pointRadius = isFocus ? 5 : 2;
       ds.borderColor = isFocus ? ds._origColor : hexToRgba(ds._origColor, 0.25);
+      // Focus line is always solid for clean visibility. Dimmed lines keep
+      // their default dash so ZC's dashes still distinguish it from Overall.
+      ds.borderDash  = isFocus ? [] : ds._origDash;
     }
   });
   chart.update();
+}
+
+/* syncL6Chrome — keep card-sub text + legend chips honest with what's on
+   the chart. Overall tab shows only Overall; ZC/ZS tabs show all three
+   with the active brand emphasised. */
+function syncL6Chrome(brand) {
+  const sub = brand === 'overall'
+    ? 'Overall PSPD'
+    : 'Overall vs ZC vs ZS · ' + ({zc:'ZUS Coffee', zs:'ZUS Signature'}[brand]) + ' highlighted';
+  const l6wSub = document.getElementById('l6wSub');
+  const l6mSub = document.getElementById('l6mSub');
+  if (l6wSub) l6wSub.innerHTML = 'Last 6 weeks rolling — each row is a 6-week window · ' + sub;
+  if (l6mSub) l6mSub.innerHTML = 'Last 6 months rolling — each row is a 6-month window · ' + sub;
+
+  ['l6wLegend', 'l6mLegend'].forEach(id => {
+    const lg = document.getElementById(id);
+    if (!lg) return;
+    lg.querySelectorAll('.leg-item').forEach(item => {
+      const k = item.dataset.leg;
+      // On Overall tab hide ZC + ZS chips; on brand tabs show all three
+      // but dim the inactive ones.
+      if (brand === 'overall') {
+        item.style.display = (k === 'overall') ? '' : 'none';
+        item.style.opacity = 1;
+      } else {
+        item.style.display = '';
+        item.style.opacity = (k === brand || k === 'overall') ? 1 : 0.4;
+      }
+    });
+  });
 }
 
 function hexToRgba(hex, alpha) {
