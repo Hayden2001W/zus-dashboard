@@ -735,6 +735,14 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
 
 /* Demographics leaderboard */
 .demo-lb-wrap { overflow-x: auto; }
+.demo-lb-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 1100px) {
+  .demo-lb-2col { grid-template-columns: 1fr; }
+}
 table.demo-leaderboard { width: 100%; border-collapse: collapse; }
 .demo-leaderboard th {
   text-align: left; font-size: 11px; font-weight: 600;
@@ -933,6 +941,49 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
 /* Trend pills (L6W/L6M) */
 .trend-badge { font-size: 13.5px; }
 
+/* Inline info icon — used on column headers like "PSPD" to define the term */
+.info-tip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px; height: 13px;
+  margin-left: 5px;
+  border-radius: 50%;
+  background: var(--muted2);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px; font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0; text-transform: none;
+  cursor: help;
+  position: relative;
+  vertical-align: middle;
+  transition: background .15s;
+}
+.info-tip:hover { background: var(--text); }
+.info-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500;
+  text-transform: none; letter-spacing: 0;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(26,37,51,0.14);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s;
+  z-index: 100;
+}
+.info-tip:hover::after { opacity: 1; }
+
 </style>
 </head>
 <body>
@@ -1049,8 +1100,8 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
       <tr>
         <th>Quarter</th>
         <th>Revenue</th>
-        <th>PSPD</th>
-        <th>PY PSPD</th>
+        <th>PSPD <span class="info-tip" data-tip="Per Store Per Day — Revenue ÷ Store-Days">i</span></th>
+        <th>PY PSPD <span class="info-tip" data-tip="Per Store Per Day — Revenue ÷ Store-Days (Prior Year)">i</span></th>
         <th>YoY %</th>
         <th>vs Target</th>
       </tr>
@@ -1280,13 +1331,15 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
       <div class="demo-quarter-ctrl" id="demoQuarterCtrlLb"></div>
       <div class="demo-sort-ctrl" id="demoSortCtrl">
         <button class="active" data-sort="gr">Revenue</button>
-        <button data-sort="grg">QoQ Growth</button>
         <button data-sort="pspd">PSPD</button>
         <button data-sort="pspdg">PSPD QoQ</button>
       </div>
     </div>
   </div>
-  <div class="demo-lb-wrap"><table class="demo-leaderboard" id="demoLeaderboard"></table></div>
+  <div class="demo-lb-2col">
+    <table class="demo-leaderboard" id="demoLeaderboardLeft"></table>
+    <table class="demo-leaderboard" id="demoLeaderboardRight"></table>
+  </div>
 </div>
 
 <!-- Revenue by Age Group — full-width with quarterly filter -->
@@ -2592,13 +2645,18 @@ function renderDemoLeaderboard(brand) {
   const aggPrev = demoAggQuarter(recs, qPrev);
   const prevMap = new Map(aggPrev.map(c => [c.age + '||' + c.eth, c]));
 
-  // QoQ growth: this quarter vs previous (null if no prior data)
+  // QoQ growth: this quarter vs previous, but only when BOTH quarters are
+  // complete (3 months each) — partial-quarter comparisons are misleading
+  // (e.g. April-only vs full Q1 = ~-58% across every segment, scaring the
+  // reader). When either quarter is partial we null the growth columns;
+  // the card sub-text still flags "partial (N/3 mo)" for context.
+  const isPartial = monthsInQuarter(q).length < 3 || monthsInQuarter(qPrev).length < 3;
   const merged = aggNow.map(c => {
     const p = prevMap.get(c.age + '||' + c.eth);
     return {
       age: c.age, eth: c.eth, gr: c.gr, pspd: c.pspd,
-      grg:   (p && p.gr > 0)                                       ? (c.gr   - p.gr)   / p.gr   : null,
-      pspdg: (p && p.pspd != null && c.pspd != null && p.pspd > 0) ? (c.pspd - p.pspd) / p.pspd : null,
+      grg:   isPartial ? null : ((p && p.gr > 0)                                       ? (c.gr   - p.gr)   / p.gr   : null),
+      pspdg: isPartial ? null : ((p && p.pspd != null && c.pspd != null && p.pspd > 0) ? (c.pspd - p.pspd) / p.pspd : null),
     };
   });
 
@@ -2628,8 +2686,11 @@ function renderDemoLeaderboard(brand) {
       const y = h - pad - (h-2*pad) * (v-min) / range;
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     }).join(' ');
-    const last = values[values.length-1], prev = values[values.length-2];
-    const trend = last >= prev ? '#1f9d52' : '#cf3f3f';
+    // Color the spark by overall trajectory (first → last) rather than just
+    // the latest tick — a segment that grew Jan–Mar but dipped slightly in
+    // Apr now stays green if its 4-month direction is up.
+    const last = values[values.length-1], first = values[0];
+    const trend = last >= first ? '#1f9d52' : '#cf3f3f';
     const lastX = pad + (w-2*pad);
     const lastY = h - pad - (h-2*pad) * (last-min) / range;
     return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${trend}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="2.4" fill="${trend}"/></svg>`;
@@ -2637,26 +2698,33 @@ function renderDemoLeaderboard(brand) {
 
   const lineTag = brand === 'overall' ? '' :
     brand === 'zc' ? '<span class="seg-line zc">ZC</span>' : '<span class="seg-line zs">ZS</span>';
+  // 6-column layout (was 7 — dropped "QoQ Growth" since PSPD QoQ already carries
+  // the unit-economics QoQ signal, and Revenue ranks per quarter are the headline).
   const head = `<thead><tr>
     <th>#</th><th>Segment</th>
-    <th class="num">Revenue</th><th class="num">QoQ Growth</th>
-    <th class="num">PSPD</th><th class="num">PSPD QoQ</th>
+    <th class="num">Revenue</th>
+    <th class="num">PSPD <span class="info-tip" data-tip="Per Store Per Day — Revenue ÷ Store-Days">i</span></th>
+    <th class="num">PSPD QoQ</th>
     <th>Monthly Trajectory</th>
   </tr></thead>`;
-  const body = '<tbody>' + sorted.map((c, i) => {
-    const grgCls   = c.grg   == null ? '' : c.grg   >= 0 ? 'pos' : 'neg';
+  const rowHTML = (c, rank) => {
     const pspdgCls = c.pspdg == null ? '' : c.pspdg >= 0 ? 'pos' : 'neg';
     return `<tr>
-      <td class="rank">${i+1}</td>
+      <td class="rank">${rank}</td>
       <td><span class="seg-age">${c.age === 'Invalid dob' ? 'Unknown' : c.age}</span><span class="seg-eth">${ETH_LABEL[c.eth]||c.eth}</span>${lineTag}</td>
       <td class="num">RM ${demoFmtRM(c.gr)}</td>
-      <td class="num ${grgCls}">${demoFmtPct(c.grg)}</td>
       <td class="num">${demoFmtPSPD(c.pspd)}</td>
       <td class="num ${pspdgCls}">${demoFmtPct(c.pspdg)}</td>
       <td>${sparkSVG(trajectoryGR(c.age, c.eth))}</td>
     </tr>`;
-  }).join('') + '</tbody>';
-  document.getElementById('demoLeaderboard').innerHTML = head + body;
+  };
+  // Split top-15 across two side-by-side tables: ranks 1-8 left, 9-15 right.
+  const leftRows  = sorted.slice(0, 8);
+  const rightRows = sorted.slice(8, 15);
+  const leftBody  = '<tbody>' + leftRows.map((c, i)  => rowHTML(c, i + 1)).join('')  + '</tbody>';
+  const rightBody = '<tbody>' + rightRows.map((c, i) => rowHTML(c, i + 9)).join('') + '</tbody>';
+  document.getElementById('demoLeaderboardLeft').innerHTML  = head + leftBody;
+  document.getElementById('demoLeaderboardRight').innerHTML = head + rightBody;
 
   const nQ  = monthsInQuarter(q).length;
   const nQp = monthsInQuarter(qPrev).length;
@@ -2757,8 +2825,8 @@ function setupDemoHmTooltips() {
         `<div class="demo-tip-title">${ageLbl} · ${ethLbl}</div>` +
         row('Revenue',     gr   != null ? 'RM ' + demoFmtRM(gr) : '—') +
         row('PSPD',        pspd != null ? demoFmtPSPD(pspd)     : '—') +
-        row('GR Growth',   grg   != null ? demoFmtPct(grg)   : '—', grg   == null ? '' : grg   >= 0 ? 'pos' : 'neg') +
-        row('PSPD Growth', pspdg != null ? demoFmtPct(pspdg) : '—', pspdg == null ? '' : pspdg >= 0 ? 'pos' : 'neg');
+        row('MoM Growth',  grg   != null ? demoFmtPct(grg)   : '—', grg   == null ? '' : grg   >= 0 ? 'pos' : 'neg') +
+        row('PSPD MoM',    pspdg != null ? demoFmtPct(pspdg) : '—', pspdg == null ? '' : pspdg >= 0 ? 'pos' : 'neg');
       tip.classList.add('on');
     });
     hm.addEventListener('mousemove', e => {
