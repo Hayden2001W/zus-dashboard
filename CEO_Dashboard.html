@@ -642,6 +642,189 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
   padding: 7px 6px; font-style: italic;
 }
 
+/* ── DEMOGRAPHICS SECTION (Age × Ethnicity heatmaps, leaderboard, charts) ── */
+.demo-month-ctrl, .demo-quarter-ctrl {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  padding: 3px;
+  gap: 2px;
+}
+.demo-month-ctrl button, .demo-quarter-ctrl button {
+  background: transparent; border: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px; font-weight: 600;
+  color: var(--muted);
+  padding: 5px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.demo-month-ctrl button:hover:not(.active),
+.demo-quarter-ctrl button:hover:not(.active) { color: var(--text); }
+.demo-month-ctrl button.active,
+.demo-quarter-ctrl button.active { background: var(--blue); color: #fff; }
+
+/* Wrap quarter picker + secondary control vertically in card headers */
+.demo-card-ctrls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.demo-grid-2 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+}
+@media (max-width: 1200px) { .demo-grid-2 { grid-template-columns: 1fr; } }
+
+.demo-hm-label {
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.10em;
+  margin-bottom: 10px;
+}
+.demo-heatmap {
+  display: grid; gap: 2px;
+}
+.demo-heatmap .dhm-corner,
+.demo-heatmap .dhm-col-head {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  text-align: center; padding: 6px 4px;
+  border-bottom: 1px solid var(--border);
+}
+.demo-heatmap .dhm-row-head {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 500; color: var(--text);
+  display: flex; align-items: center;
+  padding: 0 10px 0 4px;
+  white-space: nowrap;
+}
+.demo-heatmap .dhm-cell {
+  position: relative;
+  padding: 9px 7px;
+  text-align: right;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; font-weight: 600;
+  border-radius: 3px;
+  cursor: default;
+  transition: transform .12s;
+  line-height: 1.2;
+}
+.demo-heatmap .dhm-cell:hover {
+  transform: scale(1.04);
+  outline: 1px solid var(--text);
+  z-index: 2;
+}
+.demo-heatmap .dhm-cell .dhm-val { display: block; }
+.demo-heatmap .dhm-cell .dhm-sub {
+  font-size: 9px; opacity: 0.75; display: block; margin-top: 2px;
+}
+.demo-heatmap .dhm-cell.empty {
+  color: var(--muted2); font-size: 14px; opacity: 0.35; text-align: center;
+}
+.demo-heatmap .dhm-cell.empty::after { content: '·'; }
+.demo-hm-legend {
+  display: flex; align-items: center; gap: 8px; margin-top: 12px;
+  font-size: 10px; color: var(--muted); letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.demo-hm-legend .grad { flex: 1; height: 7px; border-radius: 2px; }
+
+/* Demographics leaderboard */
+.demo-lb-wrap { overflow-x: auto; }
+table.demo-leaderboard { width: 100%; border-collapse: collapse; }
+.demo-leaderboard th {
+  text-align: left; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.09em;
+  color: var(--muted);
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.demo-leaderboard th.num { text-align: right; }
+.demo-leaderboard td {
+  padding: 11px 12px; border-bottom: 1px solid var(--border);
+  vertical-align: middle; font-size: 13px;
+}
+.demo-leaderboard td.num { text-align: right; font-family: 'DM Mono', monospace; }
+.demo-leaderboard tr:hover td { background: rgba(43,127,196,0.04); }
+.demo-leaderboard .rank {
+  font-family: 'DM Mono', monospace; color: var(--muted2);
+  font-size: 11px; width: 26px;
+}
+.demo-leaderboard .seg-age { font-weight: 600; color: var(--text); }
+.demo-leaderboard .seg-eth {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  color: var(--muted); margin-left: 8px;
+  padding: 2px 6px; border: 1px solid var(--border);
+  border-radius: 3px;
+}
+.demo-leaderboard .seg-line {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 2px 5px; border-radius: 2px; margin-left: 6px;
+  font-weight: 700;
+}
+.demo-leaderboard .seg-line.zc { background: var(--cyan-dim); color: var(--cyan); }
+.demo-leaderboard .seg-line.zs { background: var(--amber-dim); color: var(--amber); }
+.demo-leaderboard .pos { color: var(--green); }
+.demo-leaderboard .neg { color: var(--red); }
+.demo-leaderboard .spark { display: block; width: 100px; height: 28px; }
+
+.demo-sort-ctrl {
+  display: inline-flex; gap: 3px; padding: 3px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+}
+.demo-sort-ctrl button {
+  background: transparent; border: 0;
+  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 600;
+  color: var(--muted); padding: 5px 10px;
+  border-radius: 5px; cursor: pointer; letter-spacing: 0.04em;
+  transition: background .15s, color .15s;
+}
+.demo-sort-ctrl button:hover:not(.active) { color: var(--text); }
+.demo-sort-ctrl button.active { background: var(--blue); color: #fff; }
+
+/* Custom floating tooltip for the demographic heatmap cells */
+.demo-tip {
+  position: fixed; pointer-events: none;
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  padding: 11px 13px 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.5;
+  box-shadow: 0 4px 14px rgba(26,37,51,0.14);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity .12s;
+  min-width: 200px;
+  max-width: 260px;
+}
+.demo-tip.on { opacity: 1; }
+.demo-tip-title {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.10em;
+  color: var(--muted);
+  margin-bottom: 7px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.demo-tip-row {
+  display: flex; justify-content: space-between; gap: 18px;
+  font-size: 12.5px; padding: 1px 0;
+}
+.demo-tip-row .lbl { color: var(--muted); }
+.demo-tip-row .val {
+  font-family: 'DM Mono', monospace; font-weight: 600; color: var(--text);
+}
+.demo-tip-row .val.pos { color: var(--green); }
+.demo-tip-row .val.neg { color: var(--red); }
+
 </style>
 </head>
 <body>
@@ -945,6 +1128,77 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
     </div>
   </div>
   <div class="loy-grid" id="loyGrid"></div>
+</div>
+
+<!-- ══ DEMOGRAPHICS — Age × Ethnicity heatmaps, leaderboard, charts ════ -->
+<div class="card" id="demographics" style="margin-bottom:16px;">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Customer Demographics — Age × Ethnicity</div>
+      <div class="card-sub" id="demoSub">Gross Revenue and MoM Growth · monthly snapshots</div>
+    </div>
+    <div class="demo-month-ctrl" id="demoMonthCtrl"></div>
+  </div>
+  <div class="demo-grid-2">
+    <div>
+      <div class="demo-hm-label">Gross Revenue (RM) · selected month</div>
+      <div class="demo-heatmap" id="demoRevHM"></div>
+      <div class="demo-hm-legend">
+        <span>Low</span>
+        <div class="grad" style="background:linear-gradient(90deg,#f4f6fa,#c2d6ea,#80acd0,#4f8fc4,#2b7fc4,#1c5e94);"></div>
+        <span>High</span>
+      </div>
+    </div>
+    <div>
+      <div class="demo-hm-label">Month-on-Month Growth</div>
+      <div class="demo-heatmap" id="demoGrwHM"></div>
+      <div class="demo-hm-legend">
+        <span>−50%</span>
+        <div class="grad" style="background:linear-gradient(90deg,#cf3f3f,#e9b5b5,#f4f6fa,#b5e0c4,#1f9d52);"></div>
+        <span>+50%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Top demographic segments — sortable leaderboard with quarterly filter -->
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Top Demographic Segments — Leaderboard</div>
+      <div class="card-sub" id="demoLbSub">Top 15 by selected metric · selected quarter · monthly sparkline</div>
+    </div>
+    <div class="demo-card-ctrls">
+      <div class="demo-quarter-ctrl" id="demoQuarterCtrlLb"></div>
+      <div class="demo-sort-ctrl" id="demoSortCtrl">
+        <button class="active" data-sort="gr">Revenue</button>
+        <button data-sort="grg">QoQ Growth</button>
+        <button data-sort="pspd">PSPD</button>
+        <button data-sort="pspdg">PSPD QoQ</button>
+      </div>
+    </div>
+  </div>
+  <div class="demo-lb-wrap"><table class="demo-leaderboard" id="demoLeaderboard"></table></div>
+</div>
+
+<!-- Revenue by Age Group — full-width with quarterly filter -->
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Revenue by Age Group</div>
+      <div class="card-sub" id="demoBarSub">Stacked by ethnicity · selected quarter</div>
+    </div>
+    <div class="demo-card-ctrls">
+      <div class="demo-quarter-ctrl" id="demoQuarterCtrlBar"></div>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> Chinese</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--amber)"></div> Malay</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div> Indian</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--purple)"></div> Others</div>
+      </div>
+    </div>
+  </div>
+  <div class="chart-wrap" style="height:320px;"><canvas id="demoStackedBar"></canvas></div>
 </div>
 
 </main>
@@ -2016,6 +2270,410 @@ const loyAovZE = [19.82, 20.28, 21.71, 20.21];
 
   grid.innerHTML = metricSpecs.map(buildBlock).join('');
 })();
+
+// ══════════════════════════════════════════════════════════════════════
+//  DEMOGRAPHICS — Age × Ethnicity heatmaps, leaderboard, charts
+//  Data extracted from "ZC Age Group GR" + "ZS Age Group GR" Excel tabs.
+// ══════════════════════════════════════════════════════════════════════
+
+const DEMO_DATA = {"months":["2026-01","2026-02","2026-03","2026-04"],"ages":["Below 12","12 - 16","17 - 21","22 - 25","26 - 30","31 - 36","37 - 45","46 - 80","81 and above","Invalid dob"],"eths":["CHINESE","MALAY","INDIAN","OTHERS","NULL"],"records":[{"l":"ZC","a":"12 - 16","e":"CHINESE","m":"2026-04","gr":167191.83,"grg":0.0043,"pspd":26.27,"pspdg":0.0158},{"l":"ZC","a":"12 - 16","e":"CHINESE","m":"2026-03","gr":166474.71,"grg":0.1882,"pspd":25.86,"pspdg":-0.031},{"l":"ZC","a":"12 - 16","e":"CHINESE","m":"2026-02","gr":140098.41,"grg":0.1089,"pspd":26.69,"pspdg":0.1411},{"l":"ZC","a":"12 - 16","e":"CHINESE","m":"2026-01","gr":126329.02,"grg":null,"pspd":23.38,"pspdg":null},{"l":"ZC","a":"12 - 16","e":"INDIAN","m":"2026-04","gr":7336.69,"grg":-0.0182,"pspd":19.72,"pspdg":-0.116},{"l":"ZC","a":"12 - 16","e":"INDIAN","m":"2026-03","gr":7473.35,"grg":0.4162,"pspd":22.31,"pspdg":0.0528},{"l":"ZC","a":"12 - 16","e":"INDIAN","m":"2026-02","gr":5276.75,"grg":-0.109,"pspd":21.19,"pspdg":0.0231},{"l":"ZC","a":"12 - 16","e":"INDIAN","m":"2026-01","gr":5922.53,"grg":null,"pspd":20.71,"pspdg":null},{"l":"ZC","a":"12 - 16","e":"MALAY","m":"2026-04","gr":249677.88,"grg":-0.0069,"pspd":29.6,"pspdg":-0.0869},{"l":"ZC","a":"12 - 16","e":"MALAY","m":"2026-03","gr":251421.47,"grg":0.6214,"pspd":32.42,"pspdg":0.1923},{"l":"ZC","a":"12 - 16","e":"MALAY","m":"2026-02","gr":155059.13,"grg":-0.1907,"pspd":27.19,"pspdg":0.0066},{"l":"ZC","a":"12 - 16","e":"MALAY","m":"2026-01","gr":191619.0,"grg":null,"pspd":27.01,"pspdg":null},{"l":"ZC","a":"12 - 16","e":"OTHERS","m":"2026-04","gr":35043.67,"grg":-0.048,"pspd":21.41,"pspdg":-0.0351},{"l":"ZC","a":"12 - 16","e":"OTHERS","m":"2026-03","gr":36814.35,"grg":0.5608,"pspd":22.19,"pspdg":0.0556},{"l":"ZC","a":"12 - 16","e":"OTHERS","m":"2026-02","gr":23586.58,"grg":-0.1126,"pspd":21.02,"pspdg":0.0009},{"l":"ZC","a":"12 - 16","e":"OTHERS","m":"2026-01","gr":26582.17,"grg":null,"pspd":21,"pspdg":null},{"l":"ZC","a":"17 - 21","e":"CHINESE","m":"2026-04","gr":1281797.96,"grg":0.111,"pspd":70.12,"pspdg":0.1082},{"l":"ZC","a":"17 - 21","e":"CHINESE","m":"2026-03","gr":1153639.62,"grg":0.2438,"pspd":63.28,"pspdg":0.0749},{"l":"ZC","a":"17 - 21","e":"CHINESE","m":"2026-02","gr":927477.88,"grg":0.0581,"pspd":58.87,"pspdg":0.1279},{"l":"ZC","a":"17 - 21","e":"CHINESE","m":"2026-01","gr":876480.5,"grg":null,"pspd":52.19,"pspdg":null},{"l":"ZC","a":"17 - 21","e":"INDIAN","m":"2026-04","gr":85282.0,"grg":0.1478,"pspd":24.87,"pspdg":0.0276},{"l":"ZC","a":"17 - 21","e":"INDIAN","m":"2026-03","gr":74296.19,"grg":0.3691,"pspd":24.2,"pspdg":0.0372},{"l":"ZC","a":"17 - 21","e":"INDIAN","m":"2026-02","gr":54265.32,"grg":-0.1399,"pspd":23.33,"pspdg":-0.0311},{"l":"ZC","a":"17 - 21","e":"INDIAN","m":"2026-01","gr":63096.21,"grg":null,"pspd":24.08,"pspdg":null},{"l":"ZC","a":"17 - 21","e":"MALAY","m":"2026-04","gr":4037796.48,"grg":0.1227,"pspd":163.5,"pspdg":0.0933},{"l":"ZC","a":"17 - 21","e":"MALAY","m":"2026-03","gr":3596448.51,"grg":0.6638,"pspd":149.54,"pspdg":0.4525},{"l":"ZC","a":"17 - 21","e":"MALAY","m":"2026-02","gr":2161506.44,"grg":-0.1745,"pspd":102.95,"pspdg":-0.0691},{"l":"ZC","a":"17 - 21","e":"MALAY","m":"2026-01","gr":2618674.03,"grg":null,"pspd":110.6,"pspdg":null},{"l":"ZC","a":"17 - 21","e":"OTHERS","m":"2026-04","gr":335355.76,"grg":0.1038,"pspd":34.04,"pspdg":0.0167},{"l":"ZC","a":"17 - 21","e":"OTHERS","m":"2026-03","gr":303802.6,"grg":0.4745,"pspd":33.48,"pspdg":0.1314},{"l":"ZC","a":"17 - 21","e":"OTHERS","m":"2026-02","gr":206036.06,"grg":-0.0908,"pspd":29.59,"pspdg":0.0292},{"l":"ZC","a":"17 - 21","e":"OTHERS","m":"2026-01","gr":226633.01,"grg":null,"pspd":28.75,"pspdg":null},{"l":"ZC","a":"22 - 25","e":"CHINESE","m":"2026-04","gr":2152846.06,"grg":0.043,"pspd":95.19,"pspdg":0.0344},{"l":"ZC","a":"22 - 25","e":"CHINESE","m":"2026-03","gr":2064062.91,"grg":0.1784,"pspd":92.02,"pspdg":0.0376},{"l":"ZC","a":"22 - 25","e":"CHINESE","m":"2026-02","gr":1751477.91,"grg":0.0406,"pspd":88.67,"pspdg":0.1451},{"l":"ZC","a":"22 - 25","e":"CHINESE","m":"2026-01","gr":1683134.32,"grg":null,"pspd":77.44,"pspdg":null},{"l":"ZC","a":"22 - 25","e":"INDIAN","m":"2026-04","gr":149081.63,"grg":0.0623,"pspd":25.03,"pspdg":0.006},{"l":"ZC","a":"22 - 25","e":"INDIAN","m":"2026-03","gr":140330.73,"grg":0.2822,"pspd":24.88,"pspdg":0.0093},{"l":"ZC","a":"22 - 25","e":"INDIAN","m":"2026-02","gr":109440.63,"grg":-0.0974,"pspd":24.65,"pspdg":-0.002},{"l":"ZC","a":"22 - 25","e":"INDIAN","m":"2026-01","gr":121253.17,"grg":null,"pspd":24.7,"pspdg":null},{"l":"ZC","a":"22 - 25","e":"MALAY","m":"2026-04","gr":8185295.96,"grg":0.1043,"pspd":316.95,"pspdg":0.101},{"l":"ZC","a":"22 - 25","e":"MALAY","m":"2026-03","gr":7411946.24,"grg":0.5741,"pspd":287.88,"pspdg":0.4074},{"l":"ZC","a":"22 - 25","e":"MALAY","m":"2026-02","gr":4708546.68,"grg":-0.1705,"pspd":204.54,"pspdg":-0.072},{"l":"ZC","a":"22 - 25","e":"MALAY","m":"2026-01","gr":5676852.71,"grg":null,"pspd":220.42,"pspdg":null},{"l":"ZC","a":"22 - 25","e":"OTHERS","m":"2026-04","gr":609075.23,"grg":0.0885,"pspd":40.48,"pspdg":0.013},{"l":"ZC","a":"22 - 25","e":"OTHERS","m":"2026-03","gr":559538.38,"grg":0.3548,"pspd":39.96,"pspdg":0.1231},{"l":"ZC","a":"22 - 25","e":"OTHERS","m":"2026-02","gr":412995.69,"grg":-0.0736,"pspd":35.58,"pspdg":0.0351},{"l":"ZC","a":"22 - 25","e":"OTHERS","m":"2026-01","gr":445810.37,"grg":null,"pspd":34.38,"pspdg":null},{"l":"ZC","a":"26 - 30","e":"CHINESE","m":"2026-04","gr":3091485.31,"grg":0.0006,"pspd":129.13,"pspdg":0.0021},{"l":"ZC","a":"26 - 30","e":"CHINESE","m":"2026-03","gr":3089522.99,"grg":0.1235,"pspd":128.85,"pspdg":0.0003},{"l":"ZC","a":"26 - 30","e":"CHINESE","m":"2026-02","gr":2749748.05,"grg":0.1153,"pspd":128.81,"pspdg":0.2102},{"l":"ZC","a":"26 - 30","e":"CHINESE","m":"2026-01","gr":2465388.45,"grg":null,"pspd":106.43,"pspdg":null},{"l":"ZC","a":"26 - 30","e":"INDIAN","m":"2026-04","gr":233636.14,"grg":0.0161,"pspd":28.2,"pspdg":0.0028},{"l":"ZC","a":"26 - 30","e":"INDIAN","m":"2026-03","gr":229930.44,"grg":0.3196,"pspd":28.12,"pspdg":0.0595},{"l":"ZC","a":"26 - 30","e":"INDIAN","m":"2026-02","gr":174239.55,"grg":-0.0959,"pspd":26.54,"pspdg":-0.0063},{"l":"ZC","a":"26 - 30","e":"INDIAN","m":"2026-01","gr":192722.51,"grg":null,"pspd":26.72,"pspdg":null},{"l":"ZC","a":"26 - 30","e":"MALAY","m":"2026-04","gr":11741171.21,"grg":0.0659,"pspd":453.01,"pspdg":0.0721},{"l":"ZC","a":"26 - 30","e":"MALAY","m":"2026-03","gr":11014991.24,"grg":0.5069,"pspd":422.53,"pspdg":0.3536},{"l":"ZC","a":"26 - 30","e":"MALAY","m":"2026-02","gr":7309507.01,"grg":-0.1441,"pspd":312.13,"pspdg":-0.0519},{"l":"ZC","a":"26 - 30","e":"MALAY","m":"2026-01","gr":8540824.43,"grg":null,"pspd":329.23,"pspdg":null},{"l":"ZC","a":"26 - 30","e":"OTHERS","m":"2026-04","gr":838381.51,"grg":0.0302,"pspd":47.58,"pspdg":-0.0095},{"l":"ZC","a":"26 - 30","e":"OTHERS","m":"2026-03","gr":813734.92,"grg":0.2938,"pspd":48.04,"pspdg":0.1104},{"l":"ZC","a":"26 - 30","e":"OTHERS","m":"2026-02","gr":628936.17,"grg":-0.0156,"pspd":43.26,"pspdg":0.0538},{"l":"ZC","a":"26 - 30","e":"OTHERS","m":"2026-01","gr":638939.44,"grg":null,"pspd":41.05,"pspdg":null},{"l":"ZC","a":"31 - 36","e":"CHINESE","m":"2026-04","gr":3503536.36,"grg":-0.0138,"pspd":143.41,"pspdg":-0.013},{"l":"ZC","a":"31 - 36","e":"CHINESE","m":"2026-03","gr":3552609.56,"grg":0.0906,"pspd":145.31,"pspdg":-0.0247},{"l":"ZC","a":"31 - 36","e":"CHINESE","m":"2026-02","gr":3257372.03,"grg":0.1394,"pspd":148.98,"pspdg":0.2422},{"l":"ZC","a":"31 - 36","e":"CHINESE","m":"2026-01","gr":2858659.3,"grg":null,"pspd":119.94,"pspdg":null},{"l":"ZC","a":"31 - 36","e":"INDIAN","m":"2026-04","gr":237243.09,"grg":0.0027,"pspd":27.75,"pspdg":0.0087},{"l":"ZC","a":"31 - 36","e":"INDIAN","m":"2026-03","gr":236580.87,"grg":0.2369,"pspd":27.51,"pspdg":0.0276},{"l":"ZC","a":"31 - 36","e":"INDIAN","m":"2026-02","gr":191255.33,"grg":-0.0469,"pspd":26.77,"pspdg":-0.0052},{"l":"ZC","a":"31 - 36","e":"INDIAN","m":"2026-01","gr":200671.59,"grg":null,"pspd":26.91,"pspdg":null},{"l":"ZC","a":"31 - 36","e":"MALAY","m":"2026-04","gr":12354567.0,"grg":0.0558,"pspd":477.03,"pspdg":0.0625},{"l":"ZC","a":"31 - 36","e":"MALAY","m":"2026-03","gr":11700612.67,"grg":0.4113,"pspd":448.95,"pspdg":0.2676},{"l":"ZC","a":"31 - 36","e":"MALAY","m":"2026-02","gr":8290222.61,"grg":-0.1273,"pspd":354.18,"pspdg":-0.0334},{"l":"ZC","a":"31 - 36","e":"MALAY","m":"2026-01","gr":9499525.63,"grg":null,"pspd":366.44,"pspdg":null},{"l":"ZC","a":"31 - 36","e":"OTHERS","m":"2026-04","gr":930804.24,"grg":0.0244,"pspd":49.41,"pspdg":0.0038},{"l":"ZC","a":"31 - 36","e":"OTHERS","m":"2026-03","gr":908621.98,"grg":0.2429,"pspd":49.23,"pspdg":0.0815},{"l":"ZC","a":"31 - 36","e":"OTHERS","m":"2026-02","gr":731017.69,"grg":0.0005,"pspd":45.52,"pspdg":0.0799},{"l":"ZC","a":"31 - 36","e":"OTHERS","m":"2026-01","gr":730647.82,"grg":null,"pspd":42.15,"pspdg":null},{"l":"ZC","a":"37 - 45","e":"CHINESE","m":"2026-04","gr":3725524.19,"grg":-0.0405,"pspd":152.16,"pspdg":-0.0363},{"l":"ZC","a":"37 - 45","e":"CHINESE","m":"2026-03","gr":3883032.62,"grg":0.089,"pspd":157.9,"pspdg":-0.0262},{"l":"ZC","a":"37 - 45","e":"CHINESE","m":"2026-02","gr":3565365.93,"grg":0.1523,"pspd":162.17,"pspdg":0.259},{"l":"ZC","a":"37 - 45","e":"CHINESE","m":"2026-01","gr":3093933.97,"grg":null,"pspd":128.8,"pspdg":null},{"l":"ZC","a":"37 - 45","e":"INDIAN","m":"2026-04","gr":196690.24,"grg":0.0274,"pspd":26.51,"pspdg":0.0133},{"l":"ZC","a":"37 - 45","e":"INDIAN","m":"2026-03","gr":191442.17,"grg":0.2432,"pspd":26.16,"pspdg":0.0548},{"l":"ZC","a":"37 - 45","e":"INDIAN","m":"2026-02","gr":153989.8,"grg":-0.0687,"pspd":24.8,"pspdg":-0.015},{"l":"ZC","a":"37 - 45","e":"INDIAN","m":"2026-01","gr":165352.48,"grg":null,"pspd":25.18,"pspdg":null},{"l":"ZC","a":"37 - 45","e":"MALAY","m":"2026-04","gr":11261190.93,"grg":0.0557,"pspd":435.57,"pspdg":0.0592},{"l":"ZC","a":"37 - 45","e":"MALAY","m":"2026-03","gr":10666227.86,"grg":0.3204,"pspd":411.19,"pspdg":0.1891},{"l":"ZC","a":"37 - 45","e":"MALAY","m":"2026-02","gr":8077659.36,"grg":-0.1207,"pspd":345.79,"pspdg":-0.0262},{"l":"ZC","a":"37 - 45","e":"MALAY","m":"2026-01","gr":9187054.99,"grg":null,"pspd":355.12,"pspdg":null},{"l":"ZC","a":"37 - 45","e":"OTHERS","m":"2026-04","gr":907357.62,"grg":0.001,"pspd":47.41,"pspdg":-0.025},{"l":"ZC","a":"37 - 45","e":"OTHERS","m":"2026-03","gr":906373.45,"grg":0.2137,"pspd":48.64,"pspdg":0.0671},{"l":"ZC","a":"37 - 45","e":"OTHERS","m":"2026-02","gr":746733.93,"grg":-0.0044,"pspd":45.58,"pspdg":0.0765},{"l":"ZC","a":"37 - 45","e":"OTHERS","m":"2026-01","gr":750070.88,"grg":null,"pspd":42.34,"pspdg":null},{"l":"ZC","a":"46 - 80","e":"CHINESE","m":"2026-04","gr":1887323.38,"grg":-0.051,"pspd":87.06,"pspdg":-0.049},{"l":"ZC","a":"46 - 80","e":"CHINESE","m":"2026-03","gr":1988775.93,"grg":0.0968,"pspd":91.55,"pspdg":-0.0297},{"l":"ZC","a":"46 - 80","e":"CHINESE","m":"2026-02","gr":1813229.55,"grg":0.1229,"pspd":94.36,"pspdg":0.2091},{"l":"ZC","a":"46 - 80","e":"CHINESE","m":"2026-01","gr":1614692.12,"grg":null,"pspd":78.03,"pspdg":null},{"l":"ZC","a":"46 - 80","e":"INDIAN","m":"2026-04","gr":82857.34,"grg":-0.0307,"pspd":22.6,"pspdg":-0.0044},{"l":"ZC","a":"46 - 80","e":"INDIAN","m":"2026-03","gr":85490.12,"grg":0.2308,"pspd":22.69,"pspdg":0.0111},{"l":"ZC","a":"46 - 80","e":"INDIAN","m":"2026-02","gr":69454.64,"grg":-0.08,"pspd":22.44,"pspdg":0.0112},{"l":"ZC","a":"46 - 80","e":"INDIAN","m":"2026-01","gr":75500.51,"grg":null,"pspd":22.19,"pspdg":null},{"l":"ZC","a":"46 - 80","e":"MALAY","m":"2026-04","gr":2843533.43,"grg":0.0593,"pspd":119.07,"pspdg":0.011},{"l":"ZC","a":"46 - 80","e":"MALAY","m":"2026-03","gr":2684319.91,"grg":0.2456,"pspd":117.77,"pspdg":0.1144},{"l":"ZC","a":"46 - 80","e":"MALAY","m":"2026-02","gr":2154879.94,"grg":-0.1178,"pspd":105.68,"pspdg":0.0105},{"l":"ZC","a":"46 - 80","e":"MALAY","m":"2026-01","gr":2442734.72,"grg":null,"pspd":104.58,"pspdg":null},{"l":"ZC","a":"46 - 80","e":"OTHERS","m":"2026-04","gr":333914.63,"grg":-0.0342,"pspd":29.58,"pspdg":-0.0345},{"l":"ZC","a":"46 - 80","e":"OTHERS","m":"2026-03","gr":345759.94,"grg":0.1693,"pspd":30.64,"pspdg":0.0179},{"l":"ZC","a":"46 - 80","e":"OTHERS","m":"2026-02","gr":295695.3,"grg":0.0322,"pspd":30.1,"pspdg":0.0897},{"l":"ZC","a":"46 - 80","e":"OTHERS","m":"2026-01","gr":286467.06,"grg":null,"pspd":27.62,"pspdg":null},{"l":"ZC","a":"81 and above","e":"CHINESE","m":"2026-04","gr":4866.5,"grg":0.2626,"pspd":15.07,"pspdg":-0.0971},{"l":"ZC","a":"81 and above","e":"CHINESE","m":"2026-03","gr":3854.14,"grg":0.3176,"pspd":16.68,"pspdg":-0.0419},{"l":"ZC","a":"81 and above","e":"CHINESE","m":"2026-02","gr":2924.95,"grg":-0.1538,"pspd":17.41,"pspdg":0.0175},{"l":"ZC","a":"81 and above","e":"CHINESE","m":"2026-01","gr":3456.89,"grg":null,"pspd":17.11,"pspdg":null},{"l":"ZC","a":"81 and above","e":"INDIAN","m":"2026-04","gr":282.87,"grg":0.795,"pspd":16.64,"pspdg":0.0558},{"l":"ZC","a":"81 and above","e":"INDIAN","m":"2026-03","gr":157.58,"grg":-0.4359,"pspd":15.76,"pspdg":-0.0973},{"l":"ZC","a":"81 and above","e":"INDIAN","m":"2026-02","gr":279.37,"grg":0.0574,"pspd":17.46,"pspdg":0.3217},{"l":"ZC","a":"81 and above","e":"INDIAN","m":"2026-01","gr":264.2,"grg":null,"pspd":13.21,"pspdg":null},{"l":"ZC","a":"81 and above","e":"MALAY","m":"2026-04","gr":10060,"grg":0.189,"pspd":20.08,"pspdg":-0.1146},{"l":"ZC","a":"81 and above","e":"MALAY","m":"2026-03","gr":8460.19,"grg":0.6771,"pspd":22.68,"pspdg":0.1328},{"l":"ZC","a":"81 and above","e":"MALAY","m":"2026-02","gr":5044.5,"grg":0.119,"pspd":20.02,"pspdg":-0.0098},{"l":"ZC","a":"81 and above","e":"MALAY","m":"2026-01","gr":4507.83,"grg":null,"pspd":20.21,"pspdg":null},{"l":"ZC","a":"81 and above","e":"OTHERS","m":"2026-04","gr":1242.69,"grg":-0.1896,"pspd":15.53,"pspdg":-0.1289},{"l":"ZC","a":"81 and above","e":"OTHERS","m":"2026-03","gr":1533.57,"grg":0.4792,"pspd":17.83,"pspdg":0.2212},{"l":"ZC","a":"81 and above","e":"OTHERS","m":"2026-02","gr":1036.75,"grg":-0.2142,"pspd":14.6,"pspdg":-0.0706},{"l":"ZC","a":"81 and above","e":"OTHERS","m":"2026-01","gr":1319.42,"grg":null,"pspd":15.71,"pspdg":null},{"l":"ZC","a":"Below 12","e":"CHINESE","m":"2026-04","gr":54485.45,"grg":0.1246,"pspd":22.23,"pspdg":-0.0271},{"l":"ZC","a":"Below 12","e":"CHINESE","m":"2026-03","gr":48445.65,"grg":0.1685,"pspd":22.85,"pspdg":-0.023},{"l":"ZC","a":"Below 12","e":"CHINESE","m":"2026-02","gr":41457.52,"grg":0.0993,"pspd":23.4,"pspdg":0.0138},{"l":"ZC","a":"Below 12","e":"CHINESE","m":"2026-01","gr":37711.61,"grg":null,"pspd":23.08,"pspdg":null},{"l":"ZC","a":"Below 12","e":"INDIAN","m":"2026-04","gr":2827.64,"grg":-0.0074,"pspd":20.95,"pspdg":-0.1104},{"l":"ZC","a":"Below 12","e":"INDIAN","m":"2026-03","gr":2848.79,"grg":0.2462,"pspd":23.54,"pspdg":0.0504},{"l":"ZC","a":"Below 12","e":"INDIAN","m":"2026-02","gr":2285.89,"grg":-0.0028,"pspd":22.41,"pspdg":-0.0418},{"l":"ZC","a":"Below 12","e":"INDIAN","m":"2026-01","gr":2292.35,"grg":null,"pspd":23.39,"pspdg":null},{"l":"ZC","a":"Below 12","e":"MALAY","m":"2026-04","gr":136427.52,"grg":0.0699,"pspd":26.6,"pspdg":-0.0663},{"l":"ZC","a":"Below 12","e":"MALAY","m":"2026-03","gr":127502.86,"grg":0.4526,"pspd":28.5,"pspdg":0.0944},{"l":"ZC","a":"Below 12","e":"MALAY","m":"2026-02","gr":87771.43,"grg":-0.2102,"pspd":26.04,"pspdg":-0.0377},{"l":"ZC","a":"Below 12","e":"MALAY","m":"2026-01","gr":111139.87,"grg":null,"pspd":27.05,"pspdg":null},{"l":"ZC","a":"Below 12","e":"OTHERS","m":"2026-04","gr":18684.86,"grg":0.0789,"pspd":22.84,"pspdg":-0.0226},{"l":"ZC","a":"Below 12","e":"OTHERS","m":"2026-03","gr":17317.7,"grg":0.337,"pspd":23.37,"pspdg":0.0372},{"l":"ZC","a":"Below 12","e":"OTHERS","m":"2026-02","gr":12952.52,"grg":-0.1514,"pspd":22.53,"pspdg":-0.0347},{"l":"ZC","a":"Below 12","e":"OTHERS","m":"2026-01","gr":15264.7,"grg":null,"pspd":23.34,"pspdg":null},{"l":"ZC","a":"Invalid dob","e":"CHINESE","m":"2026-04","gr":1720.5,"grg":-0.2237,"pspd":17.92,"pspdg":-0.159},{"l":"ZC","a":"Invalid dob","e":"CHINESE","m":"2026-03","gr":2216.36,"grg":-0.0199,"pspd":21.31,"pspdg":0.0461},{"l":"ZC","a":"Invalid dob","e":"CHINESE","m":"2026-02","gr":2261.46,"grg":0.1292,"pspd":20.37,"pspdg":0.0886},{"l":"ZC","a":"Invalid dob","e":"CHINESE","m":"2026-01","gr":2002.59,"grg":null,"pspd":18.72,"pspdg":null},{"l":"ZC","a":"Invalid dob","e":"INDIAN","m":"2026-04","gr":562.89,"grg":-0.0481,"pspd":18.16,"pspdg":-0.0482},{"l":"ZC","a":"Invalid dob","e":"INDIAN","m":"2026-03","gr":591.39,"grg":1.8623,"pspd":19.08,"pspdg":0.0154},{"l":"ZC","a":"Invalid dob","e":"INDIAN","m":"2026-02","gr":206.61,"grg":1.3857,"pspd":18.78,"pspdg":0.3014},{"l":"ZC","a":"Invalid dob","e":"INDIAN","m":"2026-01","gr":86.6,"grg":null,"pspd":14.43,"pspdg":null},{"l":"ZC","a":"Invalid dob","e":"MALAY","m":"2026-04","gr":8063.05,"grg":-0.0426,"pspd":22.21,"pspdg":-0.1087},{"l":"ZC","a":"Invalid dob","e":"MALAY","m":"2026-03","gr":8422.34,"grg":0.5757,"pspd":24.92,"pspdg":0.091},{"l":"ZC","a":"Invalid dob","e":"MALAY","m":"2026-02","gr":5345.12,"grg":-0.0719,"pspd":22.84,"pspdg":0.0549},{"l":"ZC","a":"Invalid dob","e":"MALAY","m":"2026-01","gr":5759.56,"grg":null,"pspd":21.65,"pspdg":null},{"l":"ZC","a":"Invalid dob","e":"NULL","m":"2026-04","gr":396.4,"grg":15.7398,"pspd":26.43,"pspdg":0.1161},{"l":"ZC","a":"Invalid dob","e":"NULL","m":"2026-03","gr":23.68,"grg":-0.4908,"pspd":23.68,"pspdg":0.0184},{"l":"ZC","a":"Invalid dob","e":"NULL","m":"2026-02","gr":46.51,"grg":2.5476,"pspd":23.26,"pspdg":0.7742},{"l":"ZC","a":"Invalid dob","e":"NULL","m":"2026-01","gr":13.11,"grg":null,"pspd":13.11,"pspdg":null},{"l":"ZC","a":"Invalid dob","e":"OTHERS","m":"2026-04","gr":556.54,"grg":-0.4989,"pspd":19.19,"pspdg":-0.2049},{"l":"ZC","a":"Invalid dob","e":"OTHERS","m":"2026-03","gr":1110.69,"grg":0.282,"pspd":24.15,"pspdg":0.1706},{"l":"ZC","a":"Invalid dob","e":"OTHERS","m":"2026-02","gr":866.37,"grg":0.5116,"pspd":20.63,"pspdg":0.1876},{"l":"ZC","a":"Invalid dob","e":"OTHERS","m":"2026-01","gr":573.12,"grg":null,"pspd":17.37,"pspdg":null},{"l":"ZS","a":"12 - 16","e":"CHINESE","m":"2026-04","gr":513.31,"grg":-0.3273,"pspd":22.32,"pspdg":-0.0934},{"l":"ZS","a":"12 - 16","e":"CHINESE","m":"2026-03","gr":763.15,"grg":0.4373,"pspd":24.62,"pspdg":-0.0265},{"l":"ZS","a":"12 - 16","e":"CHINESE","m":"2026-02","gr":530.95,"grg":-0.0104,"pspd":25.28,"pspdg":0.2722},{"l":"ZS","a":"12 - 16","e":"CHINESE","m":"2026-01","gr":536.55,"grg":null,"pspd":19.87,"pspdg":null},{"l":"ZS","a":"12 - 16","e":"INDIAN","m":"2026-04","gr":178.86,"grg":5.3628,"pspd":44.72,"pspdg":0.5908},{"l":"ZS","a":"12 - 16","e":"INDIAN","m":"2026-03","gr":28.11,"grg":null,"pspd":28.11,"pspdg":null},{"l":"ZS","a":"12 - 16","e":"MALAY","m":"2026-04","gr":81.51,"grg":-0.6532,"pspd":20.38,"pspdg":-0.3065},{"l":"ZS","a":"12 - 16","e":"MALAY","m":"2026-03","gr":235.1,"grg":0.3348,"pspd":29.39,"pspdg":0.1681},{"l":"ZS","a":"12 - 16","e":"MALAY","m":"2026-02","gr":176.13,"grg":-0.3774,"pspd":25.16,"pspdg":0.067},{"l":"ZS","a":"12 - 16","e":"MALAY","m":"2026-01","gr":282.93,"grg":null,"pspd":23.58,"pspdg":null},{"l":"ZS","a":"12 - 16","e":"OTHERS","m":"2026-04","gr":30.01,"grg":0.1871,"pspd":30.01,"pspdg":0.1871},{"l":"ZS","a":"12 - 16","e":"OTHERS","m":"2026-02","gr":25.28,"grg":null,"pspd":25.28,"pspdg":null},{"l":"ZS","a":"17 - 21","e":"CHINESE","m":"2026-04","gr":6119.23,"grg":-0.0787,"pspd":48.95,"pspdg":-0.0272},{"l":"ZS","a":"17 - 21","e":"CHINESE","m":"2026-03","gr":6642.6,"grg":0.1552,"pspd":50.32,"pspdg":-0.0636},{"l":"ZS","a":"17 - 21","e":"CHINESE","m":"2026-02","gr":5749.96,"grg":-0.198,"pspd":53.74,"pspdg":-0.0106},{"l":"ZS","a":"17 - 21","e":"CHINESE","m":"2026-01","gr":7169.95,"grg":null,"pspd":54.32,"pspdg":null},{"l":"ZS","a":"17 - 21","e":"INDIAN","m":"2026-04","gr":191.14,"grg":-0.4528,"pspd":15.93,"pspdg":-0.0426},{"l":"ZS","a":"17 - 21","e":"INDIAN","m":"2026-03","gr":349.35,"grg":1.3766,"pspd":16.64,"pspdg":-0.0947},{"l":"ZS","a":"17 - 21","e":"INDIAN","m":"2026-02","gr":146.99,"grg":-0.2233,"pspd":18.37,"pspdg":0.068},{"l":"ZS","a":"17 - 21","e":"INDIAN","m":"2026-01","gr":189.25,"grg":null,"pspd":17.2,"pspdg":null},{"l":"ZS","a":"17 - 21","e":"MALAY","m":"2026-04","gr":6004.03,"grg":0.3379,"pspd":57.73,"pspdg":0.1707},{"l":"ZS","a":"17 - 21","e":"MALAY","m":"2026-03","gr":4487.42,"grg":0.2568,"pspd":49.31,"pspdg":0.0219},{"l":"ZS","a":"17 - 21","e":"MALAY","m":"2026-02","gr":3570.33,"grg":-0.4136,"pspd":48.25,"pspdg":-0.1362},{"l":"ZS","a":"17 - 21","e":"MALAY","m":"2026-01","gr":6088.77,"grg":null,"pspd":55.86,"pspdg":null},{"l":"ZS","a":"17 - 21","e":"OTHERS","m":"2026-04","gr":650.03,"grg":-0.3288,"pspd":23.22,"pspdg":-0.1371},{"l":"ZS","a":"17 - 21","e":"OTHERS","m":"2026-03","gr":968.51,"grg":0.3734,"pspd":26.9,"pspdg":0.1446},{"l":"ZS","a":"17 - 21","e":"OTHERS","m":"2026-02","gr":705.18,"grg":-0.1921,"pspd":23.51,"pspdg":-0.0033},{"l":"ZS","a":"17 - 21","e":"OTHERS","m":"2026-01","gr":872.86,"grg":null,"pspd":23.59,"pspdg":null},{"l":"ZS","a":"22 - 25","e":"CHINESE","m":"2026-04","gr":15253.43,"grg":-0.0399,"pspd":108.18,"pspdg":-0.0263},{"l":"ZS","a":"22 - 25","e":"CHINESE","m":"2026-03","gr":15888.16,"grg":0.1896,"pspd":111.11,"pspdg":0.0731},{"l":"ZS","a":"22 - 25","e":"CHINESE","m":"2026-02","gr":13355.55,"grg":-0.1878,"pspd":103.53,"pspdg":-0.0997},{"l":"ZS","a":"22 - 25","e":"CHINESE","m":"2026-01","gr":16445.11,"grg":null,"pspd":115,"pspdg":null},{"l":"ZS","a":"22 - 25","e":"INDIAN","m":"2026-04","gr":849.53,"grg":0.2126,"pspd":20.23,"pspdg":-0.1626},{"l":"ZS","a":"22 - 25","e":"INDIAN","m":"2026-03","gr":700.57,"grg":0.5298,"pspd":24.16,"pspdg":0.1604},{"l":"ZS","a":"22 - 25","e":"INDIAN","m":"2026-02","gr":457.92,"grg":-0.2323,"pspd":20.81,"pspdg":0.0467},{"l":"ZS","a":"22 - 25","e":"INDIAN","m":"2026-01","gr":596.52,"grg":null,"pspd":19.88,"pspdg":null},{"l":"ZS","a":"22 - 25","e":"MALAY","m":"2026-04","gr":15558.31,"grg":0.2914,"pspd":111.93,"pspdg":0.1799},{"l":"ZS","a":"22 - 25","e":"MALAY","m":"2026-03","gr":12047.44,"grg":0.0215,"pspd":94.86,"pspdg":-0.1151},{"l":"ZS","a":"22 - 25","e":"MALAY","m":"2026-02","gr":11793.61,"grg":-0.3892,"pspd":107.21,"pspdg":-0.2338},{"l":"ZS","a":"22 - 25","e":"MALAY","m":"2026-01","gr":19310.63,"grg":null,"pspd":139.93,"pspdg":null},{"l":"ZS","a":"22 - 25","e":"OTHERS","m":"2026-04","gr":2662.93,"grg":0.6132,"pspd":32.88,"pspdg":0.4537},{"l":"ZS","a":"22 - 25","e":"OTHERS","m":"2026-03","gr":1650.68,"grg":-0.2804,"pspd":22.61,"pspdg":-0.3002},{"l":"ZS","a":"22 - 25","e":"OTHERS","m":"2026-02","gr":2293.98,"grg":-0.2413,"pspd":32.31,"pspdg":-0.0276},{"l":"ZS","a":"22 - 25","e":"OTHERS","m":"2026-01","gr":3023.58,"grg":null,"pspd":33.23,"pspdg":null},{"l":"ZS","a":"26 - 30","e":"CHINESE","m":"2026-04","gr":22294.29,"grg":-0.0587,"pspd":157,"pspdg":-0.0521},{"l":"ZS","a":"26 - 30","e":"CHINESE","m":"2026-03","gr":23685.88,"grg":0.1123,"pspd":165.64,"pspdg":-0.0121},{"l":"ZS","a":"26 - 30","e":"CHINESE","m":"2026-02","gr":21294.47,"grg":-0.2055,"pspd":167.67,"pspdg":-0.0991},{"l":"ZS","a":"26 - 30","e":"CHINESE","m":"2026-01","gr":26803.47,"grg":null,"pspd":186.14,"pspdg":null},{"l":"ZS","a":"26 - 30","e":"INDIAN","m":"2026-04","gr":736.79,"grg":-0.048,"pspd":27.29,"pspdg":0.199},{"l":"ZS","a":"26 - 30","e":"INDIAN","m":"2026-03","gr":773.94,"grg":0.3699,"pspd":22.76,"pspdg":0.0075},{"l":"ZS","a":"26 - 30","e":"INDIAN","m":"2026-02","gr":564.94,"grg":-0.0997,"pspd":22.6,"pspdg":0.1161},{"l":"ZS","a":"26 - 30","e":"INDIAN","m":"2026-01","gr":627.53,"grg":null,"pspd":20.24,"pspdg":null},{"l":"ZS","a":"26 - 30","e":"MALAY","m":"2026-04","gr":22982.09,"grg":0.4953,"pspd":161.85,"pspdg":0.4321},{"l":"ZS","a":"26 - 30","e":"MALAY","m":"2026-03","gr":15369.17,"grg":-0.071,"pspd":113.01,"pspdg":-0.1803},{"l":"ZS","a":"26 - 30","e":"MALAY","m":"2026-02","gr":16544.76,"grg":-0.4767,"pspd":137.87,"pspdg":-0.3676},{"l":"ZS","a":"26 - 30","e":"MALAY","m":"2026-01","gr":31618.38,"grg":null,"pspd":218.06,"pspdg":null},{"l":"ZS","a":"26 - 30","e":"OTHERS","m":"2026-04","gr":3355.1,"grg":0.0047,"pspd":34.59,"pspdg":-0.0885},{"l":"ZS","a":"26 - 30","e":"OTHERS","m":"2026-03","gr":3339.29,"grg":0.3427,"pspd":37.95,"pspdg":0.19},{"l":"ZS","a":"26 - 30","e":"OTHERS","m":"2026-02","gr":2486.87,"grg":-0.2624,"pspd":31.88,"pspdg":-0.0353},{"l":"ZS","a":"26 - 30","e":"OTHERS","m":"2026-01","gr":3371.84,"grg":null,"pspd":33.06,"pspdg":null},{"l":"ZS","a":"31 - 36","e":"CHINESE","m":"2026-04","gr":22223.71,"grg":-0.1051,"pspd":157.62,"pspdg":-0.0861},{"l":"ZS","a":"31 - 36","e":"CHINESE","m":"2026-03","gr":24835.6,"grg":0.1762,"pspd":172.47,"pspdg":0.0455},{"l":"ZS","a":"31 - 36","e":"CHINESE","m":"2026-02","gr":21113.81,"grg":-0.1764,"pspd":164.95,"pspdg":-0.067},{"l":"ZS","a":"31 - 36","e":"CHINESE","m":"2026-01","gr":25637.08,"grg":null,"pspd":176.81,"pspdg":null},{"l":"ZS","a":"31 - 36","e":"INDIAN","m":"2026-04","gr":599.27,"grg":-0.3323,"pspd":19.98,"pspdg":-0.288},{"l":"ZS","a":"31 - 36","e":"INDIAN","m":"2026-03","gr":897.62,"grg":0.1344,"pspd":28.05,"pspdg":0.1697},{"l":"ZS","a":"31 - 36","e":"INDIAN","m":"2026-02","gr":791.23,"grg":-0.2475,"pspd":23.98,"pspdg":-0.0423},{"l":"ZS","a":"31 - 36","e":"INDIAN","m":"2026-01","gr":1051.6,"grg":null,"pspd":25.04,"pspdg":null},{"l":"ZS","a":"31 - 36","e":"MALAY","m":"2026-04","gr":20259.96,"grg":0.4417,"pspd":145.76,"pspdg":0.3691},{"l":"ZS","a":"31 - 36","e":"MALAY","m":"2026-03","gr":14052.57,"grg":-0.1125,"pspd":106.46,"pspdg":-0.1797},{"l":"ZS","a":"31 - 36","e":"MALAY","m":"2026-02","gr":15834.29,"grg":-0.3525,"pspd":129.79,"pspdg":-0.2464},{"l":"ZS","a":"31 - 36","e":"MALAY","m":"2026-01","gr":24456.86,"grg":null,"pspd":172.23,"pspdg":null},{"l":"ZS","a":"31 - 36","e":"OTHERS","m":"2026-04","gr":2496.58,"grg":-0.0741,"pspd":29.72,"pspdg":-0.0409},{"l":"ZS","a":"31 - 36","e":"OTHERS","m":"2026-03","gr":2696.6,"grg":0.0363,"pspd":31,"pspdg":-0.0946},{"l":"ZS","a":"31 - 36","e":"OTHERS","m":"2026-02","gr":2601.98,"grg":0.0463,"pspd":34.24,"pspdg":0.1564},{"l":"ZS","a":"31 - 36","e":"OTHERS","m":"2026-01","gr":2486.64,"grg":null,"pspd":29.6,"pspdg":null},{"l":"ZS","a":"37 - 45","e":"CHINESE","m":"2026-04","gr":21076.75,"grg":-0.1036,"pspd":149.48,"pspdg":-0.0845},{"l":"ZS","a":"37 - 45","e":"CHINESE","m":"2026-03","gr":23514.08,"grg":0.1508,"pspd":163.29,"pspdg":0.0309},{"l":"ZS","a":"37 - 45","e":"CHINESE","m":"2026-02","gr":20432.7,"grg":-0.1586,"pspd":158.39,"pspdg":-0.0608},{"l":"ZS","a":"37 - 45","e":"CHINESE","m":"2026-01","gr":24286.95,"grg":null,"pspd":168.66,"pspdg":null},{"l":"ZS","a":"37 - 45","e":"INDIAN","m":"2026-04","gr":634.74,"grg":0.3013,"pspd":21.89,"pspdg":0.0767},{"l":"ZS","a":"37 - 45","e":"INDIAN","m":"2026-03","gr":487.77,"grg":-0.2723,"pspd":20.32,"pspdg":0.0309},{"l":"ZS","a":"37 - 45","e":"INDIAN","m":"2026-02","gr":670.29,"grg":-0.3423,"pspd":19.71,"pspdg":-0.1489},{"l":"ZS","a":"37 - 45","e":"INDIAN","m":"2026-01","gr":1019.21,"grg":null,"pspd":23.16,"pspdg":null},{"l":"ZS","a":"37 - 45","e":"MALAY","m":"2026-04","gr":11297.04,"grg":0.2341,"pspd":83.68,"pspdg":0.1061},{"l":"ZS","a":"37 - 45","e":"MALAY","m":"2026-03","gr":9153.43,"grg":-0.1494,"pspd":75.65,"pspdg":-0.1846},{"l":"ZS","a":"37 - 45","e":"MALAY","m":"2026-02","gr":10761.85,"grg":-0.3236,"pspd":92.77,"pspdg":-0.1837},{"l":"ZS","a":"37 - 45","e":"MALAY","m":"2026-01","gr":15912.41,"grg":null,"pspd":113.66,"pspdg":null},{"l":"ZS","a":"37 - 45","e":"OTHERS","m":"2026-04","gr":3667.6,"grg":0.3249,"pspd":34.93,"pspdg":0.1482},{"l":"ZS","a":"37 - 45","e":"OTHERS","m":"2026-03","gr":2768.13,"grg":-0.163,"pspd":30.42,"pspdg":-0.1631},{"l":"ZS","a":"37 - 45","e":"OTHERS","m":"2026-02","gr":3307.39,"grg":-0.0618,"pspd":36.34,"pspdg":0.1236},{"l":"ZS","a":"37 - 45","e":"OTHERS","m":"2026-01","gr":3525.28,"grg":null,"pspd":32.34,"pspdg":null},{"l":"ZS","a":"46 - 80","e":"CHINESE","m":"2026-04","gr":9925.7,"grg":-0.1393,"pspd":73.52,"pspdg":-0.1137},{"l":"ZS","a":"46 - 80","e":"CHINESE","m":"2026-03","gr":11532.39,"grg":0.2331,"pspd":82.97,"pspdg":0.1089},{"l":"ZS","a":"46 - 80","e":"CHINESE","m":"2026-02","gr":9352.29,"grg":-0.1725,"pspd":74.82,"pspdg":-0.0798},{"l":"ZS","a":"46 - 80","e":"CHINESE","m":"2026-01","gr":11301.96,"grg":null,"pspd":81.31,"pspdg":null},{"l":"ZS","a":"46 - 80","e":"INDIAN","m":"2026-04","gr":263.03,"grg":0.6151,"pspd":20.23,"pspdg":0.2424},{"l":"ZS","a":"46 - 80","e":"INDIAN","m":"2026-03","gr":162.85,"grg":-0.2164,"pspd":16.29,"pspdg":-0.4516},{"l":"ZS","a":"46 - 80","e":"INDIAN","m":"2026-02","gr":207.84,"grg":-0.2569,"pspd":29.69,"pspdg":0.2737},{"l":"ZS","a":"46 - 80","e":"INDIAN","m":"2026-01","gr":279.73,"grg":null,"pspd":23.31,"pspdg":null},{"l":"ZS","a":"46 - 80","e":"MALAY","m":"2026-04","gr":3503.94,"grg":0.0392,"pspd":36.5,"pspdg":-0.1554},{"l":"ZS","a":"46 - 80","e":"MALAY","m":"2026-03","gr":3371.49,"grg":0.0737,"pspd":43.22,"pspdg":-0.0226},{"l":"ZS","a":"46 - 80","e":"MALAY","m":"2026-02","gr":3140.05,"grg":-0.3597,"pspd":44.23,"pspdg":-0.1251},{"l":"ZS","a":"46 - 80","e":"MALAY","m":"2026-01","gr":4904.27,"grg":null,"pspd":50.56,"pspdg":null},{"l":"ZS","a":"46 - 80","e":"OTHERS","m":"2026-04","gr":1667.46,"grg":-0.2091,"pspd":26.89,"pspdg":-0.1072},{"l":"ZS","a":"46 - 80","e":"OTHERS","m":"2026-03","gr":2108.53,"grg":0.562,"pspd":30.12,"pspdg":0.2719},{"l":"ZS","a":"46 - 80","e":"OTHERS","m":"2026-02","gr":1349.86,"grg":-0.1639,"pspd":23.68,"pspdg":-0.0466},{"l":"ZS","a":"46 - 80","e":"OTHERS","m":"2026-01","gr":1614.59,"grg":null,"pspd":24.84,"pspdg":null},{"l":"ZS","a":"81 and above","e":"CHINESE","m":"2026-03","gr":11.23,"grg":-0.5,"pspd":11.23,"pspdg":-0.5},{"l":"ZS","a":"81 and above","e":"CHINESE","m":"2026-02","gr":22.46,"grg":-0.7857,"pspd":22.46,"pspdg":0.2856},{"l":"ZS","a":"81 and above","e":"CHINESE","m":"2026-01","gr":104.84,"grg":null,"pspd":17.47,"pspdg":null},{"l":"ZS","a":"81 and above","e":"MALAY","m":"2026-02","gr":25.29,"grg":null,"pspd":25.29,"pspdg":null},{"l":"ZS","a":"81 and above","e":"OTHERS","m":"2026-04","gr":14.06,"grg":null,"pspd":14.06,"pspdg":null},{"l":"ZS","a":"Below 12","e":"CHINESE","m":"2026-04","gr":374.53,"grg":3.0842,"pspd":20.81,"pspdg":0.1346},{"l":"ZS","a":"Below 12","e":"CHINESE","m":"2026-03","gr":91.7,"grg":-0.2573,"pspd":18.34,"pspdg":-0.1088},{"l":"ZS","a":"Below 12","e":"CHINESE","m":"2026-02","gr":123.48,"grg":1.1282,"pspd":20.58,"pspdg":0.0641},{"l":"ZS","a":"Below 12","e":"CHINESE","m":"2026-01","gr":58.02,"grg":null,"pspd":19.34,"pspdg":null},{"l":"ZS","a":"Below 12","e":"INDIAN","m":"2026-02","gr":29.05,"grg":-0.0316,"pspd":29.05,"pspdg":-0.0316},{"l":"ZS","a":"Below 12","e":"INDIAN","m":"2026-01","gr":30,"grg":null,"pspd":30,"pspdg":null},{"l":"ZS","a":"Below 12","e":"MALAY","m":"2026-04","gr":106.8,"grg":0.3572,"pspd":21.36,"pspdg":0.357},{"l":"ZS","a":"Below 12","e":"MALAY","m":"2026-03","gr":78.69,"grg":-0.3111,"pspd":15.74,"pspdg":-0.3111},{"l":"ZS","a":"Below 12","e":"MALAY","m":"2026-02","gr":114.24,"grg":-0.5767,"pspd":22.85,"pspdg":-0.1533},{"l":"ZS","a":"Below 12","e":"MALAY","m":"2026-01","gr":269.89,"grg":null,"pspd":26.99,"pspdg":null},{"l":"ZS","a":"Below 12","e":"OTHERS","m":"2026-04","gr":50.56,"grg":0,"pspd":25.28,"pspdg":0.5002},{"l":"ZS","a":"Below 12","e":"OTHERS","m":"2026-03","gr":50.56,"grg":0.0189,"pspd":16.85,"pspdg":-0.3208},{"l":"ZS","a":"Below 12","e":"OTHERS","m":"2026-01","gr":49.62,"grg":null,"pspd":24.81,"pspdg":null}]};
+
+// Fold NULL ethnicity into OTHERS so unclassified-ethnicity records flow
+// into the Others bucket everywhere downstream (heatmap, leaderboard, bar).
+// This mutates DEMO_DATA in place — applied once at module load.
+for (const r of DEMO_DATA.records) {
+  if (r.e === 'NULL') r.e = 'OTHERS';
+}
+DEMO_DATA.eths = DEMO_DATA.eths.filter(e => e !== 'NULL');
+
+const demoState = { month: DEMO_DATA.months[DEMO_DATA.months.length - 1], sort: 'gr' };
+const ETH_LABEL = { CHINESE:'Chinese', MALAY:'Malay', INDIAN:'Indian', OTHERS:'Others', NULL:'—' };
+const ETH_COLOR = { CHINESE:'#2b7fc4', MALAY:'#c97d09', INDIAN:'#1f9d52', OTHERS:'#7c4fd0', NULL:'#94a1b2' };
+
+const demoFmtRM   = v => v == null ? '—' :
+  Math.abs(v) >= 1e6 ? (v/1e6).toFixed(2)+'M' :
+  Math.abs(v) >= 1e3 ? (v/1e3).toFixed(1)+'K' : v.toFixed(0);
+const demoFmtPct  = v => v == null ? '—' : (v >= 0 ? '+' : '') + (v*100).toFixed(1) + '%';
+const demoFmtPSPD = v => v == null ? '—' : v.toFixed(2);
+
+function demoRecs(brand) {
+  if (brand === 'overall') return DEMO_DATA.records;
+  const tag = brand === 'zc' ? 'ZC' : 'ZS';
+  return DEMO_DATA.records.filter(r => r.l === tag);
+}
+
+function demoAggMonth(recs, month) {
+  const grid = new Map();
+  for (const r of recs) {
+    if (r.m !== month) continue;
+    const k = r.a + '||' + r.e;
+    let g = grid.get(k);
+    if (!g) { g = { age:r.a, eth:r.e, gr:0, grg_n:0, grg_w:0, pspd_n:0, pspd_w:0, pspdg_n:0, pspdg_w:0 }; grid.set(k, g); }
+    g.gr += r.gr || 0;
+    if (r.pspd  != null && r.gr != null) { g.pspd_n  += r.pspd  * r.gr; g.pspd_w  += r.gr; }
+    if (r.grg   != null && r.gr != null) { g.grg_n   += r.grg   * r.gr; g.grg_w   += r.gr; }
+    if (r.pspdg != null && r.gr != null) { g.pspdg_n += r.pspdg * r.gr; g.pspdg_w += r.gr; }
+  }
+  const out = [];
+  for (const g of grid.values()) out.push({
+    age:g.age, eth:g.eth, gr:g.gr,
+    grg:   g.grg_w   ? g.grg_n   / g.grg_w   : null,
+    pspd:  g.pspd_w  ? g.pspd_n  / g.pspd_w  : null,
+    pspdg: g.pspdg_w ? g.pspdg_n / g.pspdg_w : null,
+  });
+  return out;
+}
+
+function demoLerp(a, b, t) {
+  const ah = parseInt(a.slice(1),16), bh = parseInt(b.slice(1),16);
+  const ar=(ah>>16)&255, ag=(ah>>8)&255, abl=ah&255;
+  const br=(bh>>16)&255, bg=(bh>>8)&255, bbl=bh&255;
+  return `rgb(${Math.round(ar+(br-ar)*t)},${Math.round(ag+(bg-ag)*t)},${Math.round(abl+(bbl-abl)*t)})`;
+}
+function demoHeatRev(v, max) {
+  if (v <= 0 || max <= 0) return 'transparent';
+  const t = Math.pow(v/max, 0.55);
+  const stops = ['#f4f6fa','#c2d6ea','#80acd0','#4f8fc4','#2b7fc4','#1c5e94'];
+  const i = Math.min(stops.length-2, Math.floor(t*(stops.length-1)));
+  return demoLerp(stops[i], stops[i+1], t*(stops.length-1) - i);
+}
+function demoHeatGrw(v) {
+  if (v == null) return 'transparent';
+  const c = Math.max(-0.5, Math.min(0.5, v));
+  const t = (c + 0.5) / 1.0;
+  if (t < 0.5) return demoLerp('#cf3f3f','#f4f6fa', t*2);
+  return demoLerp('#f4f6fa','#1f9d52', (t-0.5)*2);
+}
+function demoTextOn(rgb) {
+  const m = rgb.match(/rgb\((\d+),(\d+),(\d+)\)/);
+  if (!m) return 'var(--text)';
+  const L = 0.299*+m[1] + 0.587*+m[2] + 0.114*+m[3];
+  return L > 145 ? 'var(--text)' : '#fff';
+}
+
+// ── Quarter helpers — used by leaderboard + stacked bar ──────────────
+function quarterOf(monthKey) {
+  const [y, m] = monthKey.split('-');
+  return `${y}-Q${Math.ceil(+m / 3)}`;
+}
+function monthsInQuarter(qk) {
+  return DEMO_DATA.months.filter(m => quarterOf(m) === qk);
+}
+function prevQuarter(qk) {
+  const [y, q] = qk.split('-Q');
+  return +q === 1 ? `${+y - 1}-Q4` : `${y}-Q${+q - 1}`;
+}
+function availableQuarters() {
+  return [...new Set(DEMO_DATA.months.map(quarterOf))].sort();
+}
+function quarterLabel(qk) {
+  const [y, q] = qk.split('-Q');
+  return `Q${q} '${y.slice(2)}`;
+}
+function demoAggQuarter(recs, qk) {
+  const months = monthsInQuarter(qk);
+  const grid = new Map();
+  for (const r of recs) {
+    if (!months.includes(r.m)) continue;
+    const k = r.a + '||' + r.e;
+    let g = grid.get(k);
+    if (!g) { g = { age: r.a, eth: r.e, gr: 0, pspd_n: 0, pspd_w: 0 }; grid.set(k, g); }
+    g.gr += r.gr || 0;
+    if (r.pspd != null && r.gr != null) { g.pspd_n += r.pspd * r.gr; g.pspd_w += r.gr; }
+  }
+  const out = [];
+  for (const g of grid.values()) out.push({
+    age: g.age, eth: g.eth, gr: g.gr,
+    pspd: g.pspd_w ? g.pspd_n / g.pspd_w : null,
+  });
+  return out;
+}
+// Default the quarter state to the latest quarter that has data
+demoState.quarter = availableQuarters().slice(-1)[0];
+
+let demoBarChart = null;
+
+function renderDemoMonthCtrl() {
+  const el = document.getElementById('demoMonthCtrl');
+  el.innerHTML = DEMO_DATA.months.map(m => {
+    const lbl = new Date(m + '-01').toLocaleString('en', { month:'short', year:'2-digit' });
+    return `<button data-month="${m}"${m === demoState.month ? ' class="active"' : ''}>${lbl}</button>`;
+  }).join('');
+  el.querySelectorAll('button').forEach(b => b.onclick = () => {
+    demoState.month = b.dataset.month;
+    el.querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.month === demoState.month));
+    renderDemographics(filterState.brand);
+  });
+}
+
+function renderDemoSortCtrl() {
+  const el = document.getElementById('demoSortCtrl');
+  el.querySelectorAll('button').forEach(b => b.onclick = () => {
+    demoState.sort = b.dataset.sort;
+    el.querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.sort === demoState.sort));
+    renderDemoLeaderboard(filterState.brand);
+  });
+}
+
+// Both the leaderboard and the stacked bar share demoState.quarter;
+// the two pickers are mirrored — clicking either updates both.
+function renderDemoQuarterCtrls() {
+  const quarters = availableQuarters();
+  ['demoQuarterCtrlLb', 'demoQuarterCtrlBar'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = quarters.map(q =>
+      `<button data-quarter="${q}"${q === demoState.quarter ? ' class="active"' : ''}>${quarterLabel(q)}</button>`
+    ).join('');
+    el.querySelectorAll('button').forEach(b => b.onclick = () => {
+      demoState.quarter = b.dataset.quarter;
+      document.querySelectorAll('.demo-quarter-ctrl button').forEach(x =>
+        x.classList.toggle('active', x.dataset.quarter === demoState.quarter));
+      renderDemoLeaderboard(filterState.brand);
+      renderDemoBar(filterState.brand);
+    });
+  });
+}
+
+function renderDemoHeatmaps(brand) {
+  const recs = demoRecs(brand);
+  const agg = demoAggMonth(recs, demoState.month);
+  // Heatmap intentionally shows only known age buckets — the 'Invalid dob'
+  // row is filtered out so the heatmap reads as pure known-demographics analysis.
+  // (NULL ethnicity is already folded into OTHERS upstream at DEMO_DATA load.)
+  // The full data (including Unknown age) is still surfaced in the bar chart + leaderboard.
+  const ages = DEMO_DATA.ages.filter(a => a !== 'Invalid dob');
+  const eths = DEMO_DATA.eths;
+  const lookup = new Map();
+  for (const c of agg) lookup.set(c.age + '||' + c.eth, c);
+  const maxGR = Math.max(...agg.map(c => c.gr));
+
+  function build(targetId, mode) {
+    const el = document.getElementById(targetId);
+    el.style.gridTemplateColumns = '120px ' + eths.map(()=>'1fr').join(' ');
+    let html = '<div class="dhm-corner"></div>';
+    for (const e of eths) html += `<div class="dhm-col-head">${ETH_LABEL[e] || e}</div>`;
+    for (const a of ages) {
+      html += `<div class="dhm-row-head">${a === 'Invalid dob' ? 'Unknown' : a}</div>`;
+      for (const e of eths) {
+        const c = lookup.get(a + '||' + e);
+        if (!c || (mode==='rev' && c.gr <= 0) || (mode==='grw' && c.grg == null)) {
+          html += '<div class="dhm-cell empty"></div>'; continue;
+        }
+        const bg = mode === 'rev' ? demoHeatRev(c.gr, maxGR) : demoHeatGrw(c.grg);
+        const txt = demoTextOn(bg);
+        const val = mode === 'rev' ? demoFmtRM(c.gr) : demoFmtPct(c.grg);
+        const sub = mode === 'rev'
+          ? (c.pspd != null ? 'PSPD ' + demoFmtPSPD(c.pspd) : '')
+          : (c.gr ? 'RM ' + demoFmtRM(c.gr) : '');
+        const da = `data-age="${a}" data-eth="${e}" data-gr="${c.gr ?? ''}" data-grg="${c.grg ?? ''}" data-pspd="${c.pspd ?? ''}" data-pspdg="${c.pspdg ?? ''}"`;
+        html += `<div class="dhm-cell" style="background:${bg};color:${txt}" ${da}><span class="dhm-val">${val}</span><span class="dhm-sub">${sub}</span></div>`;
+      }
+    }
+    el.innerHTML = html;
+  }
+  build('demoRevHM', 'rev');
+  build('demoGrwHM', 'grw');
+}
+
+function renderDemoLeaderboard(brand) {
+  const recs = demoRecs(brand);
+  const q     = demoState.quarter;
+  const qPrev = prevQuarter(q);
+  const aggNow  = demoAggQuarter(recs, q);
+  const aggPrev = demoAggQuarter(recs, qPrev);
+  const prevMap = new Map(aggPrev.map(c => [c.age + '||' + c.eth, c]));
+
+  // QoQ growth: this quarter vs previous (null if no prior data)
+  const merged = aggNow.map(c => {
+    const p = prevMap.get(c.age + '||' + c.eth);
+    return {
+      age: c.age, eth: c.eth, gr: c.gr, pspd: c.pspd,
+      grg:   (p && p.gr > 0)                                       ? (c.gr   - p.gr)   / p.gr   : null,
+      pspdg: (p && p.pspd != null && c.pspd != null && p.pspd > 0) ? (c.pspd - p.pspd) / p.pspd : null,
+    };
+  });
+
+  const sortKey = demoState.sort;
+  const sorted = merged.filter(c => c.gr > 0).sort((a,b) => {
+    const av = a[sortKey], bv = b[sortKey];
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1;
+    if (bv == null) return -1;
+    return bv - av;
+  }).slice(0, 15);
+
+  // Monthly sparkline — shape across the dataset, independent of quarter
+  function trajectoryGR(age, eth) {
+    return DEMO_DATA.months.map(m => {
+      let sum = 0;
+      for (const r of recs) if (r.a === age && r.e === eth && r.m === m && r.gr != null) sum += r.gr;
+      return sum;
+    });
+  }
+  function sparkSVG(values) {
+    const w=100, h=28, pad=2;
+    const min=Math.min(...values), max=Math.max(...values);
+    const range = max - min || 1;
+    const pts = values.map((v,i) => {
+      const x = pad + (w-2*pad) * i / (values.length-1);
+      const y = h - pad - (h-2*pad) * (v-min) / range;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+    const last = values[values.length-1], prev = values[values.length-2];
+    const trend = last >= prev ? '#1f9d52' : '#cf3f3f';
+    const lastX = pad + (w-2*pad);
+    const lastY = h - pad - (h-2*pad) * (last-min) / range;
+    return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${trend}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="2.4" fill="${trend}"/></svg>`;
+  }
+
+  const lineTag = brand === 'overall' ? '' :
+    brand === 'zc' ? '<span class="seg-line zc">ZC</span>' : '<span class="seg-line zs">ZS</span>';
+  const head = `<thead><tr>
+    <th>#</th><th>Segment</th>
+    <th class="num">Revenue</th><th class="num">QoQ Growth</th>
+    <th class="num">PSPD</th><th class="num">PSPD QoQ</th>
+    <th>Monthly Trajectory</th>
+  </tr></thead>`;
+  const body = '<tbody>' + sorted.map((c, i) => {
+    const grgCls   = c.grg   == null ? '' : c.grg   >= 0 ? 'pos' : 'neg';
+    const pspdgCls = c.pspdg == null ? '' : c.pspdg >= 0 ? 'pos' : 'neg';
+    return `<tr>
+      <td class="rank">${i+1}</td>
+      <td><span class="seg-age">${c.age === 'Invalid dob' ? 'Unknown' : c.age}</span><span class="seg-eth">${ETH_LABEL[c.eth]||c.eth}</span>${lineTag}</td>
+      <td class="num">RM ${demoFmtRM(c.gr)}</td>
+      <td class="num ${grgCls}">${demoFmtPct(c.grg)}</td>
+      <td class="num">${demoFmtPSPD(c.pspd)}</td>
+      <td class="num ${pspdgCls}">${demoFmtPct(c.pspdg)}</td>
+      <td>${sparkSVG(trajectoryGR(c.age, c.eth))}</td>
+    </tr>`;
+  }).join('') + '</tbody>';
+  document.getElementById('demoLeaderboard').innerHTML = head + body;
+
+  const nQ  = monthsInQuarter(q).length;
+  const nQp = monthsInQuarter(qPrev).length;
+  const partial = nQ < 3 ? ` · partial (${nQ}/3 mo)` : '';
+  const cmp = nQp === 0 ? '' : ` · QoQ vs ${quarterLabel(qPrev)}`;
+  const subEl = document.getElementById('demoLbSub');
+  if (subEl) subEl.textContent =
+    `Top 15 by selected metric · ${quarterLabel(q)}${partial}${cmp} · monthly sparkline`;
+}
+
+function renderDemoBar(brand) {
+  const recs = demoRecs(brand);
+  const q = demoState.quarter;
+  const agg = demoAggQuarter(recs, q);
+  // Include 'Invalid dob' (rendered as "Unknown") so the catch-all bucket
+  // stays visible in the section — but only after the cleaner heatmap above.
+  const ages = DEMO_DATA.ages;
+  const eths = ['CHINESE','MALAY','INDIAN','OTHERS'];
+  const nQ = monthsInQuarter(q).length;
+  const partial = nQ < 3 ? ` · partial (${nQ}/3 mo)` : '';
+  const subEl = document.getElementById('demoBarSub');
+  if (subEl) subEl.textContent = `Stacked by ethnicity · ${quarterLabel(q)}${partial}`;
+  const datasets = eths.map(e => ({
+    label: ETH_LABEL[e],
+    data: ages.map(a => {
+      const c = agg.find(x => x.age === a && x.eth === e);
+      return c ? c.gr : 0;
+    }),
+    backgroundColor: ETH_COLOR[e],
+    borderWidth: 0,
+    barPercentage: 0.7,
+  }));
+  if (demoBarChart) demoBarChart.destroy();
+  demoBarChart = new Chart(document.getElementById('demoStackedBar'), {
+    type: 'bar',
+    data: { labels: ages.map(a => a === 'Invalid dob' ? 'Unknown' : a), datasets },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{ display:false }, tooltip:{ ...tooltipDefaults,
+        callbacks:{ label: ctx => `  ${ctx.dataset.label}: RM ${demoFmtRM(ctx.raw)}` }
+      } },
+      scales:{
+        x:{ stacked:true, grid:{ color:gridColor, drawTicks:false }, border:{ display:false },
+            ticks:{ color:tickColor, font:{ ...tickFont, size:10 }, padding:6 } },
+        y:{ stacked:true, grid:{ color:gridColor, drawTicks:false }, border:{ display:false },
+            ticks:{ color:tickColor, font:tickFont, padding:8,
+              callback: v => v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1e3 ? (v/1e3).toFixed(0)+'K' : v } }
+      }
+    }
+  });
+}
+
+function renderDemographics(brand) {
+  const monthLbl = new Date(demoState.month + '-01').toLocaleString('en', { month:'long', year:'numeric' });
+  const brandLbl = brand === 'zc' ? 'ZUS Coffee' : brand === 'zs' ? 'ZUS Signature' : 'Overall (ZC + ZS)';
+  document.getElementById('demoSub').textContent =
+    `Gross Revenue and MoM Growth · ${monthLbl} · ${brandLbl}`;
+  renderDemoHeatmaps(brand);
+  renderDemoLeaderboard(brand);
+  renderDemoBar(brand);
+}
+
+renderDemoMonthCtrl();
+renderDemoSortCtrl();
+renderDemoQuarterCtrls();
+renderDemographics(filterState.brand);
+
+// Custom floating tooltip for heatmap cells (replaces native browser title)
+function setupDemoHmTooltips() {
+  let tip = document.getElementById('demoTip');
+  if (!tip) {
+    tip = document.createElement('div');
+    tip.id = 'demoTip';
+    tip.className = 'demo-tip';
+    document.body.appendChild(tip);
+  }
+  ['demoRevHM','demoGrwHM'].forEach(id => {
+    const hm = document.getElementById(id);
+    if (!hm || hm.dataset.tipBound === '1') return;
+    hm.dataset.tipBound = '1';
+    hm.addEventListener('mouseover', e => {
+      const cell = e.target.closest('.dhm-cell');
+      if (!cell || cell.classList.contains('empty') || !cell.dataset.age) {
+        tip.classList.remove('on'); return;
+      }
+      const a = cell.dataset.age, eth = cell.dataset.eth;
+      const parse = v => (v == null || v === '') ? null : +v;
+      const gr    = parse(cell.dataset.gr);
+      const grg   = parse(cell.dataset.grg);
+      const pspd  = parse(cell.dataset.pspd);
+      const pspdg = parse(cell.dataset.pspdg);
+      const ageLbl = a === 'Invalid dob' ? 'Unknown' : a;
+      const ethLbl = ETH_LABEL[eth] || eth;
+      const row = (lbl, val, cls = '') =>
+        `<div class="demo-tip-row"><span class="lbl">${lbl}</span><span class="val ${cls}">${val}</span></div>`;
+      tip.innerHTML =
+        `<div class="demo-tip-title">${ageLbl} · ${ethLbl}</div>` +
+        row('Revenue',     gr   != null ? 'RM ' + demoFmtRM(gr) : '—') +
+        row('PSPD',        pspd != null ? demoFmtPSPD(pspd)     : '—') +
+        row('GR Growth',   grg   != null ? demoFmtPct(grg)   : '—', grg   == null ? '' : grg   >= 0 ? 'pos' : 'neg') +
+        row('PSPD Growth', pspdg != null ? demoFmtPct(pspdg) : '—', pspdg == null ? '' : pspdg >= 0 ? 'pos' : 'neg');
+      tip.classList.add('on');
+    });
+    hm.addEventListener('mousemove', e => {
+      if (!tip.classList.contains('on')) return;
+      const tw = tip.offsetWidth, th = tip.offsetHeight;
+      let x = e.clientX + 14, y = e.clientY + 14;
+      if (x + tw > innerWidth - 8)  x = e.clientX - tw - 14;
+      if (y + th > innerHeight - 8) y = e.clientY - th - 14;
+      tip.style.left = x + 'px';
+      tip.style.top  = y + 'px';
+    });
+    hm.addEventListener('mouseleave', () => tip.classList.remove('on'));
+  });
+}
+setupDemoHmTooltips();
+
+// Re-render demographics whenever the dashboard tab changes
+document.querySelectorAll('#dashboardTabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    // existing tab handler already updated filterState.brand before this fires
+    renderDemographics(filterState.brand);
+  });
+});
 </script>
 </body>
 </html>
