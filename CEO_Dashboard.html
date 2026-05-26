@@ -825,6 +825,54 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
 .demo-tip-row .val.pos { color: var(--green); }
 .demo-tip-row .val.neg { color: var(--red); }
 
+/* ══ VARIANT C · HYBRID — slight bump + sans labels, mono key numbers ══ */
+.demo-hm-label                  { font-size: 12px; letter-spacing: 0.12em; }
+.demo-heatmap .dhm-col-head {
+  font-size: 11px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  padding: 8px 4px;
+}
+.demo-heatmap .dhm-row-head     { font-size: 12.5px; font-weight: 500; padding-right: 12px; }
+.demo-heatmap .dhm-cell {
+  font-family: 'DM Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: 10px 8px;
+}
+.demo-heatmap .dhm-cell .dhm-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 10.5px;
+  opacity: 0.85;
+}
+.demo-hm-legend                 { font-size: 11px; }
+.demo-leaderboard th            { font-size: 11.5px; padding: 11px 12px; }
+.demo-leaderboard td            { font-size: 14px;  padding: 12px; }
+.demo-leaderboard td.num {
+  font-family: 'DM Mono', monospace;
+  font-size: 13.5px;
+}
+.demo-leaderboard .rank {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+}
+.demo-leaderboard .seg-age      { font-size: 14px;  font-weight: 600; }
+.demo-leaderboard .seg-eth      { font-size: 10.5px; padding: 3px 7px; }
+.demo-leaderboard .seg-line     { font-size: 9.5px;  padding: 3px 6px; }
+.demo-month-ctrl button,
+.demo-quarter-ctrl button       { font-size: 12.5px; padding: 6px 13px; }
+.demo-sort-ctrl button          { font-size: 11.5px; padding: 6px 12px; }
+.demo-tip                       { font-size: 13.5px; padding: 13px 15px 12px; min-width: 220px; }
+.demo-tip-title                 { font-size: 12px;  margin-bottom: 8px; }
+.demo-tip-row                   { font-size: 13.5px; padding: 2px 0; }
+.demo-tip-row .val {
+  font-family: 'DM Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
 </style>
 </head>
 <body>
