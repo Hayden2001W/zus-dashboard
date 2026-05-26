@@ -873,6 +873,66 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
   font-weight: 600;
 }
 
+/* ══ DASHBOARD-WIDE TYPOGRAPHY — same philosophy as demographics ══════
+   Small numeric cells (≤14px) move from DM Mono → DM Sans tabular-nums
+   for crisper anti-aliasing at small sizes. Large hero numbers
+   (KPI values, mix-actual) keep DM Mono — they look strong at 24–30px
+   and the "data feel" is welcome there.                              */
+
+/* L6W / L6M period tables */
+.period-table td {
+  font-family: 'DM Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.period-table th, .period-table td { font-size: 14px; }
+.period-table th                  { font-size: 12px; }
+
+/* QoQ table */
+.qoq-table td {
+  font-family: 'DM Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 13.5px;
+}
+.qoq-table th { font-size: 11.5px; }
+
+/* Loyalty tier table — values + MoM heatmap + % share cells */
+.loy-table td.num {
+  font-family: 'DM Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+.loy-table td.tier { font-size: 13px; }
+.loy-table th.tier-hdr, .loy-table th.month-hdr { font-size: 10.5px; }
+.share-cell {
+  font-family: 'DM Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+
+/* Channel mix sub-values */
+.mix-sub-val {
+  font-family: 'DM Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Stat-val (PSPD chart card) — slightly bigger, keep mono for that "stat" feel */
+.stat-val { font-size: 15px; }
+
+/* KPI sub + badges — bump readability */
+.kpi-sub      { font-size: 13px; }
+.kpi-badge    { font-size: 12.5px; }
+.kpi-label    { font-size: 12.5px; }
+
+/* Card titles / subs — slight bump */
+.card-title { font-size: 16px; }
+.card-sub   { font-size: 13px; }
+
+/* Legend chips */
+.leg-item { font-size: 12.5px; }
+
+/* Trend pills (L6W/L6M) */
+.trend-badge { font-size: 13.5px; }
+
 </style>
 </head>
 <body>
