@@ -733,6 +733,27 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
   color: var(--muted2); font-size: 14px; opacity: 0.35; text-align: center;
 }
 .demo-heatmap .dhm-cell.empty::after { content: '·'; }
+.demo-heatmap .dhm-total-head {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; color: var(--text1);
+  display: flex; align-items: center;
+  padding: 8px 10px 4px 4px;
+  border-top: 1.5px solid var(--border2);
+  white-space: nowrap;
+}
+.demo-heatmap .dhm-total-cell {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 600; color: var(--text1);
+  text-align: right; padding: 5px 7px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  margin: 3px 2px 2px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3; cursor: default;
+}
+.demo-heatmap .dhm-total-cell .dhm-val { display: block; font-size: 10.5px; font-weight: 700; }
+.demo-heatmap .dhm-total-cell .dhm-sub { display: block; font-size: 9px; color: var(--muted); margin-top: 1px; }
 .demo-hm-legend {
   display: flex; align-items: center; gap: 8px; margin-top: 12px;
   font-size: 10px; color: var(--muted); letter-spacing: 0.08em;
@@ -2750,6 +2771,12 @@ function renderDemoHeatmaps(brand) {
   const lookup = new Map();
   for (const c of agg) lookup.set(c.age + '||' + c.eth, c);
   const maxGR = Math.max(...agg.map(c => c.gr));
+  // Previous month data for MoM total comparison
+  const mIdx = DEMO_DATA.months.indexOf(demoState.month);
+  const prevMonth = mIdx > 0 ? DEMO_DATA.months[mIdx - 1] : null;
+  const aggPrev = prevMonth ? demoAggMonth(recs, prevMonth) : [];
+  const lookupPrev = new Map();
+  for (const c of aggPrev) lookupPrev.set(c.age + '||' + c.eth, c);
 
   function build(targetId, mode) {
     const el = document.getElementById(targetId);
@@ -2771,6 +2798,31 @@ function renderDemoHeatmaps(brand) {
           : (c.gr ? 'RM ' + demoFmtRM(c.gr) : '');
         const da = `data-age="${a}" data-eth="${e}" data-gr="${c.gr ?? ''}" data-grg="${c.grg ?? ''}" data-pspd="${c.pspd ?? ''}" data-pspdg="${c.pspdg ?? ''}"`;
         html += `<div class="dhm-cell" style="background:${bg};color:${txt}" ${da}><span class="dhm-val">${val}</span><span class="dhm-sub">${sub}</span></div>`;
+      }
+    }
+    if (mode === 'rev') {
+      const ethTotals = eths.map(e => {
+        const cells = ages.map(a => lookup.get(a + '||' + e)).filter(Boolean);
+        const totalRev = cells.reduce((s, c) => s + (c.gr || 0), 0);
+        const storeDays = cells.reduce((s, c) => s + (c.pspd > 0 ? c.gr / c.pspd : 0), 0);
+        const pspd = storeDays > 0 ? totalRev / storeDays : null;
+        const grCells = cells.filter(c => c.grg != null && c.gr > 0);
+        const grg = grCells.length > 0
+          ? grCells.reduce((s, c) => s + c.grg * c.gr, 0) / grCells.reduce((s, c) => s + c.gr, 0)
+          : null;
+        return { eth: e, rev: totalRev, pspd, grg };
+      });
+      html += '<div class="dhm-total-head">Total</div>';
+      for (const t of ethTotals) {
+        const prevCells = ages.map(a => lookupPrev.get(a + '||' + t.eth)).filter(Boolean);
+        const prevRev = prevCells.reduce((s, c) => s + (c.gr || 0), 0);
+        const mom = prevRev > 0 ? (t.rev - prevRev) / prevRev : null;
+        html += `<div class="dhm-total-cell" data-total="1" data-eth="${t.eth}" ` +
+          `data-rev="${t.rev}" data-pspd="${t.pspd ?? ''}" data-grg="${t.grg ?? ''}" data-mom="${mom ?? ''}">` +
+          `<span class="dhm-val">${demoFmtRM(t.rev)}</span>` +
+          `<span class="dhm-sub">PSPD ${t.pspd != null ? demoFmtPSPD(t.pspd) : '—'}</span>` +
+          `<span class="dhm-sub">GR ${t.grg != null ? demoFmtPct(t.grg) : '—'}</span>` +
+          `</div>`;
       }
     }
     el.innerHTML = html;
@@ -2949,6 +3001,26 @@ function setupDemoHmTooltips() {
     if (!hm || hm.dataset.tipBound === '1') return;
     hm.dataset.tipBound = '1';
     hm.addEventListener('mouseover', e => {
+      const totalCell = e.target.closest('.dhm-total-cell[data-total]');
+      if (totalCell) {
+        const parse = v => (v == null || v === '') ? null : +v;
+        const eth  = totalCell.dataset.eth;
+        const rev  = parse(totalCell.dataset.rev);
+        const pspd = parse(totalCell.dataset.pspd);
+        const grg  = parse(totalCell.dataset.grg);
+        const mom  = parse(totalCell.dataset.mom);
+        const ethLbl = ETH_LABEL[eth] || eth;
+        const row = (lbl, val, cls = '') =>
+          `<div class="demo-tip-row"><span class="lbl">${lbl}</span><span class="val ${cls}">${val}</span></div>`;
+        tip.innerHTML =
+          `<div class="demo-tip-title">Total · ${ethLbl}</div>` +
+          row('Revenue',    rev  != null ? 'RM ' + demoFmtRM(rev)  : '—') +
+          row('PSPD',       pspd != null ? demoFmtPSPD(pspd)       : '—') +
+          row('Wtd GR',     grg  != null ? demoFmtPct(grg)         : '—', grg == null ? '' : grg >= 0 ? 'pos' : 'neg') +
+          row('MoM Change', mom  != null ? demoFmtPct(mom)         : '—', mom == null ? '' : mom >= 0 ? 'pos' : 'neg');
+        tip.classList.add('on');
+        return;
+      }
       const cell = e.target.closest('.dhm-cell');
       if (!cell || cell.classList.contains('empty') || !cell.dataset.age) {
         tip.classList.remove('on'); return;
