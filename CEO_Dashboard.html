@@ -1246,10 +1246,10 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
       <div class="card-sub">FY 2026 · 100% stacked composition</div>
     </div>
     <div class="legend">
-      <div class="leg-item"><div class="leg-dot" style="background:#c97d09"></div> ZUSAPP</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#c05f3c"></div> Retail</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#8b5a3c"></div> 3PL total</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#4a5a6d"></div> Others</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#0066FF"></div> ZUSAPP</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#FF5500"></div> Retail</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#00C170"></div> 3PL total</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#AAAAAA"></div> Others</div>
     </div>
   </div>
   <div class="chart-wrap" style="height:260px;"><canvas id="channelStackedChart"></canvas></div>
@@ -1259,7 +1259,7 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
   <div class="card-header">
     <div>
       <div class="card-title">3PL Sub-channel Detail</div>
-      <div class="card-sub">FY 2026 · % of monthly gross revenue</div>
+      <div class="card-sub">FY 2026 · Monthly gross revenue (RM)</div>
     </div>
     <div class="legend">
       <div class="leg-item"><div class="leg-line" style="background:#1f9d52"></div> GrabFood</div>
@@ -1732,6 +1732,10 @@ const channelMonthlyOthers     = [0.04, 0.05, 0.01, 0.00, null, null, null, null
 const channelMonthlyGrabFood   = [6.87, 7.02, 5.54, 6.73, null, null, null, null, null, null, null, null];
 const channelMonthlyFoodPanda  = [2.85, 2.89, 2.81, 2.97, null, null, null, null, null, null, null, null];
 const channelMonthlyShopeeFood = [1.77, 1.61, 1.37, 1.84, null, null, null, null, null, null, null, null];
+// Absolute gross revenue per 3PL sub-channel (RM) — rewritten by update_dashboard.py
+const channelMonthlyGrabFoodRev   = [6473704, 6008845, 6146106, 3083876, null, null, null, null, null, null, null, null];
+const channelMonthlyFoodPandaRev  = [2683956, 2469754, 3109795, 1364015, null, null, null, null, null, null, null, null];
+const channelMonthlyShopeeFoodRev = [1666454, 1376389, 1522371, 843984, null, null, null, null, null, null, null, null];
 
 // ── Render YTD tiles ─────────────────────────────────────────────────
 function renderMixTile(prefix, actual, target) {
@@ -1781,10 +1785,10 @@ const channelStackedChart = new Chart(document.getElementById('channelStackedCha
   data: {
     labels: monthLabels,
     datasets: [
-      areaDataset('ZUSAPP',    channelMonthlyZusapp, '#c97d09', 0.65),
-      areaDataset('Retail',    channelMonthlyRetail, '#c05f3c', 0.65),
-      areaDataset('3PL total', channelMonthlyTpl,    '#8b5a3c', 0.75),
-      areaDataset('Others',    channelMonthlyOthers, '#4a5a6d', 0.65),
+      areaDataset('ZUSAPP',    channelMonthlyZusapp, '#0066FF', 0.70),
+      areaDataset('Retail',    channelMonthlyRetail, '#FF5500', 0.70),
+      areaDataset('3PL total', channelMonthlyTpl,    '#00C170', 0.80),
+      areaDataset('Others',    channelMonthlyOthers, '#AAAAAA', 0.70),
     ]
   },
   options: {
@@ -1825,24 +1829,25 @@ const channelDetailChart = new Chart(document.getElementById('channelDetailChart
   data: {
     labels: monthLabels,
     datasets: [
-      detailLine('GrabFood',   channelMonthlyGrabFood,   '#1f9d52'),
-      detailLine('FoodPanda',  channelMonthlyFoodPanda,  '#cf3f3f'),
-      detailLine('ShopeeFood', channelMonthlyShopeeFood, '#7c4fd0'),
+      detailLine('GrabFood',   channelMonthlyGrabFoodRev,   '#1f9d52'),
+      detailLine('FoodPanda',  channelMonthlyFoodPandaRev,  '#cf3f3f'),
+      detailLine('ShopeeFood', channelMonthlyShopeeFoodRev, '#7c4fd0'),
     ]
   },
   options: {
     responsive: true, maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
     plugins: { legend: { display: false }, tooltip: { ...tooltipDefaults,
-      callbacks: { label: ctx => ctx.raw === null ? null : `  ${ctx.dataset.label}: ${ctx.raw.toFixed(2)}%` }
+      callbacks: { label: ctx => ctx.raw === null ? null :
+        `  ${ctx.dataset.label}: RM ${(ctx.raw / 1e6).toFixed(2)}M` }
     }},
     scales: {
       x: { grid: { color: gridColor, drawTicks: false }, border: { display: false },
            ticks: { color: tickColor, font: tickFont, padding: 6 } },
-      y: { min: 0, max: 10,
+      y: { min: 0,
            grid: { color: gridColor, drawTicks: false }, border: { display: false },
            ticks: { color: tickColor, font: tickFont, padding: 8,
-             callback: v => v + '%' } }
+             callback: v => 'RM ' + (v / 1e6).toFixed(1) + 'M' } }
     }
   }
 });
