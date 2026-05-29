@@ -427,7 +427,7 @@ body {
 /* ── YTD CHANNEL MIX TILES ─────────────────────────────── */
 .mix-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1.4fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 16px;
 }
 .mix-tile {
@@ -441,16 +441,16 @@ body {
   content: ''; position: absolute; top: 0; left: 0; right: 0;
   height: 2px; border-radius: 10px 10px 0 0;
 }
-.mix-tile.app::before    { background: #c97d09; }
-.mix-tile.retail::before { background: #c05f3c; }
-.mix-tile.tpl::before    { background: #8b5a3c; }
+.mix-tile.app::before    { background: #0066FF; }
+.mix-tile.retail::before { background: #FF5500; }
+.mix-tile.tpl::before    { background: #00C170; }
 .mix-channel { font-size: 13px; color: var(--muted); font-weight: 600;
                text-transform: uppercase; letter-spacing: 0.08em; }
 .mix-actual  { font-family: 'DM Mono', monospace; font-size: 30px;
                font-weight: 500; line-height: 1; margin-top: 6px; }
-.mix-tile.app    .mix-actual { color: #c97d09; }
-.mix-tile.retail .mix-actual { color: #c05f3c; }
-.mix-tile.tpl    .mix-actual { color: #8b5a3c; }
+.mix-tile.app    .mix-actual { color: #0066FF; }
+.mix-tile.retail .mix-actual { color: #FF5500; }
+.mix-tile.tpl    .mix-actual { color: #00C170; }
 .mix-bar {
   height: 7px; background: var(--border2); border-radius: 4px;
   overflow: hidden; margin: 12px 0 6px; position: relative;
@@ -464,9 +464,9 @@ body {
   content: '▼'; position: absolute; top: -10px; left: -5px;
   font-size: 9px; color: var(--text);
 }
-.mix-tile.app    .fill { background: #c97d09; }
-.mix-tile.retail .fill { background: #c05f3c; }
-.mix-tile.tpl    .fill { background: #8b5a3c; }
+.mix-tile.app    .fill { background: #0066FF; }
+.mix-tile.retail .fill { background: #FF5500; }
+.mix-tile.tpl    .fill { background: #00C170; }
 .mix-foot {
   display: flex; justify-content: space-between; align-items: center;
   font-size: 12px; color: var(--muted); margin-top: 4px;
