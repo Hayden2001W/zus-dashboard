@@ -641,6 +641,13 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
   color: var(--muted); font-size: 10.5px; font-family: 'DM Sans';
   padding: 7px 6px; font-style: italic;
 }
+.loy-val-total td {
+  border-top: 1.5px solid var(--border2); border-bottom: none;
+  font-weight: 600; font-size: 12.5px;
+  padding: 6px 6px; color: var(--text1);
+}
+.loy-val-total td.tier { font-family: 'DM Sans'; color: var(--muted); font-weight: 600; }
+.loy-val-total td.num  { font-family: 'DM Mono'; font-variant-numeric: tabular-nums; }
 
 /* ── DEMOGRAPHICS SECTION (Age × Ethnicity heatmaps, leaderboard, charts) ── */
 .demo-month-ctrl, .demo-quarter-ctrl {
@@ -1352,8 +1359,8 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
     <div class="demo-card-ctrls">
       <div class="demo-quarter-ctrl" id="demoQuarterCtrlBar"></div>
       <div class="legend">
-        <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> Chinese</div>
         <div class="leg-item"><div class="leg-dot" style="background:var(--amber)"></div> Malay</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div> Chinese</div>
         <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div> Indian</div>
         <div class="leg-item"><div class="leg-dot" style="background:var(--purple)"></div> Others</div>
       </div>
@@ -2458,10 +2465,10 @@ const loyAovZE = [19.82, 20.28, 21.71, 20.21];
   const fmtNum = v => (v === null || v === undefined) ? '—' : v.toLocaleString('en-MY', {maximumFractionDigits: 0});
   const fmtDec = v => (v === null || v === undefined) ? '—' : v.toFixed(2);
   const metricSpecs = [
-    { key: 'customers', label: 'Customer Count', unit: 'count', cls: 'cc',  fmt: fmtInt, hasShare: true  },
-    { key: 'revenue',   label: 'Revenue',        unit: 'RM',    cls: 'rev', fmt: fmtNum, hasShare: true  },
-    { key: 'orders',    label: 'Order Count',    unit: 'count', cls: 'oc',  fmt: fmtInt, hasShare: true  },
-    { key: 'aov',       label: 'AOV',            unit: 'RM',    cls: 'aov', fmt: fmtDec, hasShare: false },
+    { key: 'customers', label: 'Customer Count', unit: 'count', cls: 'cc',  fmt: fmtInt, hasShare: true,  showTotal: true  },
+    { key: 'revenue',   label: 'Revenue',        unit: 'RM',    cls: 'rev', fmt: fmtNum, hasShare: true,  showTotal: true  },
+    { key: 'orders',    label: 'Order Count',    unit: 'count', cls: 'oc',  fmt: fmtInt, hasShare: true,  showTotal: true  },
+    { key: 'aov',       label: 'AOV',            unit: 'RM',    cls: 'aov', fmt: fmtDec, hasShare: false, showTotal: false },
   ];
 
   const grid = document.getElementById('loyGrid');
@@ -2481,12 +2488,19 @@ const loyAovZE = [19.82, 20.28, 21.71, 20.21];
     return row + '</tr>';
   }
 
-  function valuesRows(key, fmt) {
-    return tiers.map(t => {
+  function valuesRows(key, fmt, showTotal) {
+    const tierRows = tiers.map(t => {
       let row = `<tr><td class="tier">${t}</td>`;
       loyMonths.forEach((_, mi) => row += `<td class="num">${fmt(data[key][t][mi])}</td>`);
       return row + '</tr>';
     }).join('');
+    if (!showTotal) return tierRows;
+    let totalRow = '<tr class="loy-val-total"><td class="tier">Total</td>';
+    loyMonths.forEach((_, mi) => {
+      const sum = tiers.reduce((s, t) => s + (data[key][t][mi] || 0), 0);
+      totalRow += `<td class="num">${fmt(sum)}</td>`;
+    });
+    return tierRows + totalRow + '</tr>';
   }
 
   // MoM heatmap — bucketed colors computed at runtime; shifts automatically when data updates.
@@ -2541,7 +2555,7 @@ const loyAovZE = [19.82, 20.28, 21.71, 20.21];
       <div class="metric-title"><span>${spec.label}</span><span class="metric-unit">${spec.unit}</span></div>
 
       <div class="loy-section-label">Monthly Values</div>
-      <table class="loy-table">${colgroup}<thead>${head}</thead><tbody>${valuesRows(spec.key, spec.fmt)}</tbody></table>
+      <table class="loy-table">${colgroup}<thead>${head}</thead><tbody>${valuesRows(spec.key, spec.fmt, spec.showTotal)}</tbody></table>
 
       <div class="loy-section-label">MoM Growth</div>
       <table class="loy-table">${colgroup}<thead>${head}</thead><tbody>${momRows(spec.key)}</tbody></table>`;
@@ -2870,7 +2884,7 @@ function renderDemoBar(brand) {
   // Include 'Invalid dob' (rendered as "Unknown") so the catch-all bucket
   // stays visible in the section — but only after the cleaner heatmap above.
   const ages = DEMO_DATA.ages;
-  const eths = ['CHINESE','MALAY','INDIAN','OTHERS'];
+  const eths = ['MALAY','CHINESE','INDIAN','OTHERS'];
   const nQ = monthsInQuarter(q).length;
   const partial = nQ < 3 ? ` · partial (${nQ}/3 mo)` : '';
   const subEl = document.getElementById('demoBarSub');
