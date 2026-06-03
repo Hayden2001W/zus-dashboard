@@ -1247,7 +1247,7 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
   <div class="card-header">
     <div>
       <div class="card-title">2026 YTD Channel Mix — Actual vs Target</div>
-      <div class="card-sub" id="channelYtdSub">Jan 1 – Apr 12, 2026 (102 days) · Rolling % of Gross Revenue</div>
+      <div class="card-sub" id="channelYtdSub">Jan 1 – May 31, 2026 (151 days) · Rolling % of Gross Revenue</div>
     </div>
   </div>
   <div class="mix-grid">
@@ -2162,10 +2162,36 @@ function applyFilters() {
     deltas: tc.l6m.deltas, deltaHeader: tc.l6m.header
   });
 
+  // L6W / L6M axis: rescale to the brand-visible series so the peak line
+  // never overshoots or pins to the top. Overall tab only shows the Overall
+  // line; brand tabs show all three. Floor leaves room below the lowest
+  // point, ceiling 12% above the highest (matches the monthly PSPD chart),
+  // both rounded to 200 for clean tick labels.
+  const l6Visible = arrs => arrs.flat().filter(v => v !== null && v !== undefined);
+  const niceLine = (lo, hi) => ({
+    min: Math.max(0, Math.floor((lo - (hi - lo) * 0.20) / 200) * 200),
+    max: Math.ceil(hi * 1.12 / 200) * 200
+  });
+  const l6wVals = l6Visible(brand === 'overall' ? [l6wOverall] : [l6wOverall, l6wZC, l6wZS]);
+  const l6mVals = l6Visible(brand === 'overall' ? [l6mOverall] : [l6mOverall, l6mZC, l6mZS]);
+  const l6wR = niceLine(Math.min(...l6wVals), Math.max(...l6wVals));
+  const l6mR = niceLine(Math.min(...l6mVals), Math.max(...l6mVals));
+  l6wChart.options.scales.y.min = l6wR.min;
+  l6wChart.options.scales.y.max = l6wR.max;
+  l6mChart.options.scales.y.min = l6mR.min;
+  l6mChart.options.scales.y.max = l6mR.max;
+  l6wChart.update();
+  l6mChart.update();
+
   // QoQ chart: swap CY bars, PY line, Target line + card title per tab
   qoqChart.data.datasets[0].data = cfg.qoqCy().slice();
   qoqChart.data.datasets[1].data = cfg.qoqPy().slice();
   qoqChart.data.datasets[2].data = cfg.qoqTgt().slice();
+  // Dynamic max — bars start at 0, ceiling sits 10% above the tallest of
+  // CY / PY / Target so Q2 (~4550) doesn't pin to the top of the 5000 cap.
+  const qoqVals = [...cfg.qoqCy(), ...cfg.qoqPy(), ...cfg.qoqTgt()]
+    .filter(v => v !== null && v !== undefined);
+  qoqChart.options.scales.y.max = Math.ceil(Math.max(...qoqVals) * 1.15 / 500) * 500;
   qoqChart.update();
   document.getElementById('qoqCardTitle').textContent =
     brand === 'zc' ? 'ZUS Coffee PSPD by Quarter' :
