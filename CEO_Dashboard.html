@@ -2162,20 +2162,27 @@ function applyFilters() {
     deltas: tc.l6m.deltas, deltaHeader: tc.l6m.header
   });
 
-  // L6W / L6M axis: rescale to the brand-visible series so the peak line
-  // never overshoots or pins to the top. Overall tab only shows the Overall
-  // line; brand tabs show all three. Floor leaves room below the lowest
-  // point, ceiling 12% above the highest (matches the monthly PSPD chart),
-  // both rounded to 200 for clean tick labels.
+  // L6W / L6M axis: rescale to the brand-visible series.
+  //   • Overall tab → only the Overall line renders, so use SYMMETRIC padding
+  //     (~50% of data range each side). The single line lands vertically
+  //     centred and the y-axis stays tight on its narrow range.
+  //   • Brand tab → all 3 lines render (Overall ~4.4k, ZC ~4.7k, ZS ~2.6k);
+  //     use lighter symmetric padding (~18%) so all three are visible with
+  //     breathing room above for the line-label plugin.
+  // Both rounded to 200 for clean tick labels.
   const l6Visible = arrs => arrs.flat().filter(v => v !== null && v !== undefined);
-  const niceLine = (lo, hi) => ({
-    min: Math.max(0, Math.floor((lo - (hi - lo) * 0.20) / 200) * 200),
-    max: Math.ceil(hi * 1.12 / 200) * 200
-  });
-  const l6wVals = l6Visible(brand === 'overall' ? [l6wOverall] : [l6wOverall, l6wZC, l6wZS]);
-  const l6mVals = l6Visible(brand === 'overall' ? [l6mOverall] : [l6mOverall, l6mZC, l6mZS]);
-  const l6wR = niceLine(Math.min(...l6wVals), Math.max(...l6wVals));
-  const l6mR = niceLine(Math.min(...l6mVals), Math.max(...l6mVals));
+  const niceLine = (lo, hi, single) => {
+    const pad = (hi - lo) * (single ? 0.5 : 0.18);
+    return {
+      min: Math.max(0, Math.floor((lo - pad) / 200) * 200),
+      max: Math.ceil((hi + pad) / 200) * 200
+    };
+  };
+  const singleLine = brand === 'overall';
+  const l6wVals = l6Visible(singleLine ? [l6wOverall] : [l6wOverall, l6wZC, l6wZS]);
+  const l6mVals = l6Visible(singleLine ? [l6mOverall] : [l6mOverall, l6mZC, l6mZS]);
+  const l6wR = niceLine(Math.min(...l6wVals), Math.max(...l6wVals), singleLine);
+  const l6mR = niceLine(Math.min(...l6mVals), Math.max(...l6mVals), singleLine);
   l6wChart.options.scales.y.min = l6wR.min;
   l6wChart.options.scales.y.max = l6wR.max;
   l6mChart.options.scales.y.min = l6mR.min;
