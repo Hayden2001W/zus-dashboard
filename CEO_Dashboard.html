@@ -1587,11 +1587,11 @@ const pspdChart = new Chart(document.getElementById('pspdAovChart'), {
 });
 
 // ── 2. L6M MoM ───────────────────────────────────────────────────────
-const l6mOverall = [4121.81, 4052.36, 3900.52, 3833.04, 3879.20, 3975.86];
-const l6mZC      = [4127.56, 4057.91, 3905.47, 3838.27, 3885.19, 3982.77];
-const l6mZS      = [3128.35, 3075.17, 3009.53, 2877.32, 2774.18, 2688.79];
-const l6mMoM     = [null, -0.01685, -0.03747, -0.01730, 0.01204, 0.02492];
-const l6mPeriods = ["Jun–Nov '25", "Jul–Dec '25", "Aug '25–Jan '26", "Sep '25–Feb '26", "Oct '25–Mar '26", "Nov '25–Apr '26"];
+const l6mOverall = [4052.36, 3900.52, 3833.04, 3879.20, 3975.86, 4093.61];
+const l6mZC      = [4057.91, 3905.47, 3838.27, 3885.19, 3982.77, 4101.27];
+const l6mZS      = [3075.17, 3009.53, 2877.32, 2774.18, 2688.79, 2664.23];
+const l6mMoM     = [null, -0.03747, -0.01730, 0.01204, 0.02492, 0.02962];
+const l6mPeriods = ["Jul–Dec '25", "Aug '25–Jan '26", "Sep '25–Feb '26", "Oct '25–Mar '26", "Nov '25–Apr '26", "Dec '25–May '26"];
 const l6mLabels  = l6mPeriods.map(p => {
   const parts = p.split('–');
   return parts[parts.length - 1].trim();
