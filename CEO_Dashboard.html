@@ -2746,8 +2746,13 @@ function quarterLabel(qk) {
   const [y, q] = qk.split('-Q');
   return `Q${q} '${y.slice(2)}`;
 }
-function demoAggQuarter(recs, qk) {
-  const months = monthsInQuarter(qk);
+function demoAggQuarter(recs, qk, nMonths) {
+  // nMonths optional — when set, only the FIRST nMonths months of the quarter
+  // are aggregated. Used by the leaderboard's rolling-QoQ logic to restrict
+  // the prior quarter to the same month-of-quarter window as a partial current
+  // quarter (e.g. Apr+May 2026 vs Jan+Feb 2026 instead of vs full Q1).
+  let months = monthsInQuarter(qk);
+  if (nMonths != null) months = months.slice(0, nMonths);
   const grid = new Map();
   for (const r of recs) {
     if (!months.includes(r.m)) continue;
@@ -2887,22 +2892,27 @@ function renderDemoLeaderboard(brand) {
   const recs = demoRecs(brand);
   const q     = demoState.quarter;
   const qPrev = prevQuarter(q);
+
+  // Rolling QoQ — when the current quarter has only N months of data (partial,
+  // because the quarter isn't over yet), compare against the FIRST N months of
+  // the prior quarter so the comparison is month-of-quarter aligned. Example:
+  // Q2 with just Apr+May → compare vs Jan+Feb of Q1, not vs the full Q1. The
+  // old behaviour nulled the column entirely on any partial quarter; the new
+  // behaviour shows real, like-for-like rolling figures with the sub-text
+  // flagging "rolling N-mo QoQ" so readers know it's normalised.
+  const nQ  = monthsInQuarter(q).length;
+  const nQp = monthsInQuarter(qPrev).length;
+  const isPartial = nQ < 3;
   const aggNow  = demoAggQuarter(recs, q);
-  const aggPrev = demoAggQuarter(recs, qPrev);
+  const aggPrev = demoAggQuarter(recs, qPrev, isPartial ? nQ : null);
   const prevMap = new Map(aggPrev.map(c => [c.age + '||' + c.eth, c]));
 
-  // QoQ growth: this quarter vs previous, but only when BOTH quarters are
-  // complete (3 months each) — partial-quarter comparisons are misleading
-  // (e.g. April-only vs full Q1 = ~-58% across every segment, scaring the
-  // reader). When either quarter is partial we null the growth columns;
-  // the card sub-text still flags "partial (N/3 mo)" for context.
-  const isPartial = monthsInQuarter(q).length < 3 || monthsInQuarter(qPrev).length < 3;
   const merged = aggNow.map(c => {
     const p = prevMap.get(c.age + '||' + c.eth);
     return {
       age: c.age, eth: c.eth, gr: c.gr, pspd: c.pspd,
-      grg:   isPartial ? null : ((p && p.gr > 0)                                       ? (c.gr   - p.gr)   / p.gr   : null),
-      pspdg: isPartial ? null : ((p && p.pspd != null && c.pspd != null && p.pspd > 0) ? (c.pspd - p.pspd) / p.pspd : null),
+      grg:   (p && p.gr   > 0)                                         ? (c.gr   - p.gr)   / p.gr   : null,
+      pspdg: (p && p.pspd != null && c.pspd != null && p.pspd > 0)     ? (c.pspd - p.pspd) / p.pspd : null,
     };
   });
 
@@ -2972,10 +2982,10 @@ function renderDemoLeaderboard(brand) {
   document.getElementById('demoLeaderboardLeft').innerHTML  = head + leftBody;
   document.getElementById('demoLeaderboardRight').innerHTML = head + rightBody;
 
-  const nQ  = monthsInQuarter(q).length;
-  const nQp = monthsInQuarter(qPrev).length;
-  const partial = nQ < 3 ? ` · partial (${nQ}/3 mo)` : '';
-  const cmp = nQp === 0 ? '' : ` · QoQ vs ${quarterLabel(qPrev)}`;
+  const partial = isPartial ? ` · partial (${nQ}/3 mo)` : '';
+  const cmp = nQp === 0 ? '' :
+    isPartial ? ` · rolling ${nQ}-mo QoQ vs first ${nQ} mo of ${quarterLabel(qPrev)}`
+              : ` · QoQ vs ${quarterLabel(qPrev)}`;
   const subEl = document.getElementById('demoLbSub');
   if (subEl) subEl.textContent =
     `Top 15 by selected metric · ${quarterLabel(q)}${partial}${cmp} · monthly sparkline`;
