@@ -2909,10 +2909,15 @@ function renderDemoLeaderboard(brand) {
 
   const merged = aggNow.map(c => {
     const p = prevMap.get(c.age + '||' + c.eth);
+    const hasPspdPair = p && p.pspd != null && c.pspd != null;
     return {
       age: c.age, eth: c.eth, gr: c.gr, pspd: c.pspd,
-      grg:   (p && p.gr   > 0)                                         ? (c.gr   - p.gr)   / p.gr   : null,
-      pspdg: (p && p.pspd != null && c.pspd != null && p.pspd > 0)     ? (c.pspd - p.pspd) / p.pspd : null,
+      grg:    (p && p.gr   > 0)              ? (c.gr   - p.gr)   / p.gr   : null,
+      pspdg:  (hasPspdPair && p.pspd > 0)    ? (c.pspd - p.pspd) / p.pspd : null,
+      // Absolute PSPD delta — shown beneath the % so the reader sees both the
+      // proportional change and the size of the move (e.g. +33% is a small
+      // bump if you started at 50, a huge one if you started at 500).
+      pspdAbs: hasPspdPair                   ? (c.pspd - p.pspd)          : null,
     };
   });
 
@@ -2963,14 +2968,18 @@ function renderDemoLeaderboard(brand) {
     <th class="num">PSPD QoQ</th>
     <th>Monthly Trajectory</th>
   </tr></thead>`;
+  // Signed absolute-delta formatter for PSPD — matches the 2dp PSPD column
+  // above so the unit and precision line up visually.
+  const fmtSignPSPD = v => v == null ? '' : (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(2);
   const rowHTML = (c, rank) => {
     const pspdgCls = c.pspdg == null ? '' : c.pspdg >= 0 ? 'pos' : 'neg';
+    const pspdAbsStr = fmtSignPSPD(c.pspdAbs);
     return `<tr>
       <td class="rank">${rank}</td>
       <td><span class="seg-age">${c.age === 'Invalid dob' ? 'Unknown' : c.age}</span><span class="seg-eth">${ETH_LABEL[c.eth]||c.eth}</span>${lineTag}</td>
       <td class="num">RM ${demoFmtRM(c.gr)}</td>
       <td class="num">${demoFmtPSPD(c.pspd)}</td>
-      <td class="num ${pspdgCls}">${demoFmtPct(c.pspdg)}</td>
+      <td class="num ${pspdgCls}"><span class="mom-pct">${demoFmtPct(c.pspdg)}</span><span class="mom-abs">${pspdAbsStr}</span></td>
       <td>${sparkSVG(trajectoryGR(c.age, c.eth))}</td>
     </tr>`;
   };
