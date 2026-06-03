@@ -618,13 +618,13 @@ body.tab-overall [data-tab-hide~="overall"] { display: none !important; }
   font-family: 'DM Mono', monospace; color: var(--text);
   border-bottom: 1px solid var(--border);
 }
-/* MoM heatmap — light theme: solid extremes, tinted mids */
-.mom-neg-3 { background: #c0392b;                color: #fff;     }
-.mom-neg-2 { background: rgba(207,63,63,0.40);   color: #8f2020;  }
-.mom-neg-1 { background: rgba(207,63,63,0.15);   color: #a82a2a;  }
-.mom-pos-1 { background: rgba(31,157,82,0.15);   color: #15703a;  }
-.mom-pos-2 { background: rgba(31,157,82,0.40);   color: #0e5a2c;  }
-.mom-pos-3 { background: #15803c;                color: #fff;     }
+/* MoM heatmap — pastel gradient, dark text throughout */
+.mom-neg-3 { background: rgba(192,57,43,0.32);   color: #6e1608;  }
+.mom-neg-2 { background: rgba(192,57,43,0.18);   color: #922b21;  }
+.mom-neg-1 { background: rgba(192,57,43,0.08);   color: #b03a2e;  }
+.mom-pos-1 { background: rgba(31,157,82,0.08);   color: #1e8449;  }
+.mom-pos-2 { background: rgba(31,157,82,0.18);   color: #1a7040;  }
+.mom-pos-3 { background: rgba(31,157,82,0.32);   color: #145a32;  }
 .mom-na    { color: var(--muted2); }
 .share-cell {
   position: relative; font-family: 'DM Mono', monospace;
@@ -938,6 +938,9 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
   font-size: 13px;
 }
 .loy-table td.tier { font-size: 13px; }
+.mom-pct { display: block; font-size: 13px; font-weight: 600; }
+.mom-abs { display: block; font-size: 10.5px; font-weight: 500; margin-top: 2px;
+           font-family: 'DM Sans', sans-serif; font-variant-numeric: tabular-nums; }
 .loy-table th.tier-hdr, .loy-table th.month-hdr { font-size: 10.5px; }
 .share-cell {
   font-family: 'DM Sans', sans-serif;
@@ -1011,6 +1014,12 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
   z-index: 100;
 }
 .info-tip:hover::after { opacity: 1; }
+.info-tip.tip-wide::after {
+  white-space: pre-line;
+  max-width: 300px;
+  text-align: left;
+  left: 0; transform: none;
+}
 
 </style>
 </head>
@@ -1031,7 +1040,7 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
   </div>
   <div class="top-meta">
     <div class="top-meta-label">Last Refreshed</div>
-    <div class="top-meta-val">12th Apr 2026</div>
+    <div class="top-meta-val">31st May 2026</div>
   </div>
 </div>
 
@@ -1043,29 +1052,29 @@ table.demo-leaderboard { width: 100%; border-collapse: collapse; }
 
   <div class="kpi-card blue" data-brand-card="all">
     <div class="kpi-label">YTD Revenue</div>
-    <div class="kpi-value" id="ytdRevValue">RM 336.5M</div>
-    <div class="kpi-sub" id="ytdRevSub">Target: RM 326.9M</div>
-    <span class="kpi-badge pos" id="ytdRevBadge">▲ 2.9% vs Target</span>
+    <div class="kpi-value" id="ytdRevValue">RM 533.2M</div>
+    <div class="kpi-sub" id="ytdRevSub">Target: RM 487.7M</div>
+    <span class="kpi-badge pos" id="ytdRevBadge">▲ 9.3% vs Target</span>
   </div>
 
   <div class="kpi-card amber">
     <div class="kpi-label" id="ytdPspdLabel">YTD PSPD</div>
-    <div class="kpi-value" id="ytdPspdValue">3,852.55</div>
+    <div class="kpi-value" id="ytdPspdValue">4,092.51</div>
     <div class="kpi-sub" id="ytdPspdSub">Target: 3,743.67</div>
-    <span class="kpi-badge pos" id="ytdPspdBadge">▲ 2.9% vs Target</span>
+    <span class="kpi-badge pos" id="ytdPspdBadge">▲ 9.3% vs Target</span>
   </div>
 
   <div class="kpi-card green">
     <div class="kpi-label">YTD AOV</div>
-    <div class="kpi-value" id="ytdAovValue">RM 20.30</div>
+    <div class="kpi-value" id="ytdAovValue">RM 20.21</div>
     <div class="kpi-sub">Per order average</div>
     <span class="kpi-badge neu">No Target Set</span>
   </div>
 
   <div class="kpi-card blue" style="--blue:#7c4fd0;">
     <div class="kpi-label">Total Orders YTD</div>
-    <div class="kpi-value" id="ytdOrdersValue" style="color:#7c4fd0;font-size:22px;">16.57M</div>
-    <div class="kpi-sub" id="ytdOrdersSub">Jan – Apr 2026</div>
+    <div class="kpi-value" id="ytdOrdersValue" style="color:#7c4fd0;font-size:22px;">26.39M</div>
+    <div class="kpi-sub" id="ytdOrdersSub">Jan – May 2026</div>
     <span class="kpi-badge neu">Cumulative</span>
   </div>
 
@@ -1487,16 +1496,16 @@ const tickFont    = { family: "'DM Mono', sans-serif", size: 11 };
 
 // ── 1. PSPD & AOV MONTHLY ────────────────────────────────────────────
 const months         = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const pspd           = [3582.63, 3572.04, 4162.57, 4387.41, null, null, null, null, null, null, null, null];
+const pspd           = [3582.63, 3572.04, 4162.57, 4466.49, 4615.84, null, null, null, null, null, null, null];
 const pyPspd         = [3513.94, 3695.64, 3057.78, 4030.55, 4107.29, 4545.74, 4486.30, 3992.40, 3905.30, 3896.87, 3936.75, 4099.09];
-const aov            = [19.57, 20.08, 21.30, 19.98, null, null, null, null, null, null, null, null];
+const aov            = [19.57, 20.08, 21.30, 19.90, 20.16, null, null, null, null, null, null, null];
 const pyAov          = [19.57, 19.56, 20.10, 20.53, 19.81, 20.39, 20.28, 19.87, 19.95, 20.01, 19.49, 20.37];
-const monthlyZcPspd  = [3585.79, 3577.56, 4172.41, 4396.86, null, null, null, null, null, null, null, null];
-const monthlyZsPspd  = [3012.18, 2559.51, 2352.90, 2639.29, null, null, null, null, null, null, null, null];
+const monthlyZcPspd  = [3585.79, 3577.56, 4172.41, 4477.02, 4626.18, null, null, null, null, null, null, null];
+const monthlyZsPspd  = [3012.18, 2559.51, 2352.90, 2541.62, 2654.79, null, null, null, null, null, null, null];
 
 // Brand-specific AOV (CY 2026 + PY 2025) — Total Revenue / Total Orders per month, per brand
-const monthlyZcAov   = [19.57, 20.08, 21.31, 19.98, null, null, null, null, null, null, null, null];
-const monthlyZsAov   = [20.17, 20.27, 19.35, 19.59, null, null, null, null, null, null, null, null];
+const monthlyZcAov   = [19.57, 20.08, 21.31, 19.90, 20.16, null, null, null, null, null, null, null];
+const monthlyZsAov   = [20.17, 20.27, 19.35, 19.35, 19.70, null, null, null, null, null, null, null];
 const monthlyZcPyAov = [19.57, 19.56, 20.10, 20.53, 19.81, 20.39, 20.28, 19.87, 19.95, 20.01, 19.49, 20.37];
 const monthlyZsPyAov = [19.13, 21.44, 19.78, 19.86, 19.92, 20.21, 20.07, 20.52, 19.58, 18.90, 19.21, 20.16];
 
@@ -1578,11 +1587,11 @@ const pspdChart = new Chart(document.getElementById('pspdAovChart'), {
 });
 
 // ── 2. L6M MoM ───────────────────────────────────────────────────────
-const l6mOverall = [4151.67, 4121.81, 4052.36, 3900.52, 3833.04, 3879.20];
-const l6mZC      = [4157.02, 4127.56, 4057.91, 3905.47, 3838.27, 3885.19];
-const l6mZS      = [3196.84, 3128.35, 3075.17, 3009.53, 2877.32, 2774.18];
-const l6mMoM     = [null, -0.00719, -0.01685, -0.03747, -0.01730, 0.01204];
-const l6mPeriods = ["May–Oct '25", "Jun–Nov '25", "Jul–Dec '25", "Aug '25–Jan '26", "Sep '25–Feb '26", "Oct '25–Mar '26"];
+const l6mOverall = [4121.81, 4052.36, 3900.52, 3833.04, 3879.20, 3975.86];
+const l6mZC      = [4127.56, 4057.91, 3905.47, 3838.27, 3885.19, 3982.77];
+const l6mZS      = [3128.35, 3075.17, 3009.53, 2877.32, 2774.18, 2688.79];
+const l6mMoM     = [null, -0.01685, -0.03747, -0.01730, 0.01204, 0.02492];
+const l6mPeriods = ["Jun–Nov '25", "Jul–Dec '25", "Aug '25–Jan '26", "Sep '25–Feb '26", "Oct '25–Mar '26", "Nov '25–Apr '26"];
 const l6mLabels  = l6mPeriods.map(p => {
   const parts = p.split('–');
   return parts[parts.length - 1].trim();
@@ -1624,11 +1633,11 @@ const l6mChart = new Chart(document.getElementById('l6mChart'), {
 });
 
 // ── 3. L6W WoW ───────────────────────────────────────────────────────
-const l6wOverall = [3492.00, 3357.69, 3509.21, 3868.47, 4019.91, 4251.04];
-const l6wZC      = [3497.37, 3362.99, 3515.62, 3876.95, 4029.10, 4260.98];
-const l6wZS      = [2512.73, 2388.90, 2337.39, 2310.89, 2334.17, 2425.91];
-const l6wWoW     = [null, -0.03846, 0.04512, 0.10238, 0.03915, 0.05750];
-const l6wPeriods = ["26 Jan – 8 Mar", "2 Feb – 15 Mar", "9 Feb – 22 Mar", "16 Feb – 29 Mar", "23 Feb – 5 Apr", "2 Mar – 12 Apr"];
+const l6wOverall = [4700.87, 4771.81, 4502.68, 4433.26, 4474.26, 4600.23];
+const l6wZC      = [4712.54, 4783.65, 4513.26, 4443.38, 4484.58, 4610.91];
+const l6wZS      = [2551.33, 2580.17, 2547.13, 2558.09, 2556.76, 2603.57];
+const l6wWoW     = [null, 0.01509, -0.05640, -0.01542, 0.00925, 0.02815];
+const l6wPeriods = ["16 Mar – 26 Apr", "23 Mar – 3 May", "30 Mar – 10 May", "6 Apr – 17 May", "13 Apr – 24 May", "20 Apr – 31 May"];
 const l6wLabels  = l6wPeriods.map(p => p.split('–')[1].trim());
 
 const l6wLatestWoW = l6wWoW[l6wWoW.length-1];
@@ -1665,8 +1674,8 @@ const l6wChart = new Chart(document.getElementById('l6wChart'), {
 
 // ── 4. QoQ — 2026 (bars) vs 2025 PY (line overlay) ──────────────────
 const qoqLabels  = ['Q1', 'Q2', 'Q3', 'Q4'];
-const qoqCyRev   = [290.8, 45.7, null, null];
-const qoqCyPspd  = [3780.12, 4387.41, null, null];
+const qoqCyRev   = [290.8, 242.4, null, null];
+const qoqCyPspd  = [3780.12, 4542.78, null, null];
 const qoqPyRev   = [216.5, 288.3, 299.2, 301.2];
 const qoqPyPspd  = [3410.00, 4229.54, 4127.99, 3979.92];
 const qoqTargets = [3743, 3743, 3743, 3743];
@@ -1736,11 +1745,11 @@ qoqLabels.forEach((q, i) => {
 // ── 5. CHANNEL MIX (YTD tiles + monthly stacked area + 3PL detail) ──
 // All arrays below are rewritten by update_dashboard.py — do NOT hardcode.
 // YTD per-channel % (Jan-1 → last data day)
-const channelYtdApp        = 60.07;
-const channelYtdRetail     = 28.99;
-const channelYtdGrabFood   =  6.45;
-const channelYtdFoodPanda  =  2.86;
-const channelYtdShopeeFood =  1.61;
+const channelYtdApp        = 60.38;
+const channelYtdRetail     = 28.16;
+const channelYtdGrabFood   =  6.75;
+const channelYtdFoodPanda  =  2.94;
+const channelYtdShopeeFood =  1.74;
 const channelYtdOthers     =  0.03;
 // Combined 3PL group (GrabFood + FoodPanda + ShopeeFood + Others)
 const channelYtdTpl = channelYtdGrabFood + channelYtdFoodPanda
@@ -1753,17 +1762,17 @@ const channelTargetRetail = 30.0;
 const channelTargetTpl    = 15.0;
 
 // Monthly % share (Jan→Dec, null if no data yet that month)
-const channelMonthlyZusapp     = [58.57, 59.80, 61.77, 59.52, null, null, null, null, null, null, null, null];
-const channelMonthlyRetail     = [29.91, 28.63, 28.50, 28.93, null, null, null, null, null, null, null, null];
-const channelMonthlyTpl        = [11.48, 11.51, 9.72, 11.54, null, null, null, null, null, null, null, null];
-const channelMonthlyOthers     = [0.04, 0.05, 0.01, 0.00, null, null, null, null, null, null, null, null];
-const channelMonthlyGrabFood   = [6.87, 7.02, 5.54, 6.73, null, null, null, null, null, null, null, null];
-const channelMonthlyFoodPanda  = [2.85, 2.89, 2.81, 2.97, null, null, null, null, null, null, null, null];
-const channelMonthlyShopeeFood = [1.77, 1.61, 1.37, 1.84, null, null, null, null, null, null, null, null];
+const channelMonthlyZusapp     = [58.57, 59.80, 61.77, 61.30, 60.06, null, null, null, null, null, null, null];
+const channelMonthlyRetail     = [29.91, 28.63, 28.50, 26.86, 27.46, null, null, null, null, null, null, null];
+const channelMonthlyTpl        = [11.48, 11.51, 9.72, 11.82, 12.47, null, null, null, null, null, null, null];
+const channelMonthlyOthers     = [0.04, 0.05, 0.01, 0.02, 0.01, null, null, null, null, null, null, null];
+const channelMonthlyGrabFood   = [6.87, 7.02, 5.54, 6.90, 7.38, null, null, null, null, null, null, null];
+const channelMonthlyFoodPanda  = [2.85, 2.89, 2.81, 3.02, 3.11, null, null, null, null, null, null, null];
+const channelMonthlyShopeeFood = [1.77, 1.61, 1.37, 1.91, 1.98, null, null, null, null, null, null, null];
 // Absolute gross revenue per 3PL sub-channel (RM) — rewritten by update_dashboard.py
-const channelMonthlyGrabFoodRev   = [6473704, 6008845, 6146106, 3083876, null, null, null, null, null, null, null, null];
-const channelMonthlyFoodPandaRev  = [2683956, 2469754, 3109795, 1364015, null, null, null, null, null, null, null, null];
-const channelMonthlyShopeeFoodRev = [1666454, 1376389, 1522371, 843984, null, null, null, null, null, null, null, null];
+const channelMonthlyGrabFoodRev   = [6473704, 6008845, 6146106, 8091715, 9356314, null, null, null, null, null, null, null];
+const channelMonthlyFoodPandaRev  = [2683956, 2469754, 3109795, 3538142, 3946854, null, null, null, null, null, null, null];
+const channelMonthlyShopeeFoodRev = [1666454, 1376389, 1522371, 2236910, 2504941, null, null, null, null, null, null, null];
 
 // ── Render YTD tiles ─────────────────────────────────────────────────
 function renderMixTile(prefix, actual, target) {
@@ -1883,13 +1892,13 @@ const channelDetailChart = new Chart(document.getElementById('channelDetailChart
 // ── 6+7. BRAND QUARTERLY CARDS — CY bars + PY line + Target ──────────
 // These arrays are rewritten by update_dashboard.py from Monthly_Brand_Summary
 // (aggregated to brand × year × quarter). Do not hardcode.
-const zcCyRev    = [289.65, 45.55, null, null];   // Revenue (RM millions)
-const zcCyPspd   = [3786.34, 4396.86, null, null];
+const zcCyRev    = [289.65, 241.68, null, null];   // Revenue (RM millions)
+const zcCyPspd   = [3786.34, 4553.22, null, null];
 const zcPyPspd   = [3412.30, 4234.57, 4133.38, 3985.65];
 const zcTargets  = [4000, 4000, 4000, 4000];
 
-const zsCyRev    = [1.11, 0.15, null, null];
-const zsCyPspd   = [2645.16, 2639.29, null, null];
+const zsCyRev    = [1.11, 0.74, null, null];
+const zsCyPspd   = [2645.16, 2598.40, null, null];
 const zsPyPspd   = [2743.91, 3131.16, 3230.46, 2908.33];
 const zsTargets  = [2500, 2500, 2500, 2500];
 
@@ -1991,12 +2000,12 @@ const tabData = {
     l6m: () => l6mOverall, l6w: () => l6wOverall,
     qoqCy: () => qoqCyPspd, qoqPy: () => qoqPyPspd, qoqTgt: () => qoqTargets,
     pspdLabel: 'YTD PSPD',
-    pspdValue: '3,852.55',  pspdSub: 'Target: 3,743.67',
-    pspdBadgeCls: 'pos',    pspdBadgeTxt: '▲ 2.9% vs Target',
-    revValue:  'RM 336.5M', revSub: 'Target: RM 326.9M',
-    revBadgeCls: 'pos',     revBadgeTxt: '▲ 2.9% vs Target',
-    aovValue:  'RM 20.30',
-    ordersValue: '16.57M',  ordersSub: 'Jan – Apr 2026',
+    pspdValue: '4,092.51',  pspdSub: 'Target: 3,743.67',
+    pspdBadgeCls: 'pos',    pspdBadgeTxt: '▲ 9.3% vs Target',
+    revValue:  'RM 533.2M', revSub: 'Target: RM 487.7M',
+    revBadgeCls: 'pos',     revBadgeTxt: '▲ 9.3% vs Target',
+    aovValue:  'RM 20.21',
+    ordersValue: '26.39M',  ordersSub: 'Jan – May 2026',
   },
   zc: {
     monthlyPspd:  () => monthlyZcPspd,
@@ -2007,12 +2016,12 @@ const tabData = {
     l6m: () => l6mZC, l6w: () => l6wZC,
     qoqCy: () => zcCyPspd, qoqPy: () => zcPyPspd, qoqTgt: () => zcTargets,
     pspdLabel: 'YTD ZUS Coffee',
-    pspdValue: '3,859.16',  pspdSub: 'Target: 4,000.00',
-    pspdBadgeCls: 'neg',    pspdBadgeTxt: '▼ 3.5% vs Target',
-    revValue:  'RM 335.2M', revSub: 'ZUS Coffee · YTD',
+    pspdValue: '4,100.48',  pspdSub: 'Target: 4,000.00',
+    pspdBadgeCls: 'pos',    pspdBadgeTxt: '▲ 2.5% vs Target',
+    revValue:  'RM 531.3M', revSub: 'ZUS Coffee · YTD',
     revBadgeCls: 'neu',     revBadgeTxt: 'Brand-only',
-    aovValue:  'RM 20.30',
-    ordersValue: '16.51M',  ordersSub: 'ZUS Coffee · Jan – Apr 2026',
+    aovValue:  'RM 20.21',
+    ordersValue: '26.29M',  ordersSub: 'ZUS Coffee · Jan – May 2026',
   },
   zs: {
     monthlyPspd:  () => monthlyZsPspd,
@@ -2023,12 +2032,12 @@ const tabData = {
     l6m: () => l6mZS, l6w: () => l6wZS,
     qoqCy: () => zsCyPspd, qoqPy: () => zsPyPspd, qoqTgt: () => zsTargets,
     pspdLabel: 'YTD ZUS Signature',
-    pspdValue: '2,644.46',  pspdSub: 'Target: 2,500.00',
-    pspdBadgeCls: 'pos',    pspdBadgeTxt: '▲ 5.8% vs Target',
-    revValue:  'RM 1.3M', revSub: 'ZUS Signature · YTD',
+    pspdValue: '2,626.23',  pspdSub: 'Target: 2,500.00',
+    pspdBadgeCls: 'pos',    pspdBadgeTxt: '▲ 5.0% vs Target',
+    revValue:  'RM 1.8M', revSub: 'ZUS Signature · YTD',
     revBadgeCls: 'neu',     revBadgeTxt: 'Brand-only',
-    aovValue:  'RM 19.90',
-    ordersValue: '63.1K',  ordersSub: 'ZUS Signature · Jan – Apr 2026',
+    aovValue:  'RM 19.78',
+    ordersValue: '93.5K',  ordersSub: 'ZUS Signature · Jan – May 2026',
   },
 };
 
@@ -2341,30 +2350,30 @@ sectionIds.forEach(id => {
 });
 
 // ── MTD KPI cards ────────────────────────────────────────────────────
-const mtdMonth     = 'Apr 2026';
-const prevMonthLbl = 'Mar';
+const mtdMonth     = 'May 2026';
+const prevMonthLbl = 'Apr';
 
 // All MTD metrics + their previous-month counterparts, per brand
 const mtdData = {
   overall: {
-    pspd:   4387.41, prevPspd:   4162.57, target: 4279,
-    aov:    19.98,   prevAov:    21.30,
-    orders: 2286908, prevOrders: 5203343,
+    pspd:   4615.84, prevPspd:   4466.49, target: 4663,
+    aov:    20.16,   prevAov:    19.90,
+    orders: 6242176, prevOrders: 5859662,
   },
   zc: {
-    pspd:   4396.86, prevPspd:   4172.41, target: 4000,
-    aov:    19.98,   prevAov:    21.31,
-    orders: 2279363, prevOrders: 5185837,
+    pspd:   4626.18, prevPspd:   4477.02, target: 4000,
+    aov:    20.16,   prevAov:    19.90,
+    orders: 6222908, prevOrders: 5841015,
   },
   zs: {
-    pspd:   2639.29, prevPspd:   2352.90, target: 2500,
-    aov:    19.59,   prevAov:    19.35,
-    orders: 7545, prevOrders: 17506,
+    pspd:   2654.79, prevPspd:   2541.62, target: 2500,
+    aov:    19.70,   prevAov:    19.35,
+    orders: 19268, prevOrders: 18647,
   },
 };
 
 // YTD AOV per brand (Jan-Apr 2026 weighted average)
-const ytdAovByBrand = { overall: 20.30, zc: 20.30, zs: 19.90 };
+const ytdAovByBrand = { overall: 20.21, zc: 20.21, zs: 19.78 };
 
 function mtdBadge(current, previous, prevLabel) {
   const pct = (current - previous) / previous;
@@ -2485,11 +2494,17 @@ const loyAovZE = [19.82, 20.28, 21.71, 20.21];
   const fmtInt = v => (v === null || v === undefined) ? '—' : Math.round(v).toLocaleString('en-MY');
   const fmtNum = v => (v === null || v === undefined) ? '—' : v.toLocaleString('en-MY', {maximumFractionDigits: 0});
   const fmtDec = v => (v === null || v === undefined) ? '—' : v.toFixed(2);
+  const signInt = d => (d >= 0 ? '+' : '') + Math.round(d).toLocaleString('en-MY');
+  const signRev = d => { const s = d >= 0 ? '+' : '-'; const a = Math.abs(d);
+    return a >= 1e6 ? s + 'RM ' + (a/1e6).toFixed(1) + 'M'
+         : a >= 1e3 ? s + 'RM ' + (a/1e3).toFixed(0) + 'K'
+         : s + 'RM ' + a.toFixed(0); };
+  const signDec = d => (d >= 0 ? '+' : '') + d.toFixed(2);
   const metricSpecs = [
-    { key: 'customers', label: 'Customer Count', unit: 'count', cls: 'cc',  fmt: fmtInt, hasShare: true,  showTotal: true  },
-    { key: 'revenue',   label: 'Revenue',        unit: 'RM',    cls: 'rev', fmt: fmtNum, hasShare: true,  showTotal: true  },
-    { key: 'orders',    label: 'Order Count',    unit: 'count', cls: 'oc',  fmt: fmtInt, hasShare: true,  showTotal: true  },
-    { key: 'aov',       label: 'AOV',            unit: 'RM',    cls: 'aov', fmt: fmtDec, hasShare: false, showTotal: false },
+    { key: 'customers', label: 'Customer Count', unit: 'count', cls: 'cc',  fmt: fmtInt, absFmt: signInt, hasShare: true,  showTotal: true  },
+    { key: 'revenue',   label: 'Revenue',        unit: 'RM',    cls: 'rev', fmt: fmtNum, absFmt: signRev, hasShare: true,  showTotal: true  },
+    { key: 'orders',    label: 'Order Count',    unit: 'count', cls: 'oc',  fmt: fmtInt, absFmt: signInt, hasShare: true,  showTotal: true  },
+    { key: 'aov',       label: 'AOV',            unit: 'RM',    cls: 'aov', fmt: fmtDec, absFmt: signDec, hasShare: false, showTotal: false },
   ];
 
   const grid = document.getElementById('loyGrid');
@@ -2536,14 +2551,18 @@ const loyAovZE = [19.82, 20.28, 21.71, 20.21];
   };
   const fmtMom = v => v === null ? '—' :
     (v >= 0 ? '+' : '') + (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(1)) + '%';
-  function momRows(key) {
+  function momRows(key, absFmt) {
     return tiers.map(t => {
       const arr = data[key][t];
       let row = `<tr><td class="tier">${t}</td>`;
       loyMonths.forEach((_, mi) => {
-        let mom = null;
-        if (mi > 0 && arr[mi-1]) mom = ((arr[mi] - arr[mi-1]) / arr[mi-1]) * 100;
-        row += `<td class="num ${momCls(mom)}">${fmtMom(mom)}</td>`;
+        let mom = null, delta = null;
+        if (mi > 0 && arr[mi-1]) {
+          delta = arr[mi] - arr[mi-1];
+          mom = (delta / arr[mi-1]) * 100;
+        }
+        const absTxt = (delta !== null && absFmt) ? `<span class="mom-abs">${absFmt(delta)}</span>` : '';
+        row += `<td class="num ${momCls(mom)}"><span class="mom-pct">${fmtMom(mom)}</span>${absTxt}</td>`;
       });
       return row + '</tr>';
     }).join('');
@@ -2579,7 +2598,7 @@ const loyAovZE = [19.82, 20.28, 21.71, 20.21];
       <table class="loy-table">${colgroup}<thead>${head}</thead><tbody>${valuesRows(spec.key, spec.fmt, spec.showTotal)}</tbody></table>
 
       <div class="loy-section-label">MoM Growth</div>
-      <table class="loy-table">${colgroup}<thead>${head}</thead><tbody>${momRows(spec.key)}</tbody></table>`;
+      <table class="loy-table">${colgroup}<thead>${head}</thead><tbody>${momRows(spec.key, spec.absFmt)}</tbody></table>`;
 
     if (spec.hasShare) {
       html += `
@@ -2812,7 +2831,7 @@ function renderDemoHeatmaps(brand) {
           : null;
         return { eth: e, rev: totalRev, pspd, grg };
       });
-      html += '<div class="dhm-total-head">Total</div>';
+      html += '<div class="dhm-total-head">Total <span class="info-tip tip-wide" data-tip="Wtd GR = Σ(GR × Revenue) ÷ Σ(Revenue)">?</span></div>';
       for (const t of ethTotals) {
         const prevCells = ages.map(a => lookupPrev.get(a + '||' + t.eth)).filter(Boolean);
         const prevRev = prevCells.reduce((s, c) => s + (c.gr || 0), 0);
